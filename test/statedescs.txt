@@ -1,0 +1,44 @@
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Sets system localtime to UTC.","timezone","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "DON'T USE!! Installs a bunch of other modules. Will be deleted.","common","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Installs the unix man pages.","man","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "","vim","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "","vim","vimrc");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "","tree","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Installs 'pciutils', for system hardware inspection.","pciutils","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Sets the system locale to C (English).","locale","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "","salt","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Installs the Salt Master daemon.","salt","master");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "","salt","cron");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Installs 'screen', the detachable terminal.","screen","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Installs 'net-snmp'.","snmpd","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Installs 'dmidecode' for host platform detection.","dmidecode","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "Installs 'cron' and 'anacron'.","cron","");
+INSERT INTO "state_descs" ("desc","formula_name","state_file_name") VALUES ( "","logrotate","");
+
+was...
+
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE "state_descs" ("id" INTEGER PRIMARY KEY  ,"formula_name"
+varchar(255)  ,"state_file_name" varchar(255)  ,"desc" varchar(255)  );
+INSERT INTO "state_descs" VALUES(1,'vim','','Installs Vim (Vi IMproved)');
+INSERT INTO "state_descs" VALUES(2,'vim','vimrc','Installs the root user''s
+.vimrc');
+INSERT INTO "state_descs" ("id","formula_name","state_file_name","desc")
+VALUES(null,'common','','Includes:
+  - salt: Minion config file
+  - salt.cron: Minion periodic update thru cron
+  - logrotate: logrotate.conf
+  - tree: Pretty filesystem layout
+  - screen: Persistent terminal
+  - vim: Text editor
+  - snmpd: For logic monitor
+  - dmidecode: System hardware info
+  - pciutils: System hardware info
+  - man: Manual pages
+  - cron: Cron helper
+  - timezone: Set all servers to UTC (GMT)
+  - locale: Set all servers to C (English)
+');
+COMMIT;
+

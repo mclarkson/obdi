@@ -1,0 +1,80 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<div class="container vcenter">
+  <div class="row">
+    <!--<div class="col-sm-4 col-sm-offset-4">-->
+    <div class="col-sm-12">
+      <div class="panel panel-default login-panel hcenter shadow">
+        <div class="panel-heading">
+          <strong class="">Deployment Manager Login</strong>
+
+        </div>
+        <div class="panel-body">
+          <form class="form-horizontal" role="form">
+            <div class="form-group">
+              <label for="login" class="col-sm-3 control-label">Login</label>
+              <div class="col-sm-9">
+                <input class="form-control" id="login" placeholder="Login"
+                  required="" ng-model="login.userid">
+              </div>
+            </div>
+              <div class="form-group">
+                <label for="inputPassword" class="col-sm-3 control-label">
+                  Password</label>
+                <div class="col-sm-9">
+                  <input class="form-control" id="inputPassword"
+                    placeholder="Password" required=""
+                    type="password" ng-model="login.password">
+                </div>
+              </div>
+<!--
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                  <div class="checkbox">
+                    <label class="">
+                      <input class="" type="checkbox">Remember me</label>
+                  </div>
+                </div>
+              </div>
+-->
+              <div class="form-group last">
+                <div class="col-sm-offset-3 col-sm-9">
+                  <button type="submit" class="btn btn-success btn-sm"
+                    ng-click="dologin()">Sign in</button>
+                  <button type="reset" class="btn btn-default btn-sm"
+                    ng-click="clearlogin()">Reset</button>
+                </div>
+            </div>
+          </form>
+        </div>
+        <div class="panel-footer red" ng-show="login.error">
+          {{login.errtext}}
+        </div>
+        <!--<div class="panel-footer">
+              {{login.userid}}
+              {{login.password}}
+              {{login.guid}}
+            </div>-->
+        <!--<div class="panel-footer">
+              {{login_text}}
+        </div>-->
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,50 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<div class="navbar-default sidebar" role="navigation">
+  <div class="sidebar-nav">
+    <ul class="nav" id="side-menu" ng-controller="sidebarCtrl">
+
+      <li class="sidebar-search">
+        <div class="input-group custom-search-form">
+          <input type="text" class="form-control" ng-model="text"
+            placeholder="Search..." ng-enter="search(text)">
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button"
+            ng-click="search(text)">
+                <i class="fa fa-search"></i>
+            </button>
+          </span>
+        </div>
+      </li>
+
+      <li ng-show="sidebarshow" ng-repeat="item in sidebarItems" on-last-repeat>
+        <a href="#" ng-include="item.template"
+          ng-click="sidebarClick(item.name,item.hasview)"></a>
+        <ul class="nav nav-second-level">
+          <li ng-repeat="subitem in item.level2items">
+          <a href="#" ng-include="subitem.template"
+            ng-click="sidebarClick(subitem.name,subitem.hasview)"></a>
+          </li>
+        </ul>
+      </li>
+
+    </ul>
+
+  </div>
+</div>

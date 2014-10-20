@@ -1,0 +1,36 @@
+sqlite> .dump
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE "encs" ("id" INTEGER PRIMARY KEY  ,"salt_id" bigint  ,"formula"
+varchar(255)  ,"state_file" varchar(255)  ,"dc" varchar(255)  ,"env"
+varchar(255)  );
+CREATE TABLE "regexes" ("env" varchar(255)  ,"id" INTEGER PRIMARY KEY
+,"regex" varchar(255)  ,"dc" varchar(255)  );
+INSERT INTO "regexes" VALUES('test',1,'.*DTTIMG.*','OFFICE-MARKVMS');
+INSERT INTO "regexes" VALUES('test',3,'*','OFFICE-MARKVMS');
+INSERT INTO "regexes" VALUES('test',4,'.*SALT.*','OFFICE-MARKVMS');
+CREATE TABLE "regex_sls_maps" ("id" INTEGER PRIMARY KEY  ,"regex_id" bigint
+,"formula" varchar(255)  ,"state_file" varchar(255)  );
+INSERT INTO "regex_sls_maps" VALUES(1,1,'vim','');
+INSERT INTO "regex_sls_maps" VALUES(2,1,'vim','vimrc');
+INSERT INTO "regex_sls_maps" VALUES(3,2,'common','');
+INSERT INTO "regex_sls_maps" VALUES(4,4,'salt','');
+INSERT INTO "regex_sls_maps" VALUES(5,4,'salt','cron');
+INSERT INTO "regex_sls_maps" VALUES(6,4,'salt','master');
+CREATE INDEX idx_enc_salt_id ON "encs"("salt_id");
+COMMIT;
+
+INSERT INTO "regexes" VALUES('test',2,'.*','OFFICE-MARKVMS');
+insert into regex_sls_maps values ( null, 2, "salt", "" );
+insert into regex_sls_maps values ( null, 2, "salt", "cron" );
+insert into regex_sls_maps values ( null, 2, "logrotate", "" );
+insert into regex_sls_maps values ( null, 2, "tree", "" );
+insert into regex_sls_maps values ( null, 2, "screen", "" );
+insert into regex_sls_maps values ( null, 2, "vim", "" );
+insert into regex_sls_maps values ( null, 2, "snmpd", "" );
+insert into regex_sls_maps values ( null, 2, "dmidecode", "" );
+insert into regex_sls_maps values ( null, 2, "pciutils", "" );
+insert into regex_sls_maps values ( null, 2, "man", "" );
+insert into regex_sls_maps values ( null, 2, "cron", "" );
+insert into regex_sls_maps values ( null, 2, "timezone", "" );
+insert into regex_sls_maps values ( null, 2, "locale", "" );

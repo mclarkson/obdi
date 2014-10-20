@@ -1,0 +1,81 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+
+<div class="form-horizontal prepend-xs-1" role="form">
+
+  <div class="alert alert-danger" ng-show="message">
+    {{message}}
+  </div>
+  <div class="alert alert-success" ng-show="okmessage">
+    {{okmessage}}
+  </div>
+
+  <!-- Script Name -->
+
+  <div class="form-group">
+    <label for="scriptcode" class="col-sm-offset-1 col-sm-2 control-label">
+      Name</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="scriptcode" ng-model="script.Name"
+      placeholder="Name of the script" type="text" required >
+    </div>
+  </div>
+
+  <!-- Script Description -->
+
+  <div class="form-group">
+    <label for="Name" class="col-sm-offset-1 col-sm-2 control-label">
+      Description</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="Name" ng-model="script.Desc"
+      placeholder="Description of the script" type="text" required >
+    </div>
+  </div>
+
+  <!-- Script Source -->
+
+  <div class="form-group">
+    <label for="file" class="col-sm-offset-1 col-sm-2 control-label">File</label>
+    <div class="col-sm-7">
+      <div class="fileinput fileinput-new input-group"
+        data-provides="fileinput">
+        <div class="form-control" data-trigger="fileinput">
+          <i class="glyphicon glyphicon-file fileinput-exists"></i>
+          <span class="fileinput-filename">{{script.Name}}</span>
+        </div>
+        <span class="input-group-addon btn btn-default btn-file"
+          style="border-radius: 0;" ng-if="eye_enabled"
+          ng-click="DownloadFile(script.Name)">
+          <span>
+            <i class="fa fa-eye"></i>
+          </span>
+        </span>
+        <span class="input-group-addon btn btn-default btn-file">
+          <span class="fileinput-new">Select file</span>
+          <span class="fileinput-exists">
+            <i class="fa fa-edit"></i>
+          </span>
+          <input type="file" name="..." id="file" file-upload required>
+        </span>
+        <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+      </div>
+    </div>
+
+  </div>
+</div>

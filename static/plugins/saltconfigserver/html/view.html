@@ -1,0 +1,476 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!-- tool_content -->
+
+<script type="text/ng-template" id="myModalContent.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Delete Class</h3>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete '{{classname}}'?
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">Yes</button>
+        <button class="btn btn-primary" ng-click="cancel()">No</button>
+    </div>
+</script>
+
+<div ng-controller="saltconfigserverCtrl">
+
+  <style>.modal-body table tr td {padding: 4px;}</style>
+
+  <script type="text/ng-template" id="jobdetails.html">
+      <div class="modal-header">
+          <h3 class="modal-title">Job Details</h3>
+      </div>
+      <div class="modal-body">
+        <table class="table borderless" style="margin-bottom: -8px">
+          <tr>
+            <td>Job&nbsp;Type:</td>
+            <td>{{lookupJobType(job.Type)}}</td>
+          </tr>
+      </table>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-primary" ng-click="cancel()">Close</button>
+      </div>
+  </script>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <h3 class="page-header">Configure Server
+        <button class="btn btn-sm btn-success pull-right" type="button"
+        ng-if="mainview" ng-click="Restart()" style="margin-top: -5px;">
+          <i class="fa fa-refresh"> </i> Restart</button>
+        <button class="btn btn-sm btn-default pull-right" type="button"
+        ng-if="grainsview.show || configview.show ||
+        changeversionview.show" ng-click="GoBack()"
+        style="margin-top: -5px;">
+          <i class="fa fa-arrow-left"> </i> Go Back</button>
+        <button class="btn btn-sm btn-success pull-right" type="button"
+        ng-if="changeversionview.show" ng-disabled="!changeversionview.changed"
+        ng-click="ApplyVersion()"
+        style="margin-top: -5px; margin-right:8px;">
+          <i class="fa fa-check"> </i> Apply</button>
+        <button class="btn btn-sm btn-success pull-right" type="button"
+        ng-if="configview.show" ng-disabled="!configview.changed"
+        ng-click="ApplyConfig()"
+        style="margin-top: -5px; margin-right:8px;">
+          <i class="fa fa-check"> </i> Apply</button>
+      </h3>
+    </div>
+  </div>
+
+  <div ng-if="mainview">
+    <div class="row">
+      <div class="col-sm-12">
+
+        On this page you can tell Salt Stack to configure servers. Salt
+        formulas and state files are automatically chosen for each server based
+        on its name, but this can be fine tuned here.
+
+      </div>
+    </div>
+
+    <div class="row prepend-xs-2 append-xs-1" ng-if="!applypage.complete">
+      <div class="col-sm-12" style="margin-left: 10px">
+
+        <!-- Single button -->
+        <div class="vbtn">
+        <p class="big"
+        style="display: inline-block; vertical-align: sub;
+        margin-left: 8px; margin-right: 4px;">1.</p>
+        <div class="btn-group" dropdown is-open="status.isopen">
+          <button type="button" class="btn btn-primary dropdown-toggle"
+          ng-disabled="btnenvlistdisabled">
+            Choose Environment <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="choice in environments">
+            <a href ng-click="envChoice(choice, $event)">
+              {{choice.DcSysName}} {{choice.SysName}}</a>
+            </li>
+          </ul>
+        </div>
+        </div>
+        <div class="vbtn">
+        <p class="big"
+        style="display: inline-block; vertical-align: sub;
+        margin-left: 8px; margin-right: 4px;">2.</p>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary dropdown-toggle"
+          ng-click="ServerList()" ng-disabled="btnlistserversdisabled">
+            List Servers
+          </button>
+        </div>
+        </div>
+        <div class="vbtn">
+        <p class="big"
+        style="display: inline-block; vertical-align: sub;
+        margin-left: 8px; margin-right: 4px;">3.</p>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary dropdown-toggle"
+          ng-click="Review()" ng-disabled="btnreviewdisabled">
+            Review
+          </button>
+        </div>
+        </div>
+        <div class="vbtn">
+        <p class="big"
+        style="display: inline-block; vertical-align: sub;
+        margin-left: 8px; margin-right: 4px;">4.</p>
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary dropdown-toggle"
+          ng-class="ApplyColour()" ng-click="Apply()"
+          ng-disabled="btnapplydisabled">
+            Apply
+          </button>
+        </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="alert alert-danger alert-dismissable" ng-show="mainmessage">
+      <button type="button" class="close" data-dismiss="alert"
+        aria-hidden="true">&times;</button>
+      {{mainmessage}}
+    </div>
+
+    <div class="row" ng-if="envchosen">
+      <div class="col-sm-12">
+
+        <h4 class="page-header">{{env.DcDispName}} - {{env.DispName}}</h4>
+
+        <div class="alert alert-danger alert-dismissable" ng-show="message">
+          <button type="button" class="close" data-dismiss="alert"
+            aria-hidden="true">&times;</button>
+          {{message}}
+          <span ng-if="message_jobid">
+          See: <a href="#" ng-click="showOutputlines(message_jobid)">
+          jobid:{{message_jobid}}</a> 
+          </span>
+        </div>
+        <div class="alert alert-success alert-dismissable" ng-show="okmessage">
+          <button type="button" class="close" data-dismiss="alert"
+            aria-hidden="true">&times;</button>
+          {{okmessage}}
+        </div>
+
+        <p ng-if="!listbtnpressed">Press the List Servers button above to do a real-time audit using Salt.</p>
+
+        <div ng-if="!reviewpage.enabled && !applypage.enabled">
+          <div ng-if="listbtnpressed">
+            <p ng-if="!serverlist_ready && !message">Getting the list of
+            servers. This might take a while
+            <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+
+            <p ng-if="serverlist_ready && serverlist_empty">Salt reports that this environment contains no servers!<br />
+            &nbsp;<br />
+            Check that the keys have been accepted in
+            &#8216;Key Management&#8217;.</p>
+
+            <div ng-if="serverlist_ready && !serverlist_empty">
+
+              <p>Choose the servers that you would like to configure.</p>
+
+              <div class="table-responsive" style="margin-top: 8px;">
+                <table class="table table-striped table-bordered">
+                  <thead>
+                  <tr>
+                    <th style="text-align: center;">
+                      <input type="checkbox" ng-click="SelectAllNone()"
+                      ng-model="checkbox_allnone">
+                    </th>
+                    <th>Host Name</th>
+                    <th>Version</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat="server in filteredItems = (servernames | filter:hostfilter)"
+                      class="{{style(server.Responded,server.Selected)}}">
+                    <td style="text-align: center;">
+                      <input type="checkbox" ng-selected="server.Selected"
+                      ng-model="server.Selected"
+                      ng-click="Selected(server.Name)"
+                      ng-if="server.Responded">
+                    </td>
+                    <td>{{server.Name}}</td>
+                    <td>{{server.Version}}
+                      <a href="#" ng-click="ChangeServerVersion(server)"
+                      ng-if="server.Selected">
+                        <i class="fa fa-plus-square" title="Change Version"></i></a>
+                    </td>
+                    <td>
+                      <span ng-if="server.Responded == true">up</span>
+                      <span ng-if="server.Responded == false"
+                      class="mypopover" popover-trigger="mouseenter"
+                      popover="Could not connect to the salt-minion daemon.
+                      Either the server is down or the daemon is stopped.
+                      Remove the key if this server is decommissioned.">
+                        down
+                      </span>
+                    </td>
+                    <td>
+                      <a href="#" ng-click="ViewDetails(server)">
+                        <i class="fa fa-eye" title="View Server Grains"></i></a>
+                      <a href="#" ng-click="ViewConfig(server)"
+                      ng-if="server.Selected">
+                        <i class="fa fa-cog" title="Server Configuration"></i></a>
+                    </td>
+                  </tr>
+                  {{copyToController(filteredItems)}}
+                  </tbody>
+                </table>
+              </div> <!-- /table-responsive -->
+
+            </div> <!-- serverlist_ready -->
+
+          </div> <!-- listbtnpressed -->
+
+        </div> <!-- !reviewpage.enabled -->
+
+        <!-- REVIEW CHANGES PAGE -->
+
+        <div ng-if="reviewpage.enabled && !serverlist_empty">
+
+          <p>The following configuration will be applied:</p>
+
+          <div class="table-responsive" style="margin-top: 8px;">
+            <table class="table table-striped table-bordered">
+              <thead>
+              <tr>
+                <th>Host Name</th>
+                <th>Version</th>
+                <th>Classes</th>
+              </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="server in serverstodo">
+                <td>{{server.Name}}</td>
+                <td>{{server.Version}}</td>
+                <td>
+                  <div ng-repeat="item in configs[server.Name].Classes |
+                    orderBy : 'toString()'">
+                    <p>{{item}}</p>
+                  </div>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div> <!-- /table-responsive -->
+
+        </div> <!-- serverlist_ready -->
+
+        <!-- APPLY CHANGES PAGE -->
+
+        <div ng-if="applypage.enabled">
+
+          <p ng-if="!applypage.complete && !message">
+          Sending &#8216;state.highstate&#8217; command to servers.
+          This might take a while
+          <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+
+          <div ng-if="resultlist_ready && !resultlist_empty">
+
+            <p>The following Salt jobs have been started.</p>
+
+            <div class="table-responsive" style="margin-top: 8px;">
+              <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                  <th>Host Name</th>
+                  <th>Salt Job ID</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="result in resultlist">
+                  <td>{{result.SaltId}}</td>
+                  <td>{{result.JobId}}</td>
+                </tr>
+                </tbody>
+              </table>
+            </div> <!-- /table-responsive -->
+
+          </div> <!-- resultlist_ready -->
+
+        </div> <!-- applypage.enabled -->
+
+      </div> <!-- col-sm-12 -->
+    </div>
+  </div>
+
+  <!-- GRAINS VIEW -->
+
+  <div ng-if="grainsview.show">
+
+    <div class="alert alert-danger alert-dismissable" ng-show="message">
+      <button type="button" class="close" data-dismiss="alert"
+        aria-hidden="true">&times;</button>
+      {{message}}
+    </div>
+
+    <div ng-if="!grainsview.gotgrains && !message">
+      <h5>
+      Getting grains details from server
+      <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+      </h5>
+    </div>
+
+    <div ng-if="grainsview.gotgrains">
+      <div class="row">
+        <div class="col-sm-12">
+
+          <div class="alert alert-info" role="alert" ng-if="fromGrainsCache">
+            <b>Warning</b> Since the server is unreachable this data has
+            been retrieved from the Salt grains cache.
+          </div>
+          <h5>Showing Grains for {{grainsview.saltid}}.</h5>
+
+        </div>
+      </div>
+
+      <div class="table-responsive" style="margin-top: 8px;width:100%;overflow:auto">
+        <table class="table table-striped table-bordered" style="width:100%;overflow:auto">
+          <thead>
+          <tr>
+            <th>Grain</th>
+            <th>Value</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in grains | filter:grainfilter">
+            <td>{{item.key}}</td>
+            <td>{{Stringify(item.value)}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div> <!-- /table-responsive -->
+    </div>
+  </div>
+
+  <!-- CONFIG VIEW -->
+
+  <div ng-if="configview.show">
+
+    <div class="alert alert-danger" ng-show="message">
+      {{message}}
+    </div>
+    <div class="alert alert-success" ng-show="okmessage">
+      {{okmessage}}
+    </div>
+
+    <div ng-if="!configview.gotconfig && !message">
+      <h5>
+      Getting configuration details
+      <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+      </h5>
+    </div>
+
+    <div ng-if="configview.gotconfig">
+        <p>Showing configuration for {{configview.saltid}}.</p>
+
+        <div class="alert alert-info" ng-show="config.Customised">
+          This server configuration has been customised so regular expression
+          matching will not apply to this server. Delete all items to get
+          regular expression matching back!
+        </div>
+
+      <div class="table-responsive" style="margin-top: -16px;width:100%;overflow:auto">
+        <table class="table table-striped table-bordered prepend-sm-1"
+          style="width:100%;overflow:auto">
+          <thead>
+          <tr>
+            <th>Classes</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="item in config.Classes">
+              <td>{{item}}</td>
+              <td style="white-space: pre-wrap;">{{GetDescription(item)}}</td>
+              <td>
+                <a href="#" ng-click="dialog(item)">
+                  <i class="fa fa-trash-o red" title="Delete"></i></a>
+              </td>
+            </tr>
+            <!--
+          </table>
+        </div>
+        <table class="table table-bordered" style="width:100%;overflow:auto">
+          <tbody>
+            -->
+            <tr>
+              <!-- <td style="width:200px"> -->
+              <td>
+                <select ng-model="configview.newclass" class="selectpicker"
+                ng-options="item for item in statedescs_names"
+                required >
+                  <option value="">Choose option</option>
+                </select>
+              </td>
+              <td style="white-space: pre-wrap;">{{GetDescription(configview.newclass)}}</td>
+              <!-- <td style="width:20px;"> -->
+              <td>
+                <a href="#" ng-click="AddClass(configview.newclass)"><i class="fa fa-plus-circle green" title="Add Item"></i></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div> <!-- /table-responsive -->
+    </div>
+  </div>
+
+  <!-- CHANGE VERSION VIEW -->
+
+  <div ng-if="changeversionview.show">
+
+    <div class="alert alert-danger" ng-show="message">
+      {{message}}
+      <span ng-if="message_jobid">
+      See: <a href="#" ng-click="showOutputlines(message_jobid)">
+      jobid:{{message_jobid}}</a> 
+      </span>
+    </div>
+    <div class="alert alert-success" ng-show="okmessage">
+      {{okmessage}}
+    </div>
+
+    <p>Changing Salt version for {{changeversionview.saltid}}.</p>
+
+    <p>Current version
+      <span ng-if="!changeversionview.versionchanged">is</span>
+      <span ng-if="changeversionview.versionchanged">will be changed to</span>
+      <span ng-if="!changeversion">{{changeversionview.grain.Version}}</span>
+      <span ng-if="changeversion">
+        <input type="text" ng-model="changeversionview.grain.Version"
+        placeholder="grain.Version" ng-enter="$parent.changeversion=false;
+        $parent.changeversionview.changed=true;
+        $parent.changeversionview.versionchanged=true" />
+      </span>
+      <a href="#" ng-click="changeversion=true">change</a>
+      </p>
+    </p>
+  </div>
+
+</div>

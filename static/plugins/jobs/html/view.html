@@ -1,0 +1,180 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!-- tool_content -->
+
+<div ng-controller="jobsCtrl">
+
+  <script type="text/ng-template" id="myModalContent.html">
+      <div class="modal-header">
+          <h3 class="modal-title">Stop Job</h3>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to stop the script '{{Name}}'
+        with Job ID '{{id}}'?
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-danger" ng-click="ok()">Yes</button>
+          <button class="btn btn-primary" ng-click="cancel()">No</button>
+      </div>
+  </script>
+
+  <style>.modal-body table tr td {padding: 4px;}</style>
+
+  <script type="text/ng-template" id="jobdetails.html">
+      <div class="modal-header">
+          <h3 class="modal-title">Job Details</h3>
+      </div>
+      <div class="modal-body">
+        <table class="table borderless" style="margin-bottom: -8px">
+          <tr>
+            <td>Job&nbsp;Type:</td>
+            <td>{{lookupJobType(job.Type)}}</td>
+          </tr>
+          <tr>
+            <td>Script:</td>
+            <td>{{job.ScriptName}}</td>
+          </tr>
+          <tr>
+            <td>Script&nbsp;ID:</td>
+            <td>{{job.ScriptId}}</td>
+          </tr>
+          <tr>
+            <td>Description:</td>
+            <td>{{job.ScriptDesc}}</td>
+          </tr>
+          <tr>
+            <td>Started&nbsp;By:</td>
+            <td>{{job.UserLogin}}</td>
+          </tr>
+          <tr>
+            <td>Arguments:</td>
+            <td>{{job.Args}}</td>
+          </tr>
+          <tr>
+            <td>Environment:</td>
+            <td>{{job.EnvVars}}</td>
+          </tr>
+          <tr>
+            <td>Status:</td>
+            <td>{{job.Status}} - {{job.ErrText}}</td>
+          </tr>
+          <tr>
+            <td>Status&nbsp;Reason:</td>
+            <td>{{job.StatusReason}}</td>
+          </tr>
+          <tr>
+            <td>Created&nbsp;At:</td>
+            <td>{{prettyDate(job.CreatedAt)}}</td>
+          </tr>
+          <tr>
+            <td>Updated&nbsp;At:</td>
+            <td>{{prettyDate(job.UpdatedAt)}}</td>
+          </tr>
+          <tr>
+            <td>Data&nbsp;Centre&nbsp;ID:</td>
+            <td>{{job.DcId}}</td>
+          </tr>
+          <tr>
+            <td>Data&nbsp;Centre:</td>
+            <td>{{job.DcSysName}} ({{job.DcDispName}})</td>
+          </tr>
+          <tr>
+            <td>Environment&nbsp;ID:</td>
+            <td>{{job.EnvId}}</td>
+          </tr>
+          <tr>
+            <td>Environment:</td>
+            <td>{{job.EnvSysName}} ({{job.EnvDispName}})</td>
+          </tr>
+          <tr>
+            <td>Worker&nbsp;URL:</td>
+            <td>{{job.WorkerUrl}}</td>
+          </tr>
+      </table>
+      </div>
+      <div class="modal-footer">
+          <button class="btn btn-primary" ng-click="cancel()">Close</button>
+      </div>
+  </script>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <h3 class="page-header">Jobs
+      <button class="btn btn-sm btn-success pull-right" type="button"
+        ng-click="FillJobsTable()" style="margin-top: -5px;">
+        <i class="fa fa-refresh"> </i> Refresh</button></h3>
+    </div>
+  </div>
+
+  This page is used for viewing or stopping jobs.
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <div class="alert alert-danger alert-dismissable" ng-show="message">
+        <button type="button" class="close" data-dismiss="alert"
+          aria-hidden="true">&times;</button>
+        {{message}}
+      </div>
+      <div class="alert alert-success alert-dismissable" ng-show="okmessage">
+        <button type="button" class="close" data-dismiss="alert"
+          aria-hidden="true">&times;</button>
+        {{okmessage}}
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-striped" style="margin-top: 4px">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>Script</th>
+            <th>Status</th>
+            <th>Duration</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="job in jobs | filter:jobfilter"
+          class="{{style(job.Status)}}">
+            <td>{{job.Id}}</td>
+            <td><span class="mypopover" popover="{{job.ScriptDesc}}"
+              popover-trigger="mouseenter">
+              {{job.ScriptName}}</span>
+            </td>
+            <td><span class="mypopover" popover="{{job.StatusReason}}"
+              popover-trigger="mouseenter">
+              {{lookupErrorCode(job.Status)}}</span>
+            </td>
+            <td>{{duration(job.CreatedAt,job.UpdatedAt,job.Status)}}</td>
+            <td>
+              <a href="#" ng-click="showOutputlines(job.Id)">
+                <i class="fa fa-file-text-o" title="View output"></i></a>
+              <a href="#" ng-click="jobdetails(job.Id)">
+                <i class="fa fa-tasks" title="View job details"></i></a>
+              <a href="#" ng-if="jobrunning(job.Status)"
+                ng-click="dialog(job.Id,job.ScriptName)">
+              <i class="fa fa-ban red" title="Stop job"></i></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div> <!-- /table-responsive -->
+    </div>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!-- <h4 class="append-xs-tiny pull-right">New User Details</h4> -->
+
+<div class="form-horizontal prepend-xs-1" role="form">
+
+  <div class="alert alert-danger" ng-show="message">
+    {{message}}
+  </div>
+  <div class="alert alert-success" ng-show="okmessage">
+    {{okmessage}}
+  </div>
+
+  <!-- DC Code -->
+
+  <div class="form-group">
+    <label for="dccode" class="col-sm-offset-1 col-sm-2 control-label">DC Code</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="dccode" ng-model="dc.SysName"
+      placeholder="Salt data centre code" type="text" required >
+    </div>
+  </div>
+
+  <!-- Display Name -->
+
+  <div class="form-group">
+    <label for="Name" class="col-sm-offset-1 col-sm-2 control-label">Name</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="Name" ng-model="dc.DispName"
+      placeholder="Data centre descriptive text" type="text" required >
+    </div>
+  </div>
+</div>

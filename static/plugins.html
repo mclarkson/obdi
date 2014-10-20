@@ -1,0 +1,83 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<div class="col-sm-9" ng-controller="pluginCtrl">
+  <div class="panel panel-default shadow">
+    <div class="panel-heading"> <strong class="">Plugins</strong>
+    </div>
+
+    <!-- PLUGIN DETAILS -->
+
+    <div ng-include="'frag/plugins-main.html'"
+        ng-if="!(addplugins || editplugins)">
+    </div>
+
+    <!-- ADD PLUGIN -->
+
+    <div class="panel-body" ng-if="addplugins">
+
+      <form name="pluginForm" novalidate ng-submit="Apply()">
+
+      <button class="btn btn-sm btn-default append-xs-tiny" type="button"
+      ng-click="AddPlugin(false)">
+      <i class="fa fa-arrow-left"> </i> Go Back</button>
+
+      <button class="btn btn-sm btn-success append-xs-tiny" type="submit"
+        ng-disabled="pluginForm.$invalid">
+        <!--ng-click="Apply()"> -->
+      <i class="fa fa-check"> </i> Apply</button>
+
+      <h4 class="append-xs-tiny pull-right formhdng">Add New Plugin</h4>
+
+      <tabset class="prepend-xs-tiny">
+        <tab ng-repeat="tab in addplugintabs" heading="{{tab.title}}">
+          <div ng-include="tab.content"></div>
+        </tab>
+      </tabset>
+
+      </form>
+
+    </div>
+
+  <!-- EDIT PLUGIN -->
+
+    <div class="panel-body" ng-if="editplugins">
+
+      <form name="pluginEditForm" novalidate ng-submit="EditApply()">
+
+      <button class="btn btn-sm btn-default append-xs-tiny" type="button"
+      ng-click="EditPlugin(false)">
+      <i class="fa fa-arrow-left"> </i> Go Back</button>
+
+      <button class="btn btn-sm btn-success append-xs-tiny" type="submit"
+        ng-disabled="pluginEditForm.$invalid">
+        <!--ng-click="Apply()"> -->
+      <i class="fa fa-check"> </i> Apply</button>
+
+      <h4 class="append-xs-tiny pull-right formhdng">Edit Plugin Details</h4>
+
+      <tabset class="prepend-xs-tiny">
+        <tab ng-repeat="tab in editplugintabs" heading="{{tab.title}}">
+          <div ng-include="tab.content"></div>
+        </tab>
+      </tabset>
+
+      </form>
+  </div>
+
+</div>

@@ -1,0 +1,667 @@
+/* CSS used here will be applied after bootstrap.css */
+
+/* Ellipsis animation */
+
+.ellipsis i {
+    opacity: 0;
+    -webkit-animation: dot 1.3s infinite;
+    -webkit-animation-delay: 0.0s;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.0s;
+}
+
+.ellipsis i+i {
+    opacity: 0;
+    -webkit-animation: dot 1.3s infinite;
+    -webkit-animation-delay: 0.2s;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.2s;
+}
+
+.ellipsis i+i+i {
+    opacity: 0;
+    -webkit-animation: dot 1.3s infinite;
+    -webkit-animation-delay: 0.3s;
+    animation: dot 1.3s infinite;
+    animation-delay: 0.3s;
+}
+
+@-webkit-keyframes dot {
+      0% { opacity: 0; }
+     50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes dot {
+      0% { opacity: 0; }
+     50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Ellipsis animation end */
+
+.borderless tbody tr td,
+.borderless thead tr th {
+  border: none;
+}
+/* TODO: Break-out to dashboard plugin css */
+.panel.panel-danger a div.panel-footer {
+  color: #A94442;
+  /* background-color: #F2DEDE; */
+  /* color: #A94442; */
+}
+.panel.panel-green a div.panel-footer {
+  color: #5CB85C;
+}
+.big {
+  font-size: 18px;
+}
+
+body { 
+ background: url('/manager/images/freetime-background.jpg') no-repeat center center fixed;
+ -webkit-background-size: cover;
+ -moz-background-size: cover;
+ -o-background-size: cover;
+ background-size: cover;
+}
+
+/* Not used */
+.nav-tabs-center > li {
+    float:none;
+    display:inline-block;
+    *display:inline; /* ie7 fix */
+     zoom:1; /* hasLayout ie7 trigger */
+}
+.nav-tabs-center {
+    text-align:center;
+}
+/* /Not used */
+
+.login-panel {
+ /* opacity: 0.9; */
+ margin-top:30px;
+ width: 400px
+}
+.form-group.last {
+ margin-bottom:0px;
+}
+div.panel-body {
+  background-color: #FFFFFF
+}
+.vcenter {
+  position: absolute;
+  top: calc(50% - 200px);
+  width: 100%;
+}
+.hcenter {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.tcenter {
+  text-align: center;
+}
+.navuser-default {
+  background-color: #EEEEEE;
+  border-color: #d0d0d0;
+}
+.navbar-default {
+  background-color: #EEEEEE;
+  border-color: #d0d0d0;
+}
+#sidebar {
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 12px;
+  border-top-right-radius: 0;
+}
+.sidebar {
+  width: 249px;
+  left: 0;
+}
+@media(max-width:767px) {
+    .sidebar {
+      width: 100%;
+    }
+    .sidebar ul li:last-child {
+      border-bottom: 0;
+    }
+}
+
+.sidebar ul li {
+      border-bottom: 1px solid #d0d0d0;
+}
+.sidebar ul li a.active {
+    background-color: #c8c8c8;
+}
+.nav li a:hover,
+.nav li a:focus
+{
+  background-color: #cdcdcd
+}
+#page-wrapper {
+  border-left: 1px solid #d0d0d0;
+}
+.page-header {
+  padding-bottom: 9px;
+  margin: 20px 0 20px;
+  border-bottom: 1px solid #d0d0d0;
+}
+@media(max-width:767px) {
+  .navbar-brand {
+    font-size: 14px;
+    padding-left: 0;
+  }
+}
+@media(min-width:768px) {
+  .vbtn {
+    display: inline-block;
+  }
+}
+@media(max-width:767px) {
+  .vbtn {
+    display: block;
+  }
+}
+.adminnav {
+  margin-top: 14px;
+}
+.runnav {
+  margin-top: 14px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.mypopover {
+  border-bottom: 1px dotted #999;
+}
+#page-wrapper {
+  padding: 0 15px;
+  min-height: 568px;
+  background-color: #fff;
+}
+.navbar-nav > li > a.blue:active,
+.navbar-nav > li > a.blue:visited,
+.navbar-nav > li > a.blue:link
+{
+  color: #2937A2;
+}
+.navbar-nav > li > a.blue:hover
+{
+  color: #F00000;
+}
+
+.shadow {
+    box-shadow: 5px 5px 15px black;
+}
+
+.img-logo {
+    /*text-align: left;
+    float: none;
+    vertical-align: middle;
+    display: table-cell;
+    height: 3em;
+    */
+    margin-top: 6px;
+    padding-right: 6px; 
+}
+/*.fa-plus-circle,*/
+td a .fa-trash-o,
+td a .fa-ban,
+td a .fa-tasks,
+td a .fa-plus-square,
+td a .fa-cog
+{
+  padding-left: 6px
+}
+.red {
+  color: red;
+}
+.blue {
+  color: #2937A2;
+}
+.formhdng {
+  margin-top: 5px;
+}
+.nav-tabs > li {
+  cursor: pointer;
+}
+
+/**** Grid ****/
+
+/* In case you need to add a vertical gutter uppon / below an element */
+
+.prepend-xs-none  { margin-top: 0;  }
+.prepend-xs-tiny  { margin-top: 9px;  }
+.prepend-xs-1 { margin-top: 18px; }
+.prepend-xs-2 { margin-top: 36px; }
+.prepend-xs-3 { margin-top: 54px; }
+.prepend-xs-4 { margin-top: 72px; }
+.prepend-xs-5 { margin-top: 90px; }
+.prepend-xs-6 { margin-top: 108px;  }
+.prepend-xs-7 { margin-top: 126px;  }
+.prepend-xs-8 { margin-top: 144px;  }
+.prepend-xs-9 { margin-top: 162px;  }
+.prepend-xs-10  { margin-top: 180px;  }
+.prepend-xs-11  { margin-top: 198px;  }
+.prepend-xs-12  { margin-top: 216px;  }
+.prepend-xs-13  { margin-top: 234px;  }
+.prepend-xs-14  { margin-top: 252px;  }
+.prepend-xs-15  { margin-top: 270px;  }
+.prepend-xs-16  { margin-top: 288px;  }
+.prepend-xs-17  { margin-top: 306px;  }
+.prepend-xs-18  { margin-top: 324px;  }
+.prepend-xs-19  { margin-top: 342px;  }
+.prepend-xs-20  { margin-top: 360px;  }
+.prepend-xs-21  { margin-top: 378px;  }
+.prepend-xs-22  { margin-top: 396px;  }
+.prepend-xs-23  { margin-top: 414px;  }
+.prepend-xs-24  { margin-top: 432px;  }
+.prepend-xs-25  { margin-top: 450px;  }
+.prepend-xs-26  { margin-top: 468px;  }
+.prepend-xs-27  { margin-top: 486px;  }
+.prepend-xs-28  { margin-top: 504px;  }
+.prepend-xs-29  { margin-top: 522px;  }
+.prepend-xs-30  { margin-top: 540px;  }
+.prepend-xs-31  { margin-top: 558px;  }
+.prepend-xs-32  { margin-top: 576px;  }
+.prepend-xs-33  { margin-top: 594px;  }
+.prepend-xs-34  { margin-top: 612px;  }
+.prepend-xs-35  { margin-top: 630px;  }
+.prepend-xs-36  { margin-top: 648px;  }
+.prepend-xs-37  { margin-top: 666px;  }
+.prepend-xs-38  { margin-top: 684px;  }
+.prepend-xs-39  { margin-top: 702px;  }
+.prepend-xs-40  { margin-top: 720px;  }
+.prepend-xs-41  { margin-top: 738px;  }
+.prepend-xs-42  { margin-top: 756px;  }
+.prepend-xs-43  { margin-top: 774px;  }
+.prepend-xs-44  { margin-top: 792px;  }
+.prepend-xs-45  { margin-top: 810px;  }
+.prepend-xs-46  { margin-top: 828px;  }
+.prepend-xs-47  { margin-top: 846px;  }
+.prepend-xs-48  { margin-top: 864px;  }
+.prepend-xs-49  { margin-top: 882px;  }
+.prepend-xs-50  { margin-top: 900px;  }
+
+.append-xs-none { margin-bottom: 0; }
+.append-xs-tiny { margin-bottom: 9px; }
+.append-xs-1  { margin-bottom: 18px;  }
+.append-xs-2  { margin-bottom: 36px;  }
+.append-xs-3  { margin-bottom: 54px;  }
+.append-xs-4  { margin-bottom: 72px;  }
+.append-xs-5  { margin-bottom: 90px;  }
+.append-xs-6  { margin-bottom: 108px; }
+.append-xs-7  { margin-bottom: 126px; }
+.append-xs-8  { margin-bottom: 144px; }
+.append-xs-9  { margin-bottom: 162px; }
+.append-xs-10 { margin-bottom: 180px; }
+.append-xs-11 { margin-bottom: 198px; }
+.append-xs-12 { margin-bottom: 216px; }
+.append-xs-13 { margin-bottom: 234px; }
+.append-xs-14 { margin-bottom: 252px; }
+.append-xs-15 { margin-bottom: 270px; }
+.append-xs-16 { margin-bottom: 288px; }
+.append-xs-17 { margin-bottom: 306px; }
+.append-xs-18 { margin-bottom: 324px; }
+.append-xs-19 { margin-bottom: 342px; }
+.append-xs-20 { margin-bottom: 360px; }
+.append-xs-21 { margin-bottom: 378px; }
+.append-xs-22 { margin-bottom: 396px; }
+.append-xs-23 { margin-bottom: 414px; }
+.append-xs-24 { margin-bottom: 432px; }
+.append-xs-25 { margin-bottom: 450px; }
+.append-xs-26 { margin-bottom: 468px; }
+.append-xs-27 { margin-bottom: 486px; }
+.append-xs-28 { margin-bottom: 504px; }
+.append-xs-29 { margin-bottom: 522px; }
+.append-xs-30 { margin-bottom: 540px; }
+.append-xs-31 { margin-bottom: 558px; }
+.append-xs-32 { margin-bottom: 576px; }
+.append-xs-33 { margin-bottom: 594px; }
+.append-xs-34 { margin-bottom: 612px; }
+.append-xs-35 { margin-bottom: 630px; }
+.append-xs-36 { margin-bottom: 648px; }
+.append-xs-37 { margin-bottom: 666px; }
+.append-xs-38 { margin-bottom: 684px; }
+.append-xs-39 { margin-bottom: 702px; }
+.append-xs-40 { margin-bottom: 720px; }
+.append-xs-41 { margin-bottom: 738px; }
+.append-xs-42 { margin-bottom: 756px; }
+.append-xs-43 { margin-bottom: 774px; }
+.append-xs-44 { margin-bottom: 792px; }
+.append-xs-45 { margin-bottom: 810px; }
+.append-xs-46 { margin-bottom: 828px; }
+.append-xs-47 { margin-bottom: 846px; }
+.append-xs-48 { margin-bottom: 864px; }
+.append-xs-49 { margin-bottom: 882px; }
+.append-xs-50 { margin-bottom: 900px; }
+
+
+@media (min-width: 768px) {
+
+  .prepend-sm-none  { margin-top: 0;  }
+  .prepend-sm-tiny  { margin-top: 9px;  }
+  .prepend-sm-1 { margin-top: 18px; }
+  .prepend-sm-2 { margin-top: 36px; }
+  .prepend-sm-3 { margin-top: 54px; }
+  .prepend-sm-4 { margin-top: 72px; }
+  .prepend-sm-5 { margin-top: 90px; }
+  .prepend-sm-6 { margin-top: 108px;  }
+  .prepend-sm-7 { margin-top: 126px;  }
+  .prepend-sm-8 { margin-top: 144px;  }
+  .prepend-sm-9 { margin-top: 162px;  }
+  .prepend-sm-10  { margin-top: 180px;  }
+  .prepend-sm-11  { margin-top: 198px;  }
+  .prepend-sm-12  { margin-top: 216px;  }
+  .prepend-sm-13  { margin-top: 234px;  }
+  .prepend-sm-14  { margin-top: 252px;  }
+  .prepend-sm-15  { margin-top: 270px;  }
+  .prepend-sm-16  { margin-top: 288px;  }
+  .prepend-sm-17  { margin-top: 306px;  }
+  .prepend-sm-18  { margin-top: 324px;  }
+  .prepend-sm-19  { margin-top: 342px;  }
+  .prepend-sm-20  { margin-top: 360px;  }
+  .prepend-sm-21  { margin-top: 378px;  }
+  .prepend-sm-22  { margin-top: 396px;  }
+  .prepend-sm-23  { margin-top: 414px;  }
+  .prepend-sm-24  { margin-top: 432px;  }
+  .prepend-sm-25  { margin-top: 450px;  }
+  .prepend-sm-26  { margin-top: 468px;  }
+  .prepend-sm-27  { margin-top: 486px;  }
+  .prepend-sm-28  { margin-top: 504px;  }
+  .prepend-sm-29  { margin-top: 522px;  }
+  .prepend-sm-30  { margin-top: 540px;  }
+  .prepend-sm-31  { margin-top: 558px;  }
+  .prepend-sm-32  { margin-top: 576px;  }
+  .prepend-sm-33  { margin-top: 594px;  }
+  .prepend-sm-34  { margin-top: 612px;  }
+  .prepend-sm-35  { margin-top: 630px;  }
+  .prepend-sm-36  { margin-top: 648px;  }
+  .prepend-sm-37  { margin-top: 666px;  }
+  .prepend-sm-38  { margin-top: 684px;  }
+  .prepend-sm-39  { margin-top: 702px;  }
+  .prepend-sm-40  { margin-top: 720px;  }
+  .prepend-sm-41  { margin-top: 738px;  }
+  .prepend-sm-42  { margin-top: 756px;  }
+  .prepend-sm-43  { margin-top: 774px;  }
+  .prepend-sm-44  { margin-top: 792px;  }
+  .prepend-sm-45  { margin-top: 810px;  }
+  .prepend-sm-46  { margin-top: 828px;  }
+  .prepend-sm-47  { margin-top: 846px;  }
+  .prepend-sm-48  { margin-top: 864px;  }
+  .prepend-sm-49  { margin-top: 882px;  }
+  .prepend-sm-50  { margin-top: 900px;  }
+
+  .append-sm-none { margin-bottom: 0; }
+  .append-sm-tiny { margin-bottom: 9px; }
+  .append-sm-1  { margin-bottom: 18px;  }
+  .append-sm-2  { margin-bottom: 36px;  }
+  .append-sm-3  { margin-bottom: 54px;  }
+  .append-sm-4  { margin-bottom: 72px;  }
+  .append-sm-5  { margin-bottom: 90px;  }
+  .append-sm-6  { margin-bottom: 108px; }
+  .append-sm-7  { margin-bottom: 126px; }
+  .append-sm-8  { margin-bottom: 144px; }
+  .append-sm-9  { margin-bottom: 162px; }
+  .append-sm-10 { margin-bottom: 180px; }
+  .append-sm-11 { margin-bottom: 198px; }
+  .append-sm-12 { margin-bottom: 216px; }
+  .append-sm-13 { margin-bottom: 234px; }
+  .append-sm-14 { margin-bottom: 252px; }
+  .append-sm-15 { margin-bottom: 270px; }
+  .append-sm-16 { margin-bottom: 288px; }
+  .append-sm-17 { margin-bottom: 306px; }
+  .append-sm-18 { margin-bottom: 324px; }
+  .append-sm-19 { margin-bottom: 342px; }
+  .append-sm-20 { margin-bottom: 360px; }
+  .append-sm-21 { margin-bottom: 378px; }
+  .append-sm-22 { margin-bottom: 396px; }
+  .append-sm-23 { margin-bottom: 414px; }
+  .append-sm-24 { margin-bottom: 432px; }
+  .append-sm-25 { margin-bottom: 450px; }
+  .append-sm-26 { margin-bottom: 468px; }
+  .append-sm-27 { margin-bottom: 486px; }
+  .append-sm-28 { margin-bottom: 504px; }
+  .append-sm-29 { margin-bottom: 522px; }
+  .append-sm-30 { margin-bottom: 540px; }
+  .append-sm-31 { margin-bottom: 558px; }
+  .append-sm-32 { margin-bottom: 576px; }
+  .append-sm-33 { margin-bottom: 594px; }
+  .append-sm-34 { margin-bottom: 612px; }
+  .append-sm-35 { margin-bottom: 630px; }
+  .append-sm-36 { margin-bottom: 648px; }
+  .append-sm-37 { margin-bottom: 666px; }
+  .append-sm-38 { margin-bottom: 684px; }
+  .append-sm-39 { margin-bottom: 702px; }
+  .append-sm-40 { margin-bottom: 720px; }
+  .append-sm-41 { margin-bottom: 738px; }
+  .append-sm-42 { margin-bottom: 756px; }
+  .append-sm-43 { margin-bottom: 774px; }
+  .append-sm-44 { margin-bottom: 792px; }
+  .append-sm-45 { margin-bottom: 810px; }
+  .append-sm-46 { margin-bottom: 828px; }
+  .append-sm-47 { margin-bottom: 846px; }
+  .append-sm-48 { margin-bottom: 864px; }
+  .append-sm-49 { margin-bottom: 882px; }
+  .append-sm-50 { margin-bottom: 900px; }
+}
+
+
+@media (min-width: 992px) {
+
+  .prepend-md-none  { margin-top: 0;  }
+  .prepend-md-tiny  { margin-top: 9px;  }
+  .prepend-md-1 { margin-top: 18px; }
+  .prepend-md-2 { margin-top: 36px; }
+  .prepend-md-3 { margin-top: 54px; }
+  .prepend-md-4 { margin-top: 72px; }
+  .prepend-md-5 { margin-top: 90px; }
+  .prepend-md-6 { margin-top: 108px;  }
+  .prepend-md-7 { margin-top: 126px;  }
+  .prepend-md-8 { margin-top: 144px;  }
+  .prepend-md-9 { margin-top: 162px;  }
+  .prepend-md-10  { margin-top: 180px;  }
+  .prepend-md-11  { margin-top: 198px;  }
+  .prepend-md-12  { margin-top: 216px;  }
+  .prepend-md-13  { margin-top: 234px;  }
+  .prepend-md-14  { margin-top: 252px;  }
+  .prepend-md-15  { margin-top: 270px;  }
+  .prepend-md-16  { margin-top: 288px;  }
+  .prepend-md-17  { margin-top: 306px;  }
+  .prepend-md-18  { margin-top: 324px;  }
+  .prepend-md-19  { margin-top: 342px;  }
+  .prepend-md-20  { margin-top: 360px;  }
+  .prepend-md-21  { margin-top: 378px;  }
+  .prepend-md-22  { margin-top: 396px;  }
+  .prepend-md-23  { margin-top: 414px;  }
+  .prepend-md-24  { margin-top: 432px;  }
+  .prepend-md-25  { margin-top: 450px;  }
+  .prepend-md-26  { margin-top: 468px;  }
+  .prepend-md-27  { margin-top: 486px;  }
+  .prepend-md-28  { margin-top: 504px;  }
+  .prepend-md-29  { margin-top: 522px;  }
+  .prepend-md-30  { margin-top: 540px;  }
+  .prepend-md-31  { margin-top: 558px;  }
+  .prepend-md-32  { margin-top: 576px;  }
+  .prepend-md-33  { margin-top: 594px;  }
+  .prepend-md-34  { margin-top: 612px;  }
+  .prepend-md-35  { margin-top: 630px;  }
+  .prepend-md-36  { margin-top: 648px;  }
+  .prepend-md-37  { margin-top: 666px;  }
+  .prepend-md-38  { margin-top: 684px;  }
+  .prepend-md-39  { margin-top: 702px;  }
+  .prepend-md-40  { margin-top: 720px;  }
+  .prepend-md-41  { margin-top: 738px;  }
+  .prepend-md-42  { margin-top: 756px;  }
+  .prepend-md-43  { margin-top: 774px;  }
+  .prepend-md-44  { margin-top: 792px;  }
+  .prepend-md-45  { margin-top: 810px;  }
+  .prepend-md-46  { margin-top: 828px;  }
+  .prepend-md-47  { margin-top: 846px;  }
+  .prepend-md-48  { margin-top: 864px;  }
+  .prepend-md-49  { margin-top: 882px;  }
+  .prepend-md-50  { margin-top: 900px;  }
+
+  .append-md-none { margin-bottom: 0; }
+  .append-md-tiny { margin-bottom: 9px; }
+  .append-md-1  { margin-bottom: 18px;  }
+  .append-md-2  { margin-bottom: 36px;  }
+  .append-md-3  { margin-bottom: 54px;  }
+  .append-md-4  { margin-bottom: 72px;  }
+  .append-md-5  { margin-bottom: 90px;  }
+  .append-md-6  { margin-bottom: 108px; }
+  .append-md-7  { margin-bottom: 126px; }
+  .append-md-8  { margin-bottom: 144px; }
+  .append-md-9  { margin-bottom: 162px; }
+  .append-md-10 { margin-bottom: 180px; }
+  .append-md-11 { margin-bottom: 198px; }
+  .append-md-12 { margin-bottom: 216px; }
+  .append-md-13 { margin-bottom: 234px; }
+  .append-md-14 { margin-bottom: 252px; }
+  .append-md-15 { margin-bottom: 270px; }
+  .append-md-16 { margin-bottom: 288px; }
+  .append-md-17 { margin-bottom: 306px; }
+  .append-md-18 { margin-bottom: 324px; }
+  .append-md-19 { margin-bottom: 342px; }
+  .append-md-20 { margin-bottom: 360px; }
+  .append-md-21 { margin-bottom: 378px; }
+  .append-md-22 { margin-bottom: 396px; }
+  .append-md-23 { margin-bottom: 414px; }
+  .append-md-24 { margin-bottom: 432px; }
+  .append-md-25 { margin-bottom: 450px; }
+  .append-md-26 { margin-bottom: 468px; }
+  .append-md-27 { margin-bottom: 486px; }
+  .append-md-28 { margin-bottom: 504px; }
+  .append-md-29 { margin-bottom: 522px; }
+  .append-md-30 { margin-bottom: 540px; }
+  .append-md-31 { margin-bottom: 558px; }
+  .append-md-32 { margin-bottom: 576px; }
+  .append-md-33 { margin-bottom: 594px; }
+  .append-md-34 { margin-bottom: 612px; }
+  .append-md-35 { margin-bottom: 630px; }
+  .append-md-36 { margin-bottom: 648px; }
+  .append-md-37 { margin-bottom: 666px; }
+  .append-md-38 { margin-bottom: 684px; }
+  .append-md-39 { margin-bottom: 702px; }
+  .append-md-40 { margin-bottom: 720px; }
+  .append-md-41 { margin-bottom: 738px; }
+  .append-md-42 { margin-bottom: 756px; }
+  .append-md-43 { margin-bottom: 774px; }
+  .append-md-44 { margin-bottom: 792px; }
+  .append-md-45 { margin-bottom: 810px; }
+  .append-md-46 { margin-bottom: 828px; }
+  .append-md-47 { margin-bottom: 846px; }
+  .append-md-48 { margin-bottom: 864px; }
+  .append-md-49 { margin-bottom: 882px; }
+  .append-md-50 { margin-bottom: 900px; }
+}
+
+
+@media (min-width: 1200px) {
+
+  .prepend-lg-none  { margin-top: 0;  }
+  .prepend-lg-tiny  { margin-top: 9px;  }
+  .prepend-lg-1 { margin-top: 18px; }
+  .prepend-lg-2 { margin-top: 36px; }
+  .prepend-lg-3 { margin-top: 54px; }
+  .prepend-lg-4 { margin-top: 72px; }
+  .prepend-lg-5 { margin-top: 90px; }
+  .prepend-lg-6 { margin-top: 108px;  }
+  .prepend-lg-7 { margin-top: 126px;  }
+  .prepend-lg-8 { margin-top: 144px;  }
+  .prepend-lg-9 { margin-top: 162px;  }
+  .prepend-lg-10  { margin-top: 180px;  }
+  .prepend-lg-11  { margin-top: 198px;  }
+  .prepend-lg-12  { margin-top: 216px;  }
+  .prepend-lg-13  { margin-top: 234px;  }
+  .prepend-lg-14  { margin-top: 252px;  }
+  .prepend-lg-15  { margin-top: 270px;  }
+  .prepend-lg-16  { margin-top: 288px;  }
+  .prepend-lg-17  { margin-top: 306px;  }
+  .prepend-lg-18  { margin-top: 324px;  }
+  .prepend-lg-19  { margin-top: 342px;  }
+  .prepend-lg-20  { margin-top: 360px;  }
+  .prepend-lg-21  { margin-top: 378px;  }
+  .prepend-lg-22  { margin-top: 396px;  }
+  .prepend-lg-23  { margin-top: 414px;  }
+  .prepend-lg-24  { margin-top: 432px;  }
+  .prepend-lg-25  { margin-top: 450px;  }
+  .prepend-lg-26  { margin-top: 468px;  }
+  .prepend-lg-27  { margin-top: 486px;  }
+  .prepend-lg-28  { margin-top: 504px;  }
+  .prepend-lg-29  { margin-top: 522px;  }
+  .prepend-lg-30  { margin-top: 540px;  }
+  .prepend-lg-31  { margin-top: 558px;  }
+  .prepend-lg-32  { margin-top: 576px;  }
+  .prepend-lg-33  { margin-top: 594px;  }
+  .prepend-lg-34  { margin-top: 612px;  }
+  .prepend-lg-35  { margin-top: 630px;  }
+  .prepend-lg-36  { margin-top: 648px;  }
+  .prepend-lg-37  { margin-top: 666px;  }
+  .prepend-lg-38  { margin-top: 684px;  }
+  .prepend-lg-39  { margin-top: 702px;  }
+  .prepend-lg-40  { margin-top: 720px;  }
+  .prepend-lg-41  { margin-top: 738px;  }
+  .prepend-lg-42  { margin-top: 756px;  }
+  .prepend-lg-43  { margin-top: 774px;  }
+  .prepend-lg-44  { margin-top: 792px;  }
+  .prepend-lg-45  { margin-top: 810px;  }
+  .prepend-lg-46  { margin-top: 828px;  }
+  .prepend-lg-47  { margin-top: 846px;  }
+  .prepend-lg-48  { margin-top: 864px;  }
+  .prepend-lg-49  { margin-top: 882px;  }
+  .prepend-lg-50  { margin-top: 900px;  }
+
+  .append-lg-none { margin-bottom: 0; }
+  .append-lg-tiny { margin-bottom: 9px; }
+  .append-lg-1  { margin-bottom: 18px;  }
+  .append-lg-2  { margin-bottom: 36px;  }
+  .append-lg-3  { margin-bottom: 54px;  }
+  .append-lg-4  { margin-bottom: 72px;  }
+  .append-lg-5  { margin-bottom: 90px;  }
+  .append-lg-6  { margin-bottom: 108px; }
+  .append-lg-7  { margin-bottom: 126px; }
+  .append-lg-8  { margin-bottom: 144px; }
+  .append-lg-9  { margin-bottom: 162px; }
+  .append-lg-10 { margin-bottom: 180px; }
+  .append-lg-11 { margin-bottom: 198px; }
+  .append-lg-12 { margin-bottom: 216px; }
+  .append-lg-13 { margin-bottom: 234px; }
+  .append-lg-14 { margin-bottom: 252px; }
+  .append-lg-15 { margin-bottom: 270px; }
+  .append-lg-16 { margin-bottom: 288px; }
+  .append-lg-17 { margin-bottom: 306px; }
+  .append-lg-18 { margin-bottom: 324px; }
+  .append-lg-19 { margin-bottom: 342px; }
+  .append-lg-20 { margin-bottom: 360px; }
+  .append-lg-21 { margin-bottom: 378px; }
+  .append-lg-22 { margin-bottom: 396px; }
+  .append-lg-23 { margin-bottom: 414px; }
+  .append-lg-24 { margin-bottom: 432px; }
+  .append-lg-25 { margin-bottom: 450px; }
+  .append-lg-26 { margin-bottom: 468px; }
+  .append-lg-27 { margin-bottom: 486px; }
+  .append-lg-28 { margin-bottom: 504px; }
+  .append-lg-29 { margin-bottom: 522px; }
+  .append-lg-30 { margin-bottom: 540px; }
+  .append-lg-31 { margin-bottom: 558px; }
+  .append-lg-32 { margin-bottom: 576px; }
+  .append-lg-33 { margin-bottom: 594px; }
+  .append-lg-34 { margin-bottom: 612px; }
+  .append-lg-35 { margin-bottom: 630px; }
+  .append-lg-36 { margin-bottom: 648px; }
+  .append-lg-37 { margin-bottom: 666px; }
+  .append-lg-38 { margin-bottom: 684px; }
+  .append-lg-39 { margin-bottom: 702px; }
+  .append-lg-40 { margin-bottom: 720px; }
+  .append-lg-41 { margin-bottom: 738px; }
+  .append-lg-42 { margin-bottom: 756px; }
+  .append-lg-43 { margin-bottom: 774px; }
+  .append-lg-44 { margin-bottom: 792px; }
+  .append-lg-45 { margin-bottom: 810px; }
+  .append-lg-46 { margin-bottom: 828px; }
+  .append-lg-47 { margin-bottom: 846px; }
+  .append-lg-48 { margin-bottom: 864px; }
+  .append-lg-49 { margin-bottom: 882px; }
+  .append-lg-50 { margin-bottom: 900px; }
+}

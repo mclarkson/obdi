@@ -1,0 +1,99 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+
+<div class="form-horizontal prepend-xs-1" role="form">
+
+  <div class="alert alert-danger" ng-show="message">
+    {{message}}
+  </div>
+  <div class="alert alert-success" ng-show="okmessage">
+    {{okmessage}}
+  </div>
+
+  <!-- Name -->
+
+  <div class="form-group">
+      <label for="plugname" class="col-sm-3
+          control-label">Name</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="plugname" ng-model="plugin.Name"
+      placeholder="Name of the plugin (no spaces allowed)"
+      type="text" required>
+    </div>
+  </div>
+
+  <!-- Desc -->
+
+  <div class="form-group">
+      <label for="Desc" class="col-sm-3
+          control-label">Description</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="Desc" ng-model="plugin.Desc"
+      placeholder="Plugin descriptive text" type="text" required>
+    </div>
+  </div>
+
+  <!-- Parent -->
+
+  <div class="form-group">
+      <label for="Parent" class="col-sm-3
+          control-label">Parent</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="Parent" ng-model="plugin.Parent"
+      placeholder="The plugin that this plugin depends on" type="text">
+    </div>
+  </div>
+
+  <!-- HasView -->
+
+  <div class="form-group">
+      <label for="HasView" class="col-sm-3
+          control-label">Has View</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="HasView" ng-model="plugin.HasView"
+      placeholder="Sidebar click, 1 - opens view, 2 - does nothing"
+      type="text" required>
+    </div>
+  </div>
+
+  <!-- RestEndpoint -->
+
+  <div class="form-group">
+      <label for="RestEndpoint" class="col-sm-3
+          control-label">REST Endpoint</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="RestEndpoint"
+      ng-model="plugin.RestEndpoint"
+      placeholder="The last part of the REST URL, E.g. jobs" type="text">
+    </div>
+  </div>
+
+  <!-- RestExe -->
+
+  <div class="form-group">
+      <label for="RestExe" class="col-sm-3
+          control-label">REST Executable</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="RestExe"
+      ng-model="plugin.RestExe"
+      placeholder="Name of the Go REST Executable" type="text">
+    </div>
+  </div>
+
+</div>

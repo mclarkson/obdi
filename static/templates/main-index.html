@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang='en' ng-app="mgrApp">
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+  [(/*                                          */)]
+  [(/* THIS IS A GO TEMPLATE FILE, BE CAREFUL!  */)]
+  [(/* This file is used for both /admin + /run */)]
+  [(/*                                          */)]
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deployment Manager</title>
+
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/angular.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/autofill-event.js"></script>
+    <script src="js/prettyprint.js"></script>
+    <script src="js/ui-bootstrap-tpls-0.11.0.min.js"></script>
+    <script src="js/bootstrap-select.min.js"></script>
+    <script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>
+    <script src="metisMenu/js/metisMenu.min.js"></script>
+
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <link href="css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="jasny-bootstrap/css/jasny-bootstrap.min.css"
+      rel="stylesheet">
+    <link href="metisMenu/css/metisMenu.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+      href="font-awesome-4.1.0/css/font-awesome.min.css">
+    <link href="css/sb-admin-2.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+    [(/* <link href="css/bootstrap.icon-large.css" rel="stylesheet"> */)]
+
+    <script>
+        var mgrApp = angular.module("mgrApp", ['ui.bootstrap']);
+    </script>
+
+    [(/* Extra scripts, written by the Manager */)]
+    [(range .Items)] <script src="[(.)]"></script>
+    [(end)]
+
+  </head>
+
+  <body ng-controller="loginCtrl">
+
+  <div ng-include="userOrAdminPage()"></div>
+
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<script type="text/ng-template" id="myModalContent.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Delete Data Centre</h3>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete the Plugin, '{{Name}}'?
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">Yes</button>
+        <button class="btn btn-primary" ng-click="cancel()">No</button>
+    </div>
+</script>
+
+<div class="panel-body">
+
+  <div class="alert alert-danger alert-dismissable" ng-show="mainmessage">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    {{mainmessage}}
+  </div>
+  <div class="alert alert-success alert-dismissable" ng-show="mainokmessage">
+    <button type="button" class="close" data-dismiss="alert"
+      aria-hidden="true">&times;</button>
+    {{mainokmessage}}
+  </div>
+
+  <button class="btn btn-sm btn-default" type="button"
+    ng-click="AddPlugin(true)">
+    <i class="fa fa-plus-circle"> </i> Add Plugin</button>
+
+  <div class="table-responsive">
+    <table class="table table-striped" style="margin-top: 4px">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Parent</th>
+        <th>End Point</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="plugin in plugins">
+        <td><span class="mypopover" popover="{{plugin.Desc}}"
+          popover-trigger="mouseenter">
+          {{plugin.Name}}</span></td>
+        <td>{{plugin.Parent}}</td>
+        <td>{{plugin.RestEndpoint}}</td>
+        <td>
+          <a href="#" ng-click="EditPlugin(plugin.Id)"><i class="fa fa-edit" title="Edit"></i></a>
+          <a href="#" ng-click="dialog(plugin.Id,plugin.Name)"><i class="fa fa-trash-o red" title="Delete"></i></a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- /table-responsive -->
+</div>

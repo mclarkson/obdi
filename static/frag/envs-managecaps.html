@@ -1,0 +1,141 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<script type="text/ng-template" id="DeleteEnvcap.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Delete Capability</h3>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete '{{Code}}'?
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">Yes</button>
+        <button class="btn btn-primary" ng-click="cancel()">No</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="EditEnvcap.html">
+  <div class="modal-header">
+      <h3 class="modal-title">Edit Capability</h3>
+  </div>
+  <div class="modal-body">
+    <div class="form-horizontal">
+
+      <!-- Code -->
+
+      <div class="form-group">
+        <label for="envcapcode"
+          class="col-sm-offset-1 col-sm-2 control-label">
+          Code</label>
+        <div class="col-sm-7">
+          <input class="form-control" id="envcapcode" ng-model="envcap.Code"
+          placeholder="Capability Code" type="text" required>
+        </div>
+      </div>
+
+      <!-- Display Name -->
+
+      <div class="form-group">
+        <label for="envcapdesc"
+          class="col-sm-offset-1 col-sm-2 control-label">
+          Description</label>
+        <div class="col-sm-7">
+          <input class="form-control" id="envcapdesc" ng-model="envcap.Desc"
+          placeholder="Description" type="text">
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="modal-footer" style="margin-top: 0;">
+      <button class="btn btn-danger" ng-click="ok()">Apply</button>
+      <button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+  </div>
+</script>
+
+<div class="panel-body" ng-if="managecaps" ng-controller="envcapsCtrl">
+
+  <form name="envManageCapsForm" novalidate ng-submit="Apply()">
+
+  <button class="btn btn-sm btn-default append-xs-tiny"
+    type="button" ng-click="ManageCaps(false)">
+  <i class="fa fa-arrow-left"> </i> Go Back</button>
+
+  <h4 class="append-xs-tiny pull-right formhdng">Manage Capabilites</h4>
+
+  <div class="form-horizontal prepend-xs-tiny" role="form">
+
+    <div class="alert alert-danger alert-dismissable" ng-show="error">
+      <button type="button" class="close" 
+        ng-click="error=false;">&times;</button>
+      {{message}}
+    </div>
+    <div class="alert alert-success alert-dismissable" ng-show="okmessage">
+      <button type="button" class="close" data-dismiss="alert"
+        aria-hidden="true">&times;</button>
+      {{okmessage}}
+    </div>
+
+    <div class="col-sm-offset-1 col-sm-10">
+      <p class="alert alert-info tcenter"><strong>Note:</strong>
+        Any changes made here will be saved immediately.
+      </p>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+          <tr>
+            <th>Code</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="envcap in envcaps">
+            <td>
+                {{envcap.Code}}
+            </td>
+            <td>
+                {{envcap.Desc}}
+            </td>
+            <td>
+              <a href="#" ng-click="editdialog(envcap)"><i class="fa fa-edit" title="Delete"></i></a>
+              <a href="#" ng-click="dialog(envcap.Id,envcap.Code)"><i class="fa fa-trash-o red" title="Delete"></i></a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" ng-model="newcap.Code"
+              placeholder="New Code"/>
+            </td>
+            <td>
+              <input type="text" ng-model="newcap.Desc"
+              placeholder="Description" />
+            </td>
+            <td>
+              <a href="#" ng-click="AddCapability()"><i class="fa fa-plus-circle green" title="Add Capability"></i></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- /table-responsive -->
+    </div>
+  </div>
+
+  </form>
+</div>

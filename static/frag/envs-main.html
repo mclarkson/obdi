@@ -1,0 +1,80 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<script type="text/ng-template" id="myModalContent.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Delete Environment</h3>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete environment '{{SysName}}'
+      in '{{DcSysName}}'?
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">Yes</button>
+        <button class="btn btn-primary" ng-click="cancel()">No</button>
+    </div>
+</script>
+
+<div class="panel-body">
+
+  <div class="alert alert-danger alert-dismissable" ng-show="mainmessage">
+    <button type="button" class="close" data-dismiss="alert"
+      aria-hidden="true">&times;</button>
+    {{mainmessage}}
+  </div>
+  <div class="alert alert-success alert-dismissable" ng-show="mainokmessage">
+    <button type="button" class="close" data-dismiss="alert"
+      aria-hidden="true">&times;</button>
+    {{mainokmessage}}
+  </div>
+
+  <button class="btn btn-sm btn-default" type="button"
+    ng-click="AddEnv(true)">
+    <i class="fa fa-plus-circle"> </i> Add Environment</button>
+
+  <button class="btn btn-sm btn-default pull-right" type="button"
+    ng-click="ManageCaps(true)">
+    <i class="fa fa-cog"> </i> Manage Capabilites</button>
+
+  <div class="table-responsive">
+    <table class="table table-striped" style="margin-top: 4px">
+      <thead>
+      <tr>
+        <th>Data Centre</th>
+        <th>Environment</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="env in envs">
+        <td><span class="mypopover" popover="{{env.DcDispName}}"
+          popover-trigger="mouseenter">
+          {{env.DcSysName}}</span></td>
+        <td>{{env.SysName}}</td>
+        <td>{{env.DispName}}</td>
+        <td>
+          <a href="#" ng-click="EditEnv(env.Id)"><i class="fa fa-edit" title="Edit"></i></a>
+          <a href="#" ng-click="dialog(env.Id,env.SysName,env.DcSysName)"><i class="fa fa-trash-o red" title="Delete"></i></a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- /table-responsive -->
+</div>

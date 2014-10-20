@@ -1,0 +1,100 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!-- <h4 class="append-xs-tiny pull-right">New User Details</h4> -->
+
+<div class="form-horizontal prepend-xs-1" role="form">
+
+  <div class="alert alert-danger" ng-show="message">
+    {{message}}
+  </div>
+  <div class="alert alert-success" ng-show="okmessage">
+    {{okmessage}}
+  </div>
+
+  <!-- Data Centre -->
+
+  <div class="form-group">
+    <label for="envcode" class="col-sm-3 control-label">Data Centre</label>
+    <div class="col-sm-7">
+        <select ng-model="env.dc_obj" class="selectpicker"
+        ng-options="dc.SysName for dc in dcs" required updsel>
+          <option value="">Choose a data centre</option>
+        </select>
+    </div>
+  </div>
+
+  <!-- ENV Code -->
+
+  <div class="form-group">
+    <label for="envcode" class="col-sm-3 control-label">Environment</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="envcode" ng-model="env.SysName"
+      placeholder="Salt environment" type="text" required>
+    </div>
+  </div>
+
+  <!-- Display Name -->
+
+  <div class="form-group">
+    <label for="Name" class="col-sm-3 control-label">
+        Description
+    </label>
+    <div class="col-sm-7">
+      <input class="form-control" id="Name" ng-model="env.DispName"
+      placeholder="Environment descriptive text" type="text">
+    </div>
+  </div>
+
+  <!-- Worker IP address -->
+
+  <div class="form-group">
+    <label for="workerip" class="col-sm-3 control-label">
+        Worker URL
+    </label>
+    <div class="col-sm-7">
+      <input class="form-control" id="workerip" ng-model="env.WorkerUrl"
+      placeholder="Worker URL prefix, E.g. https://127.0.0.1:4443" type="text">
+    </div>
+  </div>
+
+  <!-- Worker Port
+
+  <div class="form-group">
+    <label for="workerport" class="col-sm-3 control-label">
+        Worker Port
+    </label>
+    <div class="col-sm-7">
+      <input class="form-control" id="workerport" ng-model="env.WorkerPort"
+      placeholder="The port number (1-65535) that the worker listens on"
+      type="text">
+    </div>
+  </div> -->
+
+  <!-- Worker Key -->
+
+  <div class="form-group">
+    <label for="workerkey" class="col-sm-3 control-label">
+        Worker Key
+    </label>
+    <div class="col-sm-7">
+      <input class="form-control" id="workerkey" ng-model="env.WorkerKey"
+      placeholder="The key (password) for the remote worker" type="text">
+    </div>
+  </div>
+</div>

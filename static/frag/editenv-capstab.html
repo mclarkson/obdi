@@ -1,0 +1,89 @@
+<!--
+ Deployment Manager - a REST interface and GUI for deploying software
+ Copyright (C) 2014  Mark Clarkson
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<script type="text/ng-template" id="DeleteEnvcapmap.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Delete Capability</h3>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete '{{Code}}'?
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">Yes</button>
+        <button class="btn btn-primary" ng-click="cancel()">No</button>
+    </div>
+</script>
+
+<div class="panel-body">
+
+  <form name="envCapsForm" novalidate ng-submit="EditApply()">
+
+  <div class="form-horizontal prepend-xs-tiny" role="form">
+
+    <div class="alert alert-danger alert-dismissable" ng-show="error">
+      <button type="button" class="close" 
+        ng-click="error=false;">&times;</button>
+      {{message}}
+    </div>
+    <div class="alert alert-success alert-dismissable" ng-show="okmessage">
+      <button type="button" class="close" data-dismiss="alert"
+        aria-hidden="true">&times;</button>
+      {{okmessage}}
+    </div>
+
+    <div class="col-sm-offset-1 col-sm-10">
+      <div class="table-responsive">
+        <table class="table table-striped" style="margin-top: 4px">
+          <thead>
+          <tr>
+            <th>Code</th>
+            <th>Action</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr ng-repeat="capmap in envcapmaps">
+            <td>
+              <span class="mypopover" popover="{{capmap.EnvCapDesc}}"
+                popover-trigger="mouseenter">
+                {{capmap.EnvCapCode}}</span></td>
+            </td>
+            <td>
+              <a href="#" ng-click="Edit_DeleteModal(capmap.Id,capmap.EnvCapCode)"><i class="fa fa-trash-o red" title="Delete"></i></a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <select ng-model="newcap.selected" class="selectpicker"
+                ng-options="envcap.Code for envcap in envcaps" updenvcapsel >
+                <option value="">Choose Capability</option>
+              </select>
+            </td>
+            <td>
+              <a href="#" style="margin-left:6px;" ng-click="EditAddCapMap()"><i class="fa fa-plus-circle green" title="Add Capability"></i></a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- /table-responsive -->
+    </div>
+  </div>
+
+  </form>
+</div>
+
