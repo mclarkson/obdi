@@ -21,6 +21,7 @@ import (
   "github.com/mclarkson/obdi/external/jinzhu/gorm"
   _ "github.com/mclarkson/obdi/external/mattn/go-sqlite3"
   "time"
+  "log"
 )
 
 // Maps to the users table
@@ -191,73 +192,73 @@ func (db *Database) InitDB() {
   db.dB, err = gorm.Open("sqlite3", dbname)
   if err != nil {
     logit("Could not open sqlite3 database, '" + dbname + "'")
-    panic(fmt.Sprintf(
+    log.Fatal(fmt.Sprintf(
       "Got error when connect database, the error is '%v'", err))
   }
 
   if err := db.dB.AutoMigrate(User{}).Error; err != nil {
     txt := "AutoMigrate Users table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Session{}).Error; err != nil {
     txt := "AutoMigrate Sessions table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Activity{}).Error; err != nil {
     txt := "AutoMigrate Activity table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Env{}).Error; err != nil {
     txt := "AutoMigrate Env table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Dc{}).Error; err != nil {
     txt := "AutoMigrate Dc table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Perm{}).Error; err != nil {
     txt := "AutoMigrate Dc table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(DcCap{}).Error; err != nil {
     txt := "AutoMigrate DcCap table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(DcCapMap{}).Error; err != nil {
     txt := "AutoMigrate DcCapMap table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(EnvCap{}).Error; err != nil {
     txt := "AutoMigrate EnvCap table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(EnvCapMap{}).Error; err != nil {
     txt := "AutoMigrate EnvCapMap table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Perm{}).Error; err != nil {
     txt := "AutoMigrate Dc table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Job{}).Error; err != nil {
     txt := "AutoMigrate Job table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(OutputLine{}).Error; err != nil {
     txt := "AutoMigrate OutputLine table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Script{}).Error; err != nil {
     txt := "AutoMigrate Script table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(Plugin{}).Error; err != nil {
     txt := "AutoMigrate Plugin table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
   if err := db.dB.AutoMigrate(File{}).Error; err != nil {
     txt := "AutoMigrate File table failed"
-    panic(fmt.Sprintf("%s: %s", txt, err))
+    log.Fatal(fmt.Sprintf("%s: %s", txt, err))
   }
 
   // Unique index is also a constraint. So these are forced to be unique
