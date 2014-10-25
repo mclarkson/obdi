@@ -19,7 +19,7 @@ package main
 import (
     //"fmt"
     "net/http"
-    "github.com/mclarkson/deployman/external/ant0ine/go-json-rest/rest"
+    "github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
 )
 
 func main() {

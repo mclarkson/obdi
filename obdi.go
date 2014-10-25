@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-// deployman manages deployment processes
+// obdi manages deployment processes
 package main
 
 import (
   //"fmt"
-  "github.com/mclarkson/deployman/external/ant0ine/go-json-rest/rest"
+  "github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
   "net/http"
   "sync"
 )

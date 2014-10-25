@@ -15,27 +15,27 @@ Could not send job to worker. ('Invalid key')
     Enter the correct key (password) for the environment in the
     admin interface. The key to use can be retrieved from the file:
 
-        /etc/deployman-worker/deployman-worker.conf
+        /etc/obdi-worker/obdi-worker.conf
 
     This file is on the worker host. Look for the 'key' setting in
     that file.
 
 Server said: Plugin endpoint 'saltconfigserver/servers' does not exist.
-Compile failed for '/usr/lib/deployman/plugins/saltconfigserver/servers'.
+Compile failed for '/usr/lib/obdi/plugins/saltconfigserver/servers'.
 System said 'exec: "go": executable file not found in $PATH'. 
 
     Go should be installed on the Deployman Master for automatic compiling
     of Go plugin source code. Install go and set the variable, 'go_root'.
 
-        /etc/deployman/deployman-worker.conf
+        /etc/obdi/obdi-worker.conf
 
-    This file resides on the deployman master host.
+    This file resides on the obdi master host.
 
 Server said: Plugin returned error. Internal error: HTTP request type was not
 set 
 
-    The plugin was not sent the QueryType by deployman. This is an error
-    in the deployman server (plugin_support.go) and should not be possible.
+    The plugin was not sent the QueryType by obdi. This is an error
+    in the obdi server (plugin_support.go) and should not be possible.
 
 Server said: Plugin returned error. The requested script,
 'salt-set-grains.sh', does not exist or the permissions to access it are

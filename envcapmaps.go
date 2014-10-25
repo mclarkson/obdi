@@ -24,7 +24,7 @@ import (
 	//"net/url"
 	//"time"
 	//"github.com/jinzhu/gorm"
-	"github.com/mclarkson/deployman/external/ant0ine/go-json-rest/rest"
+	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
 	"strconv"
 )
 

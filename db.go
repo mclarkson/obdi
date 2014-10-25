@@ -18,8 +18,8 @@ package main
 
 import (
   "fmt"
-  "github.com/mclarkson/deployman/external/jinzhu/gorm"
-  _ "github.com/mclarkson/deployman/external/mattn/go-sqlite3"
+  "github.com/mclarkson/obdi/external/jinzhu/gorm"
+  _ "github.com/mclarkson/obdi/external/mattn/go-sqlite3"
   "time"
 )
 

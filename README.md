@@ -21,6 +21,6 @@ Development and testing phase.
 This package is "go-gettable", just do:
 
 ```
-go get github.com/mclarkson/deployman
+go get github.com/mclarkson/obdi
 ```
 

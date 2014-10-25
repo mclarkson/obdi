@@ -18,7 +18,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/mclarkson/deployman/external/jinzhu/gorm"
+	"github.com/mclarkson/obdi/external/jinzhu/gorm"
 	"html/template"
 	"net/http"
 	"os"

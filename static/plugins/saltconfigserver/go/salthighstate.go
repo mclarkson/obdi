@@ -87,7 +87,7 @@ type Args struct {
 // Log to syslog
 func logit(msg string) {
     log.Println(msg)
-    l, err := syslog.New(syslog.LOG_ERR, "deployman")
+    l, err := syslog.New(syslog.LOG_ERR, "obdi")
     defer l.Close()
     if err != nil {
         log.Fatal("error writing syslog!")
@@ -231,7 +231,7 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
   // Check for required query string entries
 
   if len(args.QueryString["env_id"]) == 0 {
-    // We need to know which deployman worker to send the script to
+    // We need to know which obdi worker to send the script to
     ReturnError( "'env_id' must be set", response )
     return nil
   }

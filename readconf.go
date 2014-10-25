@@ -19,7 +19,7 @@ package main
 import (
 	"os"
 	//"fmt"
-	"github.com/mclarkson/deployman/external/BurntSushi/toml"
+	"github.com/mclarkson/obdi/external/BurntSushi/toml"
 )
 
 var config Config
@@ -50,7 +50,7 @@ func (c Config) DBPath() string {
 }
 
 func (c *Config) Read_config() {
-	if _, err := toml.DecodeFile("/etc/deployman/deployman.conf",
+	if _, err := toml.DecodeFile("/etc/obdi/obdi.conf",
 		c); err != nil {
 		logit(err.Error())
 		//txt := "Unable to read configuration"

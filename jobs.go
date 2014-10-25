@@ -23,7 +23,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"github.com/mclarkson/deployman/external/ant0ine/go-json-rest/rest"
+	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
 	"io/ioutil"
 	"net/http"
 	"strconv"

@@ -17,7 +17,7 @@
 package main
 
 import (
-	"github.com/mclarkson/deployman/external/go-uuid/uuid"
+	"github.com/mclarkson/obdi/external/go-uuid/uuid"
 	//"fmt"
 )
 

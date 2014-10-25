@@ -25,7 +25,7 @@ import (
     //"time"
     //"github.com/jinzhu/gorm"
     //"database/sql"
-    "github.com/mclarkson/deployman/external/ant0ine/go-json-rest/rest"
+    "github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
     "io/ioutil"
     "os"
     "os/exec"
@@ -165,11 +165,11 @@ func (api *Api) AddScript(w rest.ResponseWriter, r *rest.Request) {
     // Work out type:
     //   Write to disk then use unix 'file -b' (brief)
 
-    if err := ioutil.WriteFile(os.TempDir()+"/deployman_scriptcheck",
+    if err := ioutil.WriteFile(os.TempDir()+"/obdi_scriptcheck",
         scriptData.Source, 0644); err != nil {
         scriptData.Type = "Unknown type of script"
     } else {
-        runCmd := exec.Command("file", "-b", os.TempDir()+"/deployman_scriptcheck")
+        runCmd := exec.Command("file", "-b", os.TempDir()+"/obdi_scriptcheck")
         output, err := runCmd.Output()
         if err != nil {
             scriptData.Type = "Unknown type of script"
@@ -262,13 +262,13 @@ func (api *Api) UpdateScript(w rest.ResponseWriter, r *rest.Request) {
     //   Write to disk then use unix 'file -b' (brief)
 
     if len(script.Source) > 0 {
-        if err := ioutil.WriteFile(os.TempDir()+"/deployman_scriptcheck",
+        if err := ioutil.WriteFile(os.TempDir()+"/obdi_scriptcheck",
             script.Source, 0644); err != nil {
             script.Type = "Write file failed. Type of script unknown. (" +
                           err.Error() + ")"
         } else {
             runCmd := exec.Command("file", "-b",
-                os.TempDir()+"/deployman_scriptcheck")
+                os.TempDir()+"/obdi_scriptcheck")
             output, err := runCmd.Output()
             if err != nil {
                 script.Type = "Unix 'file' failed. Type of script unknown." +

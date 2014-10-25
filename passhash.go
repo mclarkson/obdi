@@ -19,7 +19,7 @@ package main
 import (
 	"log"
 	//"fmt"
-	"github.com/mclarkson/deployman/external/go.crypto/bcrypt"
+	"github.com/mclarkson/obdi/external/go.crypto/bcrypt"
 )
 
 type Crypt struct {

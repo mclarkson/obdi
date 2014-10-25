@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/mclarkson/deployman/external/lib/pq/hstore"
+	"github.com/mclarkson/obdi/external/lib/pq/hstore"
 )
 
 type postgres struct {

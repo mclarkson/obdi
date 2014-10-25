@@ -47,7 +47,7 @@ func init() {
 }
 
 func (c *Config) Read_config() {
-    if _, err := toml.DecodeFile("/etc/deployman-worker/deployman-worker.conf",
+    if _, err := toml.DecodeFile("/etc/obdi-worker/obdi-worker.conf",
     c); err != nil {
         logit(err.Error())
         txt := "Unable to read configuration"

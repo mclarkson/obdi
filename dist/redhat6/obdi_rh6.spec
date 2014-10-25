@@ -1,4 +1,4 @@
-%define name deployman
+%define name obdi
 %define version 1
 %define php php
 %if "%{?dist}" == ".el5"

@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     jobids = doHighState( servers, __opts__ )
 
-    # Send back an array of objects all set up nicely for deployman
+    # Send back an array of objects all set up nicely for obdi
 
     print json.dumps( jobids )
 

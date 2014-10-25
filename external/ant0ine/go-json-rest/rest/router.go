@@ -2,7 +2,7 @@ package rest
 
 import (
 	"errors"
-	"github.com/mclarkson/deployman/external/ant0ine/go-json-rest/rest/trie"
+	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest/trie"
 	"net/url"
 	"strings"
 )

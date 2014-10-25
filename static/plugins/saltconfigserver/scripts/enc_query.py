@@ -108,7 +108,7 @@ def main():
 
     # Read the worker configuration file
     conf = {}
-    with open("/etc/deployman-worker/deployman-worker.conf") as myfile:
+    with open("/etc/obdi-worker/obdi-worker.conf") as myfile:
         for line in myfile:
             name, var = line.partition("=")[::2]
             conf[name.strip()] = var.strip(" \"\n")
@@ -116,7 +116,7 @@ def main():
     # Initialise 'g'
     g = {}
 
-    # From deployman_worker.conf
+    # From obdi_worker.conf
     g['master_url'] = conf['man_urlprefix']
     g['enc_user'] = conf['man_user']
     g['enc_pass'] = conf['man_password']

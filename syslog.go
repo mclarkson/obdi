@@ -23,7 +23,7 @@ import (
 
 func logit(msg string) {
 	log.Println(msg)
-	l, err := syslog.New(syslog.LOG_ERR, "deployman")
+	l, err := syslog.New(syslog.LOG_ERR, "obdi")
 	defer l.Close()
 	if err != nil {
 		log.Fatal("error writing syslog!")

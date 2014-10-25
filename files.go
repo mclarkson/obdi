@@ -20,7 +20,7 @@ package main
 
 import (
 	//"fmt"
-	"github.com/mclarkson/deployman/external/ant0ine/go-json-rest/rest"
+	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
 	"strconv"
 )
 

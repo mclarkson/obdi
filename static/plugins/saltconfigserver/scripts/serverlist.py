@@ -123,7 +123,7 @@ if __name__ == '__main__':
     grains_cache_set = set( grains_cache )
     difference = grains_cache_set - servers_set
 
-    # Send back an array of objects all set up nicely for deployman
+    # Send back an array of objects all set up nicely for obdi
 
     ret = []
     i=0
