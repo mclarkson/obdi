@@ -19,7 +19,8 @@ package main
 import (
     "os"
     "fmt"
-    "github.com/BurntSushi/toml"
+    //"github.com/BurntSushi/toml"
+	"github.com/mclarkson/obdi/external/BurntSushi/toml"
 )
 
 var config Config
