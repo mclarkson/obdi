@@ -1,4 +1,4 @@
-// Deployment Manager - a REST interface and GUI for deploying software
+// Obdi - a REST interface and GUI for deploying software
 // Copyright (C) 2014  Mark Clarkson
 // 
 // This program is free software: you can redistribute it and/or modify
