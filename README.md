@@ -16,7 +16,16 @@ Development and testing phase.
 
 ## Features
 
-* blah
+* All GUI items in the screen shot are implemented using plugins.
+* Plugins can be REST end-points - they can be used for automation.
+* The saltconfigserver plugin contains a number of REST end-points, including an External Node Classifier (ENC).
+
+## Architecture
+
+* Google Go for the back end REST interface.
+* Angular JS and bootstrap for the front end.
+* Sqlite3 used for data storage.
+* Obdi simply runs scripts on remote servers, so it can be used for lots of different tasks.
 
 ## Install
 
