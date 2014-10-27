@@ -1,6 +1,6 @@
 # Obdi
 
-# Screenshot
+## Screenshot
 
 ![](images/screenshot-2014-10.27.png?raw=true)
 
