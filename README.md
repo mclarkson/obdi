@@ -1,5 +1,9 @@
 # Obdi
 
+# Screenshot
+
+![](images/screenshot-2014-10.27.png?raw=true)
+
 ## What is it?
 
 Obdi is an extendable graphical user interface for running scripts on
