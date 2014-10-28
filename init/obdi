@@ -1,0 +1,75 @@
+#!/bin/sh
+#
+# chkconfig: 2345 99 99
+# description: Obdi main server
+#
+
+. /etc/rc.d/init.d/functions
+
+PROG_NAME="obdi"
+DAEMON="/usr/sbin/$PROG_NAME"
+LOG_FILE="/var/log/$PROG_NAME/master.log"
+LOCK_FILE="/var/lock/subsys/$PROG_NAME"
+PID_FILE="/var/run/${PROG_NAME}.pid"
+
+start()
+{
+	[ -x $DAEMON ] || exit 5
+
+	umask 077
+
+	echo -n $"Starting $PROG_NAME: "
+	daemon --pidfile="$PID_FILE" "$DAEMON &>>/var/log/obdi.log &"
+	RETVAL=$?
+        pid=`ps -A | grep $PROG_NAME | cut -d" " -f2`
+        pid=`echo $pid | cut -d" " -f2`
+        if [ -n "$pid" ]; then
+                echo $pid > "$PID_FILE"
+        fi
+	echo
+	[ $RETVAL -eq 0 ] && touch $LOCK_FILE
+}
+stop()
+{
+        echo -n $"Shutting down $PROG_NAME: "
+        killproc -p "$PID_FILE" $DAEMON
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && rm -f $LOCK_FILE
+        return $RETVAL
+}
+rhstatus() {
+        status -p "$PID_FILE" -l $PROG_NAME $DAEMON
+}
+
+case "$1" in
+        start)
+                start
+                ;;
+        stop)
+                stop
+                ;;
+        restart)
+                stop
+                start
+                ;;
+	reload)
+		exit 3
+		;;
+	force-reload)
+		restart
+		;;
+	status)
+		rhstatus
+		;;
+	condrestart|try-restart)
+		rhstatus >/dev/null 2>&1 || exit 0
+		restart
+		;;
+        *)
+		echo $"Usage: $0 {start|stop|restart|condrestart|try-restart|reload|force-reload|status}"
+                exit 3
+esac
+
+exit $?
+

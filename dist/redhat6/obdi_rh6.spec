@@ -85,6 +85,11 @@ install -D -m 640 conf/obdi.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi/obdi.conf
 install -D -m 755 obdi ${RPM_BUILD_ROOT}%{_sbindir}/obdi
 install -D -m 755 obdi-worker/obdi-worker ${RPM_BUILD_ROOT}%{_sbindir}/obdi-worker
 
+# Initrd
+install -D -m 755 init/obdi %{_initrddir}/obdi
+
+# Directories
+
 # Main database directory (/var/lib)
 install -d -m 755 ${RPM_BUILD_ROOT}/%{_sharedstatedir}/obdi/
 
@@ -104,6 +109,7 @@ cp -r static ${RPM_BUILD_ROOT}/%{_datarootdir}/obdi/
 %files
 %defattr(755,root,root,755)
 %_sbindir/obdi
+%_initrddir/obdi
 %defattr(644,root,root,755)
 %dir %{_sharedstatedir}/obdi
 %dir %{_sharedstatedir}/obdi/plugins
