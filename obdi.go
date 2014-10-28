@@ -44,224 +44,172 @@ func main() {
   }
   handler.SetRoutes(
 
-    rest.RouteObjectMethod("POST", "/login", &api, "DoLogin"),
+    &rest.Route{"POST", "/login", api.DoLogin},
 
-    rest.RouteObjectMethod("POST", "/#login/:GUID/logout", &api, "Logout"),
+    &rest.Route{"POST", "/#login/:GUID/logout", api.Logout},
 
     // ADMIN FUNCTIONS
 
     // USERS
 
-    rest.RouteObjectMethod("GET", "/:login/:GUID/users",
-      &api, "GetAllUsers"),
+    &rest.Route{"GET", "/:login/:GUID/users", api.GetAllUsers},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/users",
-      &api, "AddUser"),
+    &rest.Route{"POST", "/:login/:GUID/users", api.AddUser},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/users/:id",
-      &api, "UpdateUser"),
+    &rest.Route{"PUT", "/:login/:GUID/users/:id", api.UpdateUser},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/users/:id",
-      &api, "DeleteUser"),
+    &rest.Route{"DELETE", "/:login/:GUID/users/:id", api.DeleteUser},
 
     // Data Centres
 
-    rest.RouteObjectMethod("GET", "/:login/:GUID/dcs",
-      &api, "GetAllDcs"),
+    &rest.Route{"GET", "/:login/:GUID/dcs", api.GetAllDcs},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/dcs",
-      &api, "AddDc"),
+    &rest.Route{"POST", "/:login/:GUID/dcs", api.AddDc},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/dcs/:id",
-      &api, "DeleteDc"),
+    &rest.Route{"DELETE", "/:login/:GUID/dcs/:id", api.DeleteDc},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/dcs/:id",
-      &api, "UpdateDc"),
+    &rest.Route{"PUT", "/:login/:GUID/dcs/:id", api.UpdateDc},
 
     // Environments
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/envs",
-      &api, "GetAllEnvs"),
+    &rest.Route{"GET", "/#login/:GUID/envs", api.GetAllEnvs},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/envs",
-      &api, "AddEnv"),
+    &rest.Route{"POST", "/:login/:GUID/envs", api.AddEnv},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/envs/:id",
-      &api, "DeleteEnv"),
+    &rest.Route{"DELETE", "/:login/:GUID/envs/:id", api.DeleteEnv},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/envs/:id",
-      &api, "UpdateEnv"),
+    &rest.Route{"PUT", "/:login/:GUID/envs/:id", api.UpdateEnv},
 
     // User Permissions
 
-    rest.RouteObjectMethod("GET", "/:login/:GUID/perms",
-      &api, "GetAllPerms"),
+    &rest.Route{"GET", "/:login/:GUID/perms", api.GetAllPerms},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/perms",
-      &api, "AddPerm"),
+    &rest.Route{"POST", "/:login/:GUID/perms", api.AddPerm},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/perms/:id",
-      &api, "DeletePerm"),
+    &rest.Route{"DELETE", "/:login/:GUID/perms/:id", api.DeletePerm},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/perms/:id",
-      &api, "UpdatePerm"),
+    &rest.Route{"PUT", "/:login/:GUID/perms/:id", api.UpdatePerm},
 
     // Data Centre Capabilities
 
-    rest.RouteObjectMethod("GET", "/:login/:GUID/dccaps",
-      &api, "GetAllDcCaps"),
+    &rest.Route{"GET", "/:login/:GUID/dccaps", api.GetAllDcCaps},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/dccaps",
-      &api, "AddDcCap"),
+    &rest.Route{"POST", "/:login/:GUID/dccaps", api.AddDcCap},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/dccaps/:id",
-      &api, "DeleteDcCap"),
+    &rest.Route{"DELETE", "/:login/:GUID/dccaps/:id", api.DeleteDcCap},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/dccaps/:id",
-      &api, "UpdateDcCap"),
+    &rest.Route{"PUT", "/:login/:GUID/dccaps/:id", api.UpdateDcCap},
 
     // Data Centre Capability Maps
 
-    rest.RouteObjectMethod("GET", "/:login/:GUID/dccapmaps",
-      &api, "GetAllDcCapMaps"),
+    &rest.Route{"GET", "/:login/:GUID/dccapmaps", api.GetAllDcCapMaps},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/dccapmaps",
-      &api, "AddDcCapMap"),
+    &rest.Route{"POST", "/:login/:GUID/dccapmaps", api.AddDcCapMap},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/dccapmaps/:id",
-      &api, "DeleteDcCapMap"),
+    &rest.Route{"DELETE", "/:login/:GUID/dccapmaps/:id", api.DeleteDcCapMap},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/dccapmaps/:id",
-      &api, "UpdateDcCapMap"),
+    &rest.Route{"PUT", "/:login/:GUID/dccapmaps/:id", api.UpdateDcCapMap},
 
     // Environment Capabilities
 
-    rest.RouteObjectMethod("GET", "/:login/:GUID/envcaps",
-      &api, "GetAllEnvCaps"),
+    &rest.Route{"GET", "/:login/:GUID/envcaps", api.GetAllEnvCaps},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/envcaps",
-      &api, "AddEnvCap"),
+    &rest.Route{"POST", "/:login/:GUID/envcaps", api.AddEnvCap},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/envcaps/:id",
-      &api, "DeleteEnvCap"),
+    &rest.Route{"DELETE", "/:login/:GUID/envcaps/:id", api.DeleteEnvCap},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/envcaps/:id",
-      &api, "UpdateEnvCap"),
+    &rest.Route{"PUT", "/:login/:GUID/envcaps/:id", api.UpdateEnvCap},
 
     // Data Centre Capability Maps
 
-    rest.RouteObjectMethod("GET", "/:login/:GUID/envcapmaps",
-      &api, "GetAllEnvCapMaps"),
+    &rest.Route{"GET", "/:login/:GUID/envcapmaps", api.GetAllEnvCapMaps},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/envcapmaps",
-      &api, "AddEnvCapMap"),
+    &rest.Route{"POST", "/:login/:GUID/envcapmaps", api.AddEnvCapMap},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/envcapmaps/:id",
-      &api, "DeleteEnvCapMap"),
+    &rest.Route{"DELETE", "/:login/:GUID/envcapmaps/:id", api.DeleteEnvCapMap},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/envcapmaps/:id",
-      &api, "UpdateEnvCapMap"),
+    &rest.Route{"PUT", "/:login/:GUID/envcapmaps/:id", api.UpdateEnvCapMap},
 
     // Scripts
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/scripts",
-      &api, "GetAllScripts"),
+    &rest.Route{"GET", "/#login/:GUID/scripts", api.GetAllScripts},
 
-    rest.RouteObjectMethod("POST", "/:login/:GUID/scripts",
-      &api, "AddScript"),
+    &rest.Route{"POST", "/:login/:GUID/scripts", api.AddScript},
 
-    rest.RouteObjectMethod("DELETE", "/:login/:GUID/scripts/:id",
-      &api, "DeleteScript"),
+    &rest.Route{"DELETE", "/:login/:GUID/scripts/:id", api.DeleteScript},
 
-    rest.RouteObjectMethod("PUT", "/:login/:GUID/scripts/:id",
-      &api, "UpdateScript"),
+    &rest.Route{"PUT", "/:login/:GUID/scripts/:id", api.UpdateScript},
 
     // Jobs
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/jobs",
-      &api, "GetAllJobs"),
+    &rest.Route{"GET", "/#login/:GUID/jobs", api.GetAllJobs},
 
-    rest.RouteObjectMethod("POST", "/#login/:GUID/jobs",
-      &api, "AddJob"),
+    &rest.Route{"POST", "/#login/:GUID/jobs", api.AddJob},
 
-    rest.RouteObjectMethod("DELETE", "/#login/:GUID/jobs/kill/:id",
-      &api, "KillJob"),
+    &rest.Route{"DELETE", "/#login/:GUID/jobs/kill/:id", api.KillJob},
 
-    rest.RouteObjectMethod("DELETE", "/#login/:GUID/jobs/:id",
-      &api, "DeleteJob"),
+    &rest.Route{"DELETE", "/#login/:GUID/jobs/:id", api.DeleteJob},
 
-    rest.RouteObjectMethod("PUT", "/#login/:GUID/jobs/:id",
-      &api, "UpdateJob"),
+    &rest.Route{"PUT", "/#login/:GUID/jobs/:id", api.UpdateJob},
 
     // Plugins
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/plugins",
-      &api, "GetAllPlugins"),
+    &rest.Route{"GET", "/#login/:GUID/plugins", api.GetAllPlugins},
 
-    rest.RouteObjectMethod("POST", "/#login/:GUID/plugins",
-      &api, "AddPlugin"),
+    &rest.Route{"POST", "/#login/:GUID/plugins", api.AddPlugin},
 
-    rest.RouteObjectMethod("DELETE", "/#login/:GUID/plugins/:id",
-      &api, "DeletePlugin"),
+    &rest.Route{"DELETE", "/#login/:GUID/plugins/:id", api.DeletePlugin},
 
-    rest.RouteObjectMethod("PUT", "/#login/:GUID/plugins/:id",
-      &api, "UpdatePlugin"),
+    &rest.Route{"PUT", "/#login/:GUID/plugins/:id", api.UpdatePlugin},
 
     // Files
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/files",
-      &api, "GetAllFiles"),
+    &rest.Route{"GET", "/#login/:GUID/files", api.GetAllFiles},
 
-    rest.RouteObjectMethod("POST", "/#login/:GUID/files",
-      &api, "AddFile"),
+    &rest.Route{"POST", "/#login/:GUID/files", api.AddFile},
 
-    rest.RouteObjectMethod("DELETE", "/#login/:GUID/files/:id",
-      &api, "DeleteFile"),
+    &rest.Route{"DELETE", "/#login/:GUID/files/:id", api.DeleteFile},
 
-    rest.RouteObjectMethod("PUT", "/#login/:GUID/files/:id",
-      &api, "UpdateFile"),
+    &rest.Route{"PUT", "/#login/:GUID/files/:id", api.UpdateFile},
 
     // Notifications
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/outputlines",
-      &api, "GetAllOutputLines"),
+    &rest.Route{"GET", "/#login/:GUID/outputlines", api.GetAllOutputLines},
 
-    rest.RouteObjectMethod("POST", "/#login/:GUID/outputlines",
-      &api, "AddOutputLine"),
+    &rest.Route{"POST", "/#login/:GUID/outputlines", api.AddOutputLine},
 
-    rest.RouteObjectMethod("DELETE", "/#login/:GUID/outputlines/:id",
-      &api, "DeleteOutputLine"),
+    &rest.Route{"DELETE", "/#login/:GUID/outputlines/:id",
+    api.DeleteOutputLine},
 
     /* No changing output logs
-       // //rest.RouteObjectMethod("PUT", "/#login/:GUID/outputlines/:id",
-       // //    &api, "UpdateOutputLine"),
+       // //&rest.Route{"PUT", "/#login/:GUID/outputlines/:id", // //
+       // api.UpdateOutputLine},
     */
 
     // Generic
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/#endpoint",
-      &api, "GenericGetEndpoint"),
+    &rest.Route{"GET", "/#login/:GUID/#endpoint",
+                api.GenericGetEndpoint},
 
-    rest.RouteObjectMethod("GET", "/#login/:GUID/#endpoint/#subitem",
-      &api, "GenericGetEndpoint"),
+    &rest.Route{"GET", "/#login/:GUID/#endpoint/#subitem",
+                api.GenericGetEndpoint},
 
-    rest.RouteObjectMethod("POST", "/#login/:GUID/#endpoint",
-      &api, "GenericPostEndpoint"),
+    &rest.Route{"POST", "/#login/:GUID/#endpoint",
+                api.GenericPostEndpoint},
 
-    rest.RouteObjectMethod("POST", "/#login/:GUID/#endpoint/#subitem",
-      &api, "GenericPostEndpoint"),
+    &rest.Route{"POST", "/#login/:GUID/#endpoint/#subitem",
+                api.GenericPostEndpoint},
 
-    rest.RouteObjectMethod("DELETE", "/#login/:GUID/#endpoint",
-      &api, "GenericDeleteEndpoint"),
+    &rest.Route{"DELETE", "/#login/:GUID/#endpoint",
+                api.GenericDeleteEndpoint},
 
-    rest.RouteObjectMethod("DELETE", "/#login/:GUID/#endpoint/#subitem",
-      &api, "GenericDeleteEndpoint"),
+    &rest.Route{"DELETE", "/#login/:GUID/#endpoint/#subitem",
+                api.GenericDeleteEndpoint},
 
-    rest.RouteObjectMethod("PUT", "/#login/:GUID/#endpoint",
-      &api, "GenericPutEndpoint"),
+    &rest.Route{"PUT", "/#login/:GUID/#endpoint",api.GenericPutEndpoint},
 
-    rest.RouteObjectMethod("PUT", "/#login/:GUID/#endpoint/#subitem",
-      &api, "GenericPutEndpoint"),
+    &rest.Route{"PUT", "/#login/:GUID/#endpoint/#subitem",
+                api.GenericPutEndpoint},
   )
 
   // Add the REST API handle
