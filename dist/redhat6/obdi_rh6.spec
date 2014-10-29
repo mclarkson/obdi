@@ -1,5 +1,6 @@
 %define name obdi
 %define version 0.1.0
+%define release 1%{?BUILD_NUMBER}
 # The following line may be required
 #%define debug_package %{nil}
 
@@ -7,7 +8,7 @@ Summary: A REST interface and GUI for deploying software
 # Don't replace the next line with %{name}, hudson build script needs it
 Name: obdi
 Version: %{version}
-Release: 1
+Release: %{release}
 License: GPL
 Group: Application/System
 Source: obdi-%{version}.tar.gz
