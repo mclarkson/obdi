@@ -84,10 +84,10 @@ install -D -m 640 conf/obdi.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi/obdi.conf
 
 # Golang single binary (/usr/sbin)
 install -D -m 755 obdi ${RPM_BUILD_ROOT}%{_sbindir}/obdi
-install -D -m 755 obdi-worker/obdi-worker ${RPM_BUILD_ROOT}%{_sbindir}/obdi-worker
+install -D -m 755 obdi-worker/obdi-worker ${RPM_BUILD_ROOT}/%{_sbindir}/obdi-worker
 
 # Initrd
-install -D -m 755 init/obdi %{_initrddir}/obdi
+install -D -m 755 init/obdi ${RPM_BUILD_ROOT}/%{_initrddir}/obdi
 
 # Directories
 
