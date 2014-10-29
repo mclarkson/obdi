@@ -1,6 +1,6 @@
 %define name obdi
 %define version 0.1.0
-%define release 1%{?BUILD_NUMBER}
+%define release %{?BUILD_NUMBER}
 # The following line may be required
 #%define debug_package %{nil}
 
