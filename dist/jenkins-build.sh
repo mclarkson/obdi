@@ -19,8 +19,9 @@ mkdir -p rpmbuild/SOURCES/obdi-$VERSION
 cp -a $files rpmbuild/SOURCES/obdi-$VERSION
 
 # Compress
-cd rpmbuild/SOURCES
+pushd rpmbuild/SOURCES
 tar cvzf obdi-$VERSION.tar.gz obdi-$VERSION
 
+popd
 rpmbuild --define "_topdir `pwd`" --define "BUILD_NUMBER $BUILD_NUMBER" -bb SPECS/obdi_rh6.spec
 
