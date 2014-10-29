@@ -4,7 +4,7 @@
 VERSION="0.1.0"
 
 # Get the list of top level files before we make changes
-files=`echo *`
+files=`echo * | sed 's/rpmbuild//'`
 
 mkdir -p rpmbuild/BUILD/
 mkdir -p rpmbuild/RPMS/
