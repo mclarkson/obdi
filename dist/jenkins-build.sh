@@ -1,7 +1,13 @@
 #!/bin/bash
 
 # Get the version from the spec file (TODO)
-VERSION="0.1.0"
+if [[ -r VERSION ]]; then
+    # OBDI_SEMANTIC_VERSION is set in the VERSION file
+    source VERSION
+else
+    echo "VERSION file does not exist."
+    exit 1
+fi
 
 # Get the list of top level files before we make changes
 files=`echo * | sed 's/rpmbuild//'`
@@ -23,5 +29,8 @@ cd rpmbuild/SOURCES
 tar cvzf obdi-$VERSION.tar.gz obdi-$VERSION
 
 cd ..
-rpmbuild --define "_topdir `pwd`" --define "BUILD_NUMBER $BUILD_NUMBER" -bb SPECS/obdi_rh6.spec
+rpmbuild --define "_topdir `pwd`" \
+         --define "BUILD_NUMBER $BUILD_NUMBER" \
+         --define "OBDI_SEMANTIC_VERSION $OBDI_SEMANTIC_VERSION" \
+         -bb SPECS/obdi_rh6.spec
 
