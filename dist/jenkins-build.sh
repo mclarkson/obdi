@@ -21,12 +21,12 @@ mkdir -p rpmbuild/SRPMS/
 cp dist/redhat6/obdi_rh6.spec rpmbuild/SPECS
 
 # Copy 
-mkdir -p rpmbuild/SOURCES/obdi-$VERSION
-cp -a $files rpmbuild/SOURCES/obdi-$VERSION
+mkdir -p rpmbuild/SOURCES/obdi-$OBDI_SEMANTIC_VERSION
+cp -a $files rpmbuild/SOURCES/obdi-$OBDI_SEMANTIC_VERSION
 
 # Compress
 cd rpmbuild/SOURCES
-tar cvzf obdi-$VERSION.tar.gz obdi-$VERSION
+tar cvzf obdi-$OBDI_SEMANTIC_VERSION obdi-$OBDI_SEMANTIC_VERSION
 
 cd ..
 rpmbuild --define "_topdir `pwd`" \
