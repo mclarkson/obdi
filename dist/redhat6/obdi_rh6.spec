@@ -81,6 +81,7 @@ go build -o obdi-worker
 # Config
 install -d -m 755 ${RPM_BUILD_ROOT}/%{_sysconfdir}/
 install -D -m 640 conf/obdi.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi/obdi.conf
+install -D -m 640 conf/obdi-worker.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi-worker/obdi-worker.conf
 
 # Golang single binary (/usr/sbin)
 install -D -m 755 obdi ${RPM_BUILD_ROOT}%{_sbindir}/obdi
@@ -124,6 +125,7 @@ cp -r static ${RPM_BUILD_ROOT}/%{_datarootdir}/obdi/
 %files worker
 %defattr(755,root,root,755)
 %_sbindir/obdi-worker
+%config(noreplace) /etc/obdi/obdi-worker.conf
 
 %clean
 %{__rm} -rf %{buildroot}
