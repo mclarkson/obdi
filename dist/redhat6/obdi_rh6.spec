@@ -125,7 +125,7 @@ cp -r static ${RPM_BUILD_ROOT}/%{_datarootdir}/obdi/
 %files worker
 %defattr(755,root,root,755)
 %_sbindir/obdi-worker
-%config(noreplace) /etc/obdi/obdi-worker.conf
+%config(noreplace) /etc/obdi-worker/obdi-worker.conf
 
 %clean
 %{__rm} -rf %{buildroot}
