@@ -26,7 +26,7 @@ cp -a $files rpmbuild/SOURCES/obdi-$OBDI_SEMANTIC_VERSION
 
 # Compress
 cd rpmbuild/SOURCES
-tar cvzf obdi-$OBDI_SEMANTIC_VERSION obdi-$OBDI_SEMANTIC_VERSION
+tar cvzf obdi-$OBDI_SEMANTIC_VERSION.tar.gz obdi-$OBDI_SEMANTIC_VERSION
 
 cd ..
 rpmbuild --define "_topdir `pwd`" \
