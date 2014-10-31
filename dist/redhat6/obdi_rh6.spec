@@ -1,6 +1,8 @@
 %define name obdi
 %define version %{?OBDI_SEMANTIC_VERSION}
 %define release %{?BUILD_NUMBER}
+# Don't strip the Golang binaries
+%define __strip /bin/true
 # The following line may be required
 #%define debug_package %{nil}
 
