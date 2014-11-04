@@ -53,4 +53,9 @@ saltconfigserver plugin
 
       output_indent: Null
 
+Server said: Plugin endpoint 'saltconfigserver/statedescs' does not exist.
+
+    The 'go_plugin_source' variable in obdi.conf is incorrectly configured.
+    This variable should point at the plugins directory, where all the
+    plugins are stored, containing the Go source files.
 
