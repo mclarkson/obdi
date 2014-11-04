@@ -23,7 +23,8 @@ window.interface = "run";
 
 mgrApp.controller("runCtrl", function ($scope) {
 
-  $scope.view = "plugins/dashboard/html/view.html"
+  //$scope.view = "plugins/dashboard/html/view.html"
+  $scope.view = ""
 
   $scope.setView = function( v ) {
     $scope.view = v;
