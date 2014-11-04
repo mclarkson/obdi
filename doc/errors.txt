@@ -8,7 +8,9 @@ Could not send job to worker. ('Could not send REST request ('Post
 https://10.0.0.3:4443/api/jobs: dial tcp 10.0.0.3:4443: connection
 refused').')
 
-    The worker daemon is not running.
+    The worker daemon is not running. Start the daemon with:
+
+        service obdi-worker start
 
 Could not send job to worker. ('Invalid key')
 
