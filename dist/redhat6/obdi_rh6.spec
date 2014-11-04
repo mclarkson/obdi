@@ -91,6 +91,7 @@ install -D -m 755 obdi-worker/obdi-worker ${RPM_BUILD_ROOT}/%{_sbindir}/obdi-wor
 
 # Initrd
 install -D -m 755 init/obdi ${RPM_BUILD_ROOT}/%{_initrddir}/obdi
+install -D -m 755 init/obdi-worker ${RPM_BUILD_ROOT}/%{_initrddir}/obdi-worker
 
 # Directories
 
@@ -127,6 +128,7 @@ cp -r static ${RPM_BUILD_ROOT}/%{_datarootdir}/obdi/
 %files worker
 %defattr(755,root,root,755)
 %_sbindir/obdi-worker
+%_initrddir/obdi
 %config(noreplace) /etc/obdi-worker/obdi-worker.conf
 
 %clean
