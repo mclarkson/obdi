@@ -1,3 +1,10 @@
+Server said: Could not send job to worker. ('Login from worker to Manager
+failed ('User or password error.').') See: jobid:3 
+
+    On the worker host, /etc/obdi-worker/obdi-worker.conf, check that
+    the 'man_user' and 'man_password' values match a user listed in
+    the obdi admin interface.
+
 Could not send job to worker. ('Could not send REST request ('Post
 https://10.0.0.3:4443/api/jobs: net/http: request canceled while waiting for
 connection').')
