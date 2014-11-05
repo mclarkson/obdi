@@ -10,7 +10,7 @@
 
 PROG_NAME="obdi-worker"
 DAEMON="/usr/sbin/$PROG_NAME"
-LOG_FILE="/var/log/$PROG_NAME/master.log"
+LOG_FILE="/var/log/$PROG_NAME.log"
 LOCK_FILE="/var/lock/subsys/$PROG_NAME"
 PID_FILE="/var/run/${PROG_NAME}.pid"
 
@@ -21,7 +21,7 @@ start()
         umask 077
 
         echo -n $"Starting $PROG_NAME: "
-        daemon --pidfile="$PID_FILE" "$DAEMON &>>/var/log/obdi.log &"
+        daemon --pidfile="$PID_FILE" "$DAEMON &>>$LOG_FILE &"
         RETVAL=$?
         sleep 1
         pid=`ps -ef | grep $DAEMON | grep -v grep | awk '{ print $2; }'`
