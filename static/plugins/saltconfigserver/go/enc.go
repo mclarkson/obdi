@@ -324,6 +324,7 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
     matched := false
 
+i_loop:
     for i := range regexes {
       tryRegex,err := regexp.Compile( regexes[i].Regex )
       if err == nil {
@@ -344,12 +345,19 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
               matched = true
 
               stripped := strings.TrimSuffix(regexSlsMaps[j].StateFile, ".sls")
+              item := ""
               if len(stripped) > 0 {
-                encClasses = append(encClasses, regexSlsMaps[j].Formula +
-                                    "." + stripped)
+                item = regexSlsMaps[j].Formula + "." + stripped
               } else {
-                encClasses = append(encClasses, regexSlsMaps[j].Formula)
+                item = regexSlsMaps[j].Formula
               }
+              // Check for existing entry
+              for j := range encClasses {
+                if encClasses[j] == item {
+                  continue i_loop
+                }
+              }
+              encClasses = append(encClasses, item)
           }
         }
       } else {
@@ -375,15 +383,24 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
     customised = true
 
+i_loop2:
     for i := range encs {
 
       stripped := strings.TrimSuffix(encs[i].StateFile, ".sls")
 
+      item := ""
       if len(stripped) > 0 {
-        encClasses = append(encClasses, encs[i].Formula + "." + stripped)
+        item = encs[i].Formula + "." + stripped
       } else {
-        encClasses = append(encClasses, encs[i].Formula)
+        item = encs[i].Formula
       }
+      // Check for existing entry
+      for j := range encClasses {
+        if encClasses[j] == item {
+          continue i_loop2
+        }
+      }
+      encClasses = append(encClasses, item)
     }
     encEnvironment = env_name// + "_" + env_version
   }
