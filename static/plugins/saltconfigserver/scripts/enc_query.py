@@ -57,6 +57,31 @@ def getGrains( g, __opts__ ):
 
     return dc,env,version
 
+def getGrainsFromCache( g, __opts__ ):
+
+    runner = salt.runner.Runner(__opts__)
+
+    stdout_bak = sys.stdout
+    with open(os.devnull, 'wb') as f:
+        sys.stdout = f
+        items = runner.cmd("cache.grains", [g['salt_id']])
+    sys.stdout = stdout_bak
+
+    if 'dc' in items[g['salt_id']]:
+        dc = items[g['salt_id']]['dc']
+    else:
+        dc = 'null'
+    if 'env' in items[g['salt_id']]:
+        env = items[g['salt_id']]['env']
+    else:
+        env = 'null'
+    if 'version' in items[g['salt_id']]:
+        version = items[g['salt_id']]['version']
+    else:
+        version = 'null'
+
+    return dc,env,version
+
 def login( g ):
     url = g['master_url'] + "/api/login"
 
@@ -130,7 +155,7 @@ def main():
         usage()
         sys.exit(1)
 
-    dc,env,version = getGrains( g, __opts__ )
+    dc,env,version = getGrainsFromCache( g, __opts__ )
 
     g['dc'] = dc
     g['env'] = env
