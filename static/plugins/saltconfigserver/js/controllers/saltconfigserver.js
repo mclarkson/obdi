@@ -1232,7 +1232,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         $scope.login.pageurl = "login.html";
       } else if (status>=400) {
         clearMessages();
-        $scope.mainmessage = "Server said: " + data['Error'];
+        $scope.message = "Server said: " + data['Error'];
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";

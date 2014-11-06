@@ -65,6 +65,23 @@ type Job struct {
 }
 
 // For retrieving details from the Manager
+type Env struct {
+    Id       int64
+    DispName string // Display name
+    SysName  string // System name (Salt name)
+    /*Dc          Dc*/ // only for creating Env and substruct
+    DcId               int64
+    DcSysName     string
+    //WorkerIp    string      // Hostname or IP address of worker
+    //WorkerPort  string      // Port the worker listens on
+    WorkerUrl string // Worker URL Prefix
+    WorkerKey string // Key (password) for worker
+    CreatedAt time.Time
+    UpdatedAt time.Time
+    DeletedAt time.Time
+}
+
+// For retrieving details from the Manager
 type Script struct {
     Id        int64
     Name      string
@@ -336,15 +353,44 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
   env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
-  if len(args.QueryString["salt_id"]) == 0 {
-    ReturnError( "'salt_id' must be set", response )
+  if len(args.QueryString["version"]) == 0 {
+    ReturnError( "'version' must be set", response )
+    return nil
+  }
+
+  version := args.QueryString["version"][0]
+
+  // Get the DcSysName and [Env]SysName for this env_id for using
+  // as arguments to the script that will be run later.
+  // GET queries always return an array of items, even for 1 item.
+  envs := []Env{}
+  resp, err := GET("https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "envs" +
+    "?env_id=" + args.QueryString["env_id"][0] )
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    errtext := Reply{ 0,ERROR,txt }
+    jsondata, _ := json.Marshal( errtext )
+    *response = jsondata
+    return nil
+  } else {
+    json.Unmarshal(b,&envs)
+  }
+  // If envs is empty then we don't have permission to see it
+  // or the env does not exist so bug out.
+  if len(envs) == 0 {
+    txt := "The requested environment id does not exist" +
+      " or the permissions to access it are insufficient."
+    errtext := Reply{ 0,ERROR,txt }
+    jsondata, _ := json.Marshal( errtext )
+    *response = jsondata
     return nil
   }
 
   // Get the ScriptId from the scripts table for:
-  scriptName := "salt-grains.sh"
+  scriptName := "statelist.sh"
   scripts := []Script{}
-  resp, err := GET("https://127.0.0.1/api/" +
+  resp, err = GET("https://127.0.0.1/api/" +
     args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
     "?nosource=1&name=" + scriptName )
   if b, err := ioutil.ReadAll(resp.Body); err != nil {
@@ -368,7 +414,7 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
   job := Job{
     ScriptId:         scripts[0].Id,
     EnvId:            env_id,
-    Args:             args.QueryString["salt_id"][0],
+    Args:             envs[0].SysName + "_" + version,
 
     // Type 1 - User Job - Output is
     //     sent back as it's created
