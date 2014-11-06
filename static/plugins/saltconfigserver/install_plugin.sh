@@ -152,3 +152,13 @@ curl -k -d '{
     "Source": "'"$source"'"
 }' $proto://$ipport/api/admin/$guid/scripts
 
+# --
+
+source=`sed '1n;/^\s*#/d;/^$/d;' scripts/statelist.sh | base64 -w 0`
+
+curl -k -d '{
+    "Desc": "Returns a list of states and formulas. Arg1 - The branch/tag.",
+    "Name": "statelist.sh",
+    "Source": "'"$source"'"
+}' $proto://$ipport/api/admin/$guid/scripts
+

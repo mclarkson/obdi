@@ -20,101 +20,18 @@ import (
   "log"
   "log/syslog"
   "net"
+  "net/http"
   "net/rpc"
+  "crypto/tls"
   "encoding/json"
   "fmt"
+  "time"
+  "bytes"
+  "strings"
+  "io/ioutil"
   "os"
-  "sync"
-  "github.com/jinzhu/gorm"
-  _ "github.com/mattn/go-sqlite3"
+  "strconv"
 )
-
-const DBFILE = "statedesc.db"
-
-// ***************************************************************************
-// SQLITE3 PRIVATE DB
-// ***************************************************************************
-
-type StateDesc struct {
-  Id              int64
-  FormulaName     string
-  StateFileName   string
-  Desc            string
-}
-
-// --
-
-var config *Config
-
-type Config struct {
-    Dbname    string
-}
-
-// --------------------------------------------------------------------------
-func (c *Config) DBPath() string {
-// --------------------------------------------------------------------------
-    return c.Dbname
-}
-
-// --------------------------------------------------------------------------
-func (c *Config) SetDBPath( path string ) {
-// --------------------------------------------------------------------------
-    c.Dbname = path
-}
-
-// --------------------------------------------------------------------------
-func NewConfig() {
-// --------------------------------------------------------------------------
-    config = &Config{}
-}
-
-// --
-
-type GormDB struct {
-  db gorm.DB
-}
-
-// --------------------------------------------------------------------------
-func (gormInst *GormDB) InitDB() error {
-// --------------------------------------------------------------------------
-  var err error
-  dbname := config.DBPath()
-
-  gormInst.db, err = gorm.Open("sqlite3", dbname + DBFILE)
-  if err != nil {
-    return ApiError{"Open " + dbname + " failed. " + err.Error()}
-  }
-
-  if err := gormInst.db.AutoMigrate(StateDesc{}).Error; err != nil {
-    txt := fmt.Sprintf("AutoMigrate StateDesc table failed: %s", err)
-    return ApiError{ txt }
-  }
-
-  // Unique index is also a constraint, so are forced to be unique
-  //gormInst.db.Model(Enc{}).AddIndex("idx_enc_salt_id", "salt_id")
-
-  return nil
-}
-
-// --------------------------------------------------------------------------
-func (gormInst *GormDB) DB() *gorm.DB {
-// --------------------------------------------------------------------------
-  return &gormInst.db
-}
-
-// --------------------------------------------------------------------------
-func NewDB() (*GormDB,error) {
-// --------------------------------------------------------------------------
-  gormInst := &GormDB{}
-  if err := gormInst.InitDB(); err != nil {
-    return gormInst, err
-  }
-  return gormInst,nil
-}
-
-// ***************************************************************************
-// ERRORS
-// ***************************************************************************
 
 const (
     SUCCESS = 0
@@ -125,20 +42,62 @@ type ApiError struct {
   details string
 }
 
-// --------------------------------------------------------------------------
 func (e ApiError) Error() string {
-// --------------------------------------------------------------------------
   return fmt.Sprintf("%s", e.details)
 }
 
+// For sending a job to the Manager
+type Job struct {
+  Id            int64
+  ScriptId      int64
+  Args          string // E.g. `-a -f "bob 1" name`
+  EnvVars       string // E.g. `A:1 B:"Hi there" C:3`
+  Status        int64
+  StatusReason  string
+  StatusPercent int64
+  CreatedAt     time.Time
+  UpdatedAt     time.Time
+  DeletedAt     time.Time
+  UserLogin     string
+  Errors        int64
+  EnvId         int64 // For WorkerUrl and WorkerKey
+  Type          int64 // 1 - user job, 2 - system job
+}
+
+// For retrieving details from the Manager
+type Script struct {
+    Id        int64
+    Name      string
+    Desc      string
+    Source    []byte
+    Type      string
+    CreatedAt time.Time
+    UpdatedAt time.Time
+    DeletedAt time.Time
+}
+
+// Args are send over RPC from the Manager
+type Args struct {
+  PathParams    map[string]string
+  QueryString   map[string][]string
+  PostData      []byte
+  QueryType     string
+}
+
+type PostedData struct {
+  Grain         string
+  Text          string
+}
+
 // ***************************************************************************
-// LOGGING
+// SUPPORT FUNCS
 // ***************************************************************************
 
 // --------------------------------------------------------------------------
 func logit(msg string) {
 // --------------------------------------------------------------------------
 // Log to syslog
+
     log.Println(msg)
     l, err := syslog.New(syslog.LOG_ERR, "obdi")
     defer l.Close()
@@ -149,40 +108,220 @@ func logit(msg string) {
     l.Err(msg)
 }
 
-// ***************************************************************************
-// GO RPC PLUGIN
-// ***************************************************************************
+// --------------------------------------------------------------------------
+func GET(url, endpoint string) (r *http.Response, e error) {
+// --------------------------------------------------------------------------
+// Send HTTP GET request
 
-// Args are send over RPC from the Manager
-type Args struct {
-  PathParams    map[string]string
-  QueryString   map[string][]string
-  PostData      []byte
-  QueryType     string
+  // accept bad certs
+  tr := &http.Transport{
+    TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+  }
+  client := &http.Client{Transport: tr}
+  client.Timeout = 8 * 1e9
+
+  //fmt.Printf("\n%s/api/%s\n",url,endpoint)
+  for strings.HasSuffix(url, "/") {
+    url = strings.TrimSuffix(url, "/")
+  }
+  //fmt.Printf( "%s\n", url+"/"+endpoint )
+  resp, err := client.Get(url+"/"+endpoint)
+  if err != nil {
+    txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
+    return resp, ApiError{txt}
+  }
+
+  if resp.StatusCode != 200 {
+    var body []byte
+    if b, err := ioutil.ReadAll(resp.Body); err != nil {
+      txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+      return resp, ApiError{txt}
+    } else {
+      body = b
+    }
+    type myErr struct {
+      Error string
+    }
+    errstr := myErr{}
+    if err := json.Unmarshal(body, &errstr); err != nil {
+      txt := fmt.Sprintf("Error decoding JSON "+
+        "returned from worker - (%s). Check the Worker URL.",
+        err.Error())
+      return resp, ApiError{txt}
+    }
+
+    //txt := fmt.Sprintf("%s", resp.StatusCode)
+    return resp, ApiError{errstr.Error}
+  }
+
+  return resp, nil
+}
+
+// --------------------------------------------------------------------------
+func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
+// --------------------------------------------------------------------------
+// Send HTTP POST request
+
+  buf := bytes.NewBuffer(jsondata)
+
+  // accept bad certs
+  tr := &http.Transport{
+    TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+  }
+  client := &http.Client{Transport: tr}
+  client.Timeout = 8 * 1e9
+
+  //fmt.Printf("\n%s/api/%s\n",url,endpoint)
+  for strings.HasSuffix(url, "/") {
+    url = strings.TrimSuffix(url, "/")
+  }
+  //fmt.Printf( "%s\n", url+"/"+endpoint )
+  resp, err := client.Post(url+"/"+endpoint, "application/json", buf)
+  if err != nil {
+    txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
+    return resp, ApiError{txt}
+  }
+
+  if resp.StatusCode != 200 {
+    var body []byte
+    if b, err := ioutil.ReadAll(resp.Body); err != nil {
+      txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+      return resp, ApiError{txt}
+    } else {
+      body = b
+    }
+    type myErr struct {
+      Error string
+    }
+    errstr := myErr{}
+    if err := json.Unmarshal(body, &errstr); err != nil {
+      txt := fmt.Sprintf("Error decoding JSON "+
+        "returned from worker - (%s). Check the Worker URL.",
+        err.Error())
+      return resp, ApiError{txt}
+    }
+
+    //txt := fmt.Sprintf("%s", resp.StatusCode)
+    return resp, ApiError{errstr.Error}
+  }
+
+  return resp, nil
 }
 
 type Plugin struct{}
 
 // The reply will be sent and output by the master
 type Reply struct {
-  // Add more if required
-  EncData         string
-  // Must have the following
-  PluginReturn    int64        // 0 - success, 1 - error
-  PluginError     string
+// Add more if required
+JobId           int64
+// Must have the following
+PluginReturn    int64        // 0 - success, 1 - error
+PluginError     string
 }
 
-// Global mutex
-var dbmutex = &sync.Mutex{}
+// --------------------------------------------------------------------------
+func (t *Plugin) RunScript(args *Args, response *[]byte) (int64,error) {
+// --------------------------------------------------------------------------
+
+  // Check for required query string entries
+
+  if len(args.QueryString["env_id"]) == 0 {
+    ReturnError( "'env_id' must be set", response )
+    return 0,ApiError{"Error"}
+  }
+
+  env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+
+  if len(args.QueryString["salt_id"]) == 0 {
+    ReturnError( "'salt_id' must be set", response )
+    return 0,ApiError{"Error"}
+  }
+
+  var postedData PostedData
+
+  if err := json.Unmarshal(args.PostData,&postedData); err != nil {
+    txt := fmt.Sprintf("Error decoding JSON ('%s')"+ ".", err.Error())
+    ReturnError( "Error decoding the POST data (" +
+      fmt.Sprintf("%s",args.PostData) + "). " + txt, response )
+    return 0,nil
+  }
+
+  // Get the ScriptId from the scripts table for:
+  scriptName := "statelist.sh"
+  scripts := []Script{}
+  resp, err := GET("https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
+    "?nosource=1&name=" + scriptName )
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return 0,ApiError{"Error"}
+  } else {
+    json.Unmarshal(b,&scripts)
+  }
+  // If scripts is empty then we don't have permission to see it
+  // or the script does not exist (well, scripts don't have permissions
+  // but lets say the same thing anyway)
+  if len(scripts) == 0 {
+    txt := "The requested script, '" + scriptName + "', does not exist" +
+      " or the permissions to access it are insufficient."
+    ReturnError( txt, response )
+    return 0,ApiError{"Error"}
+  }
+
+  cmdargs := args.QueryString["salt_id"][0] + " " +
+             postedData.Grain + "," + postedData.Text
+
+  // Set up some fields for the Job struct we'll send to the master
+  job := Job{
+    ScriptId:         scripts[0].Id,
+    EnvId:            env_id,
+    Args:             cmdargs,
+
+    // Type 1 - User Job - Output is
+    //     sent back as it's created
+    // Type 2 - System Job - All output
+    //     is saved in one single line.
+    //     Good for json etc.
+    Type:             2,
+  }
+
+  // Send the job POST request to the master
+  jsonjob, err := json.Marshal(job)
+  resp, err = POST(jsonjob, "https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "jobs")
+  if err != nil {
+    txt := "Could not send job to worker. ('" + err.Error() + "')"
+    ReturnError( txt, response )
+    return 0,ApiError{"Error"}
+  }
+  defer resp.Body.Close()
+  // Read the worker's response from the master
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return 0,ApiError{"Error"}
+  } else {
+    json.Unmarshal(b,&job)
+  }
+
+  // Send the Job ID as the RPC reply (back to the master)
+
+  return job.Id, nil
+}
 
 // --------------------------------------------------------------------------
 func ReturnError(text string, response *[]byte) {
 // --------------------------------------------------------------------------
-    errtext := Reply{ "", ERROR, text }
+    errtext := Reply{ 0, ERROR, text }
     logit( text )
     jsondata, _ := json.Marshal( errtext )
     *response = jsondata
 }
+
+// ***************************************************************************
+// GO RPC PLUGIN
+// ***************************************************************************
 
 // --------------------------------------------------------------------------
 func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
@@ -190,49 +329,78 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
   // Check for required query string entries
 
-  var err error
-
-  if len(args.PathParams["PluginDatabasePath"]) == 0 {
-    ReturnError( "Internal Error: 'PluginDatabasePath' must be set",response )
+  if len(args.QueryString["env_id"]) == 0 {
+    ReturnError( "'env_id' must be set", response )
     return nil
   }
 
-  config.SetDBPath( args.PathParams["PluginDatabasePath"] )
+  env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
-  // Open/Create database
-  var gormInst *GormDB
-  if gormInst,err = NewDB(); err!=nil {
-    txt := "GormDB open error for '" + config.DBPath() + DBFILE + "'. " +
-           err.Error()
+  if len(args.QueryString["salt_id"]) == 0 {
+    ReturnError( "'salt_id' must be set", response )
+    return nil
+  }
+
+  // Get the ScriptId from the scripts table for:
+  scriptName := "salt-grains.sh"
+  scripts := []Script{}
+  resp, err := GET("https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
+    "?nosource=1&name=" + scriptName )
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return nil
+  } else {
+    json.Unmarshal(b,&scripts)
+  }
+  // If scripts is empty then we don't have permission to see it
+  // or the script does not exist (well, scripts don't have permissions
+  // but lets say the same thing anyway)
+  if len(scripts) == 0 {
+    txt := "The requested script, '" + scriptName + "', does not exist" +
+      " or the permissions to access it are insufficient."
     ReturnError( txt, response )
     return nil
   }
 
-  db := gormInst.DB()          // Instead of using gormInst.DB() everywhere
+  // Set up some fields for the Job struct we'll send to the master
+  job := Job{
+    ScriptId:         scripts[0].Id,
+    EnvId:            env_id,
+    Args:             args.QueryString["salt_id"][0],
 
-  stateDescs := []StateDesc{}
-
-  dbmutex.Lock()
-  if err := db.Find(&stateDescs); err.Error != nil {
-      if !err.RecordNotFound() {
-        dbmutex.Unlock()
-        ReturnError( err.Error.Error(), response )
-        return nil
-      }
+    // Type 1 - User Job - Output is
+    //     sent back as it's created
+    // Type 2 - System Job - All output
+    //     is saved in one single line.
+    //     Good for json etc.
+    Type:             2,
   }
-  dbmutex.Unlock()
 
-  TempEncData, err := json.Marshal(stateDescs)
-  EncData := string( TempEncData )
-
+  // Send the job POST request to the master
+  jsonjob, err := json.Marshal(job)
+  resp, err = POST(jsonjob, "https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "jobs")
   if err != nil {
-    ReturnError( "Marshal error: "+err.Error(), response )
+    txt := "Could not send job to worker. ('" + err.Error() + "')"
+    ReturnError( txt, response )
     return nil
   }
+  defer resp.Body.Close()
+  // Read the worker's response from the master
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return nil
+  } else {
+    json.Unmarshal(b,&job)
+  }
 
-  // Reply with the EncData (back to the master)
+  // Send the Job ID as the RPC reply (back to the master)
 
-  reply := Reply{ EncData,SUCCESS,"" }
+  id := job.Id
+  reply := Reply{ id,SUCCESS,"" }
   jsondata, err := json.Marshal(reply)
 
   if err != nil {
@@ -248,8 +416,41 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 // --------------------------------------------------------------------------
 func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 // --------------------------------------------------------------------------
-    ReturnError( "Internal error: Unimplemented HTTP POST", response )
+
+  // Decode the post data into struct
+
+  var postedData PostedData
+
+  if err := json.Unmarshal(args.PostData,&postedData); err != nil {
+    txt := fmt.Sprintf("Error decoding JSON ('%s')"+ ".", err.Error())
+    ReturnError( "Error decoding the POST data (" +
+      fmt.Sprintf("%s",args.PostData) + "). " + txt, response )
     return nil
+  }
+
+  // Use salt to change the version, if it's changed
+
+  var jobid int64
+  if len(postedData.Grain)>0 && len(postedData.Text)>0 {
+    var err error
+    if jobid,err = t.RunScript(args,response); err != nil {
+      // RunScript wrote the error
+      return nil
+    }
+  } else {
+    ReturnError( "No POST data received. Nothing to do.", response )
+    return nil
+  }
+
+  reply := Reply{ jobid,SUCCESS,"" }
+  jsondata, err := json.Marshal(reply)
+  if err != nil {
+    ReturnError( "Marshal error: "+err.Error(), response )
+    return nil
+  }
+  *response = jsondata
+
+  return nil
 }
 
 // --------------------------------------------------------------------------
@@ -273,16 +474,11 @@ func (t *Plugin) HandleRequest(args *Args, response *[]byte) error {
   }
 }
 
-// ***************************************************************************
-// ENTRY POINT
-// ***************************************************************************
-
 // --------------------------------------------------------------------------
 func main() {
 // --------------------------------------------------------------------------
 
-  // Sets the global config var
-  NewConfig()
+  //logit("Plugin starting")
 
   plugin := new(Plugin)
   rpc.Register(plugin)
@@ -293,11 +489,14 @@ func main() {
       logit( txt )
   }
 
+  //logit("Plugin listening on port " + os.Args[1])
+
   //for {
     if conn, err := listener.Accept(); err != nil {
       txt := fmt.Sprintf( "Accept error. ", err )
       logit( txt )
     } else {
+      //logit("New connection established")
       rpc.ServeConn(conn)
     }
   //}

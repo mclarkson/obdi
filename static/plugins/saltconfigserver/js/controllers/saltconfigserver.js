@@ -909,6 +909,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     $scope.configview.saltid = saltid;
     $scope.configview.show = true;
 
+    $scope.FillDescriptionTable( $scope.env.SysName );
     $scope.FillConfigTable( saltid );
   }
 
@@ -1141,6 +1142,66 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
+  $scope.GetStatedescOutputLine = function( id ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/outputlines?job_id=" + id
+    }).success( function(data, status, headers, config) {
+
+      try {
+        $scope.statedescs = $.parseJSON(data[0].Text);
+        $scope.statedescs.sort(function(a, b){
+          if(a < b) return -1;
+          if(a > b) return 1;
+          return 0;
+        });
+      } catch (e) {
+        clearMessages();
+        $scope.message = "Error: " + e;
+        $scope.message_jobid = id;
+      }
+
+      // Create an array of names for a select box
+      for( var i=0; i < $scope.statedescs.length; ++i ) {
+        $scope.statedescs_names[i] = $scope.statedescs[i].FormulaName;
+        if( $scope.statedescs[i].StateFileName.length > 0 ) {
+          $scope.statedescs_names[i] += "." +
+            $scope.statedescs[i].StateFileName;
+        }
+      }
+      // And sort the list
+      $scope.statedescs_names.sort(function(a, b){
+        if(a < b) return -1;
+        if(a > b) return 1;
+        return 0;
+      });
+
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
   $scope.FillDescriptionTable = function() {
   // ----------------------------------------------------------------------
 
@@ -1149,21 +1210,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/statedescs"
     }).success( function(data, status, headers, config) {
-      $scope.statedescs = $.parseJSON(data['EncData']);
-      // Create an array of names for a select box
-      for( var i=0; i < $scope.statedescs.length; ++i ) {
-        $scope.statedescs_names[i] = $scope.statedescs[i].FormulaName;
-        if( $scope.statedescs[i].StateFileName.length > 0 ) {
-          $scope.statedescs_names[i] += "." +
-                                        $scope.statedescs[i].StateFileName;
-        }
-      }
-      // And sort it
-      $scope.statedescs_names.sort(function(a, b){
-        if(a < b) return -1;
-        if(a > b) return 1;
-        return 0;
-      });
+      $scope.PollForJobFinish(data.JobId,50,0,$scope.GetStatedescOutputLine);
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -1229,7 +1276,6 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   };
 
   $scope.FillEnvironmentsTable();
-  $scope.FillDescriptionTable();
 
   // Modal dialog
 
