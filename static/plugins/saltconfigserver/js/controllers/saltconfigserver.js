@@ -1205,10 +1205,20 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   $scope.FillDescriptionTable = function() {
   // ----------------------------------------------------------------------
 
+    var grain = $.grep($scope.servernames,
+      function(e){ return e.Name == saltid; })[0];
+
+    if( typeof grain == "undefined" ) {
+      // TODO: RETURN AN ERROR
+      alert("(ERROR 1011) Not found: " + saltid);
+    }
+
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/statedescs"
+           + "?env_id=" + $scope.env.Id
+           + "&version=" + grain.Version,
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetStatedescOutputLine);
     }).error( function(data,status) {
