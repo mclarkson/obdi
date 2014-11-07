@@ -159,11 +159,13 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     if( typeof(name) == 'undefined' ) return "";
 
     // Search in formula's
-    var desc = $.grep($scope.statedescs,
-      function(e){ return e.FormulaName == name; });
+    if( ! name.split(".")[1] ) {
+      var desc = $.grep($scope.statedescs,
+        function(e){ return (e.FormulaName==name && !e.StateFileName); });
 
-    if( desc.length > 0 ) {
-      return desc[0].Desc;
+      if( desc.length > 0 ) {
+        return desc[0].Desc;
+      }
     }
 
     // Search in state files
@@ -1004,6 +1006,11 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
            + "&dc=" + $scope.env.DcSysName
     }).success( function(data, status, headers, config) {
       $scope.config = $.parseJSON(data['EncData']);
+      $scope.config.Classes.sort(function(a, b){
+        if(a < b) return -1;
+        if(a > b) return 1;
+        return 0;
+      });
       $scope.configview.gotconfig = true;
     }).error( function(data,status) {
       if (status>=500) {
@@ -1153,11 +1160,6 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
 
       try {
         $scope.statedescs = $.parseJSON(data[0].Text);
-        $scope.statedescs.sort(function(a, b){
-          if(a < b) return -1;
-          if(a > b) return 1;
-          return 0;
-        });
       } catch (e) {
         clearMessages();
         $scope.message = "Error: " + e;
@@ -1205,6 +1207,9 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   $scope.FillDescriptionTable = function() {
   // ----------------------------------------------------------------------
 
+    $scope.statedescs = [];
+    $scope.statedescs_names = [];
+
     var grain = $.grep($scope.servernames,
       function(e){ return e.Name == saltid; })[0];
 
@@ -1232,7 +1237,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         $scope.login.pageurl = "login.html";
       } else if (status>=400) {
         clearMessages();
-        $scope.message = "Server said: " + data['Error'];
+        $scope.message = "Could not load class list for environment version."
+                         + " Server said: " + data['Error'];
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";
