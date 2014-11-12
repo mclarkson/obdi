@@ -39,7 +39,7 @@ For Red Hat based systems RPMs can be built using:
 cd
 yum install rpmdevtools gcc
 git clone https://github.com/mclarkson/obdi.git
-cd fdp-mgmt-obdi
+cd obdi
 BUILD_NUMBER=1 ./dist/jenkins-build.sh
 ```
 
@@ -54,8 +54,10 @@ Front-end
 * System Log plugin
 * Regex manager
 * Monitoring plugin
+* Plugin loader (from Git)
 
 Back-end
 
-* Expose system log so plugins can use it.
+* Expose system log so plugins can use it
+* Split plugins out to their own repo
 
