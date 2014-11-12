@@ -379,6 +379,12 @@
       {{okmessage}}
     </div>
 
+    <div class="alert alert-info" ng-show="config.Customised">
+      This server configuration has been customised so regular expression
+      matching will not apply to this server. Delete all items to get
+      regular expression matching back!
+    </div>
+
     <div ng-if="!configview.gotconfig && !message">
       <h5>
       Getting configuration details
@@ -388,12 +394,6 @@
 
     <div ng-if="configview.gotconfig">
         <p>Showing configuration for {{configview.saltid}}.</p>
-
-        <div class="alert alert-info" ng-show="config.Customised">
-          This server configuration has been customised so regular expression
-          matching will not apply to this server. Delete all items to get
-          regular expression matching back!
-        </div>
 
       <div class="table-responsive" style="margin-top: -16px;width:100%;overflow:auto">
         <table class="table table-striped table-bordered prepend-sm-1"
