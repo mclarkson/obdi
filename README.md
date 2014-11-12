@@ -12,7 +12,7 @@ manage users, data centres and environments, and includes a job manager.
 
 ## Status
 
-Development and testing phase.
+Development and testing phase. Not ready for use.
 
 ## Features
 
@@ -29,9 +29,17 @@ Development and testing phase.
 
 ## Install
 
-This package is "go-gettable", just do:
+This package is "go-gettable", but will require a lot of moving things around to get working.
 
 ```
 go get github.com/mclarkson/obdi
+```
+For Red Hat based systems RPMs can be built using:
+```
+cd
+yum install rpmdevtools gcc
+git clone git@freesat-fdp.git.beanstalkapp.com:/freesat-fdp/fdp-mgmt-obdi.git
+cd fdp-mgmt-obdi
+BUILD_NUMBER=1 ./dist/jenkins-build.sh
 ```
 

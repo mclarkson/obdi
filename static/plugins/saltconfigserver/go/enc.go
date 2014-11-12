@@ -427,7 +427,15 @@ i_loop2:
       EncData = "classes:\n"
       for i := range encClasses {
         EncData += "  - " + encClasses[i] + "\n"
+        // TODO: Salt enc does not support parameters
+        //EncData += "  " + encClasses[i] + ":\n"
+        //if( encClasses[i] == "vim.vimrc" ) {
+        //  EncData += "    vim_new_value: 1\n"
+        //}
       }
+      // TODO: Salt enc does not support parameters
+      //EncData += "parameters:\n"
+      //EncData += "  vim_test_value: 2\n"
       EncData += "environment: " + encEnvironment + "_" + env_version
     }
   } else {
