@@ -43,3 +43,18 @@ cd fdp-mgmt-obdi
 BUILD_NUMBER=1 ./dist/jenkins-build.sh
 ```
 
+## Todo
+
+Front-end
+
+* Versioning plugin
+* Key Management plugin
+* Salt job viewer plugin
+* Scripting plugin (chainable)
+* System Log plugin
+* Monitoring plugin
+
+Back-end
+
+* Expose system log so plugins can use it.
+
