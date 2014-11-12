@@ -52,6 +52,7 @@ Front-end
 * Salt job viewer plugin
 * Scripting plugin (chainable)
 * System Log plugin
+* Regex manager
 * Monitoring plugin
 
 Back-end
