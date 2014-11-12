@@ -87,7 +87,7 @@ EnD
 
 # Get sls details and output as JSON
 
-cd /var/cache/salt/master/gitfs/refs/; cd ${ENV}/root
+cd /var/cache/salt/master/gitfs/refs/; cd ${ENV}
 declare -i numstates i
 numstates=`find . -type f -name "*.sls" | wc -l`
 echo -n "["

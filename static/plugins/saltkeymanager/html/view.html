@@ -31,19 +31,25 @@
 
   <div class="row">
     <div class="col-sm-12">
+      <div class="alert alert-danger alert-dismissable" ng-show="message">
+        <button type="button" class="close" data-dismiss="alert"
+          aria-hidden="true">&times;</button>
+        {{message}}
+      </div>
+    </div>
+  </div>
 
-      This page is used for managing the Salt SSL keys.
+  <div class="row">
+    <div class="col-sm-12">
+
+      This page is used for managing the Salt SSL keys and assigning servers to
+      environments.
 
     </div>
   </div>
 
-  <div class="row prepend-sm-2 append-sm-1">
-    <div class="col-sm-12" style="margin-left: 10px">
-
-      <!-- Single button -->
-      <p class="big"
-      style="display: inline-block; vertical-align: sub;
-      margin-right: 4px;">1.</p>
+  <div class="row" ng-if="!showkeybtnblockhidden">
+    <div class="col-sm-12" style="margin-top: 20px">
       <div class="btn-group" dropdown is-open="status.isopen">
         <button type="button" class="btn btn-primary dropdown-toggle"
         ng-disabled="btnenvlistdisabled">
@@ -56,78 +62,96 @@
           </li>
         </ul>
       </div>
-      <p class="big"
-      style="display: inline-block; vertical-align: sub;
-      margin-left: 8px; margin-right: 4px;">2.</p>
       <div class="btn-group">
         <button type="button" class="btn btn-primary dropdown-toggle"
-        ng-click="ServerList()" ng-disabled="btnlistkeysdisabled">
-          List Keys
+        style="margin-left: 8px;" 
+        ng-click="KeyList()" ng-disabled="btnshowkeysdisabled">
+          Show Server Keys
         </button>
       </div>
-      <p class="big"
-      style="display: inline-block; vertical-align: sub;
-      margin-left: 8px; margin-right: 4px;">3.</p>
-      <div class="btn-group">
-        <button type="button" class="btn btn-primary dropdown-toggle"
-        ng-click="Review()" ng-disabled="btnreviewdisabled">
-          Review
-        </button>
-      </div>
-      <p class="big"
-      style="display: inline-block; vertical-align: sub;
-      margin-left: 8px; margin-right: 4px;">4.</p>
-      <div class="btn-group">
-        <button type="button" class="btn btn-primary dropdown-toggle"
-        ng-click="Apply()" ng-disabled="btnapplydisabled">
-          Apply
-        </button>
-      </div>
-
     </div>
   </div>
 
   <div class="row" ng-if="envchosen">
     <div class="col-sm-12">
 
-      <h4 class="page-header">{{env.DcDispName}} - {{env.DispName}}</h4>
+    <h4 class="page-header">{{env.DcDispName}} - {{env.DispName}}</h4>
 
-      <p ng-if="!listbtnpressed">Press the List Servers button above.</p>
+    <p ng-if="!btnshowkeysdisabled">Press the Show Server Keys button above to
+    get the list of keys from Salt.</p>
 
+    <div ng-if="!reviewpage.enabled && !applypage.enabled">
       <div ng-if="listbtnpressed">
-        <p ng-if="!serverlist_ready">Getting the list of servers.
-        This might take a while...</p>
+        <p ng-if="!serverlist_ready && !message">Getting the list of
+        servers. This might take a while
+        <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
-        <p ng-if="serverlist_ready && serverlist_empty">No servers are up!</p>
+        <p ng-if="serverlist_ready && serverlist_empty">Salt reports that this
+        environment contains no servers!<br />
+        &nbsp;<br />
+        Check that the keys have been accepted in
+        &#8216;Key Management&#8217;.</p>
 
         <div ng-if="serverlist_ready && !serverlist_empty">
-          <div class="table-responsive" style="margin-top: 8px; width: 60%;">
+
+          <p>Choose the servers that you would like to configure.</p>
+
+          <div class="table-responsive" style="margin-top: 8px;">
             <table class="table table-striped table-bordered">
               <thead>
               <tr>
-                <th style="text-align: center;"><input type="checkbox"></th>
+                <th style="text-align: center;">
+                  <input type="checkbox" ng-click="SelectAllNone()"
+                  ng-model="checkbox_allnone">
+                </th>
                 <th>Host Name</th>
+                <th>Version</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
               </thead>
               <tbody>
-              <tr ng-repeat="server in servernames">
+                <tr ng-repeat="server in filteredItems = (servernames | filter:hostfilter)"
+                  class="{{style(server.Responded,server.Selected)}}">
                 <td style="text-align: center;">
-                  <input type="checkbox" ng-selected="server.Selected">
+                  <input type="checkbox" ng-selected="server.Selected"
+                  ng-model="server.Selected"
+                  ng-click="Selected(server.Name)"
+                  ng-if="server.Responded">
                 </td>
                 <td>{{server.Name}}</td>
+                <td>{{server.Version}}
+                  <a href="#" ng-click="ChangeServerVersion(server)"
+                  ng-if="server.Selected">
+                    <i class="fa fa-plus-square" title="Change Version"></i></a>
+                </td>
                 <td>
-                  <a href="#" ng-click="ViewDetails(server.Name)"><i class="fa fa-eye" title="View Details"></i></a>
+                  <span ng-if="server.Responded == true">up</span>
+                  <span ng-if="server.Responded == false"
+                  class="mypopover" popover-trigger="mouseenter"
+                  popover="Could not connect to the salt-minion daemon.
+                  Either the server is down or the daemon is stopped.
+                  Remove the key if this server is decommissioned.">
+                    down
+                  </span>
+                </td>
+                <td>
+                  <a href="#" ng-click="ViewDetails(server)">
+                    <i class="fa fa-eye" title="View Server Grains"></i></a>
+                  <a href="#" ng-click="ViewConfig(server)"
+                  ng-if="server.Selected">
+                    <i class="fa fa-cog" title="Server Configuration"></i></a>
                 </td>
               </tr>
+              {{copyToController(filteredItems)}}
               </tbody>
             </table>
           </div> <!-- /table-responsive -->
+
         </div> <!-- serverlist_ready -->
 
       </div> <!-- listbtnpressed -->
-
     </div> <!-- col-sm-12 -->
-  </div>
+  </div> <!-- row -->
 
 </div>

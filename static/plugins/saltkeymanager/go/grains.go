@@ -247,7 +247,7 @@ func (t *Plugin) RunScript(args *Args, response *[]byte) (int64,error) {
   }
 
   // Get the ScriptId from the scripts table for:
-  scriptName := "salt-set-grains.sh"
+  scriptName := "saltkey-set-grains.sh"
   scripts := []Script{}
   resp, err := GET("https://127.0.0.1/api/" +
     args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
@@ -329,20 +329,20 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
   // Check for required query string entries
 
-  //if len(args.QueryString["env_id"]) == 0 {
-  //  ReturnError( "'env_id' must be set", response )
-  //  return nil
-  //}
+  if len(args.QueryString["env_id"]) == 0 {
+    ReturnError( "'env_id' must be set", response )
+    return nil
+  }
 
-  //env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+  env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
-  //if len(args.QueryString["salt_id"]) == 0 {
-  //  ReturnError( "'salt_id' must be set", response )
-  //  return nil
-  //}
+  if len(args.QueryString["salt_id"]) == 0 {
+    ReturnError( "'salt_id' must be set", response )
+    return nil
+  }
 
   // Get the ScriptId from the scripts table for:
-  scriptName := "saltkey-showkeys.sh"
+  scriptName := "saltkey-grains.sh"
   scripts := []Script{}
   resp, err := GET("https://127.0.0.1/api/" +
     args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
@@ -368,7 +368,7 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
   job := Job{
     ScriptId:         scripts[0].Id,
     EnvId:            env_id,
-    Args:             "",
+    Args:             args.QueryString["salt_id"][0],
 
     // Type 1 - User Job - Output is
     //     sent back as it's created

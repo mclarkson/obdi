@@ -22,75 +22,65 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       $timeout,baseUrl,$rootScope) {
 
   $scope.environments = [];
+  $scope.keylist = [];
   $scope.env = {};
-  $scope.servernames = [];
+  $scope.status = {};  // For env chooser button
+
+  // Alerting
+  $scope.message = "";
+  $scope.mainmessage = "";
+  $scope.okmessage = "";
+  $scope.login.error = false;
 
   // Button enabling/disabling and content showing/hiding vars
-  $scope.btnenvlistdisabled = false;
-  $scope.btnlistkeysdisabled = true;
-  $scope.btnapplydisabled = true;
-  $scope.btnreviewdisabled = true;
   $scope.envchosen = false;
   $scope.listbtnpressed = false;
-  $scope.serverlist_ready = false;
-  $scope.serverlist_empty = true;
+  $scope.btnenvlistdisabled = false;
+  $scope.showkeybtnblockhidden = false;
+  $scope.btnshowkeysdisabled = true;
+  $scope.keylist_ready = false;
+  $scope.keylist_empty = true;
 
   // ----------------------------------------------------------------------
-  $scope.Review = function() {
+  var clearMessages = function() {
   // ----------------------------------------------------------------------
-    $scope.btnlistkeysdisabled = true;
-    $scope.btnenvlistdisabled = false;
-    $scope.btnapplydisabled = false;
-    $scope.btnreviewdisabled = true;
-  };
+    $scope.message = "";
+    $scope.mainmessage = "";
+    $scope.okmessage = "";
+    $scope.login.error = false;
+    $scope.error = false;
+  }
 
   // ----------------------------------------------------------------------
-  $scope.Apply = function() {
+  $scope.envChoice = function( envobj, $event ) {
   // ----------------------------------------------------------------------
-    $scope.btnlistkeysdisabled = true;
-    $scope.btnenvlistdisabled = false;
-    $scope.btnapplydisabled = true;
-    $scope.btnreviewdisabled = false;
+    clearMessages();
+    $event.preventDefault();
+    $event.stopPropagation();
+    $scope.status.isopen = !$scope.status.isopen;
+    $scope.envchosen = true;
+    $scope.btnshowkeysdisabled = false;
+    $scope.btnenvlistdisabled = true;
+    $scope.env = envobj;
   };
 
   // ----------------------------------------------------------------------
   $scope.Restart = function() {
   // ----------------------------------------------------------------------
-    $scope.btnlistkeysdisabled = true;
-    $scope.btnenvlistdisabled = false;
-    $scope.btnapplydisabled = true;
-    $scope.btnreviewdisabled = true;
     $scope.listbtnpressed = false;
-    $scope.serverlist_ready = false;
-    $scope.serverlist_empty = false;
-    $scope.envchosen = false;
+    $scope.showkeybtnblockhidden = false;
+    $scope.keylist_ready = false;
+    $scope.keylist_empty = false;
   };
 
   // ----------------------------------------------------------------------
-  $scope.ServerList = function() {
+  $scope.KeyList = function() {
   // ----------------------------------------------------------------------
-    $scope.btnlistkeysdisabled = true;
-    $scope.btnenvlistdisabled = true;
-    $scope.btnapplydisabled = true;
-    $scope.btnreviewdisabled = true;
-    $scope.listbtnpressed = true;
-    $scope.serverlist_ready = false;
-    $scope.serverlist_empty = false;
-    $scope.envchosen = true;
+    $scope.btnshowkeysdisabled = true;
+    $scope.keylist_ready = false;
+    $scope.keylist_empty = false;
 
-    $scope.FillServerListTable();
-  };
-
-  // ----------------------------------------------------------------------
-  $scope.envChoice = function( envobj, $event ) {
-  // ----------------------------------------------------------------------
-    $event.preventDefault();
-    $event.stopPropagation();
-    $scope.status.isopen = !$scope.status.isopen;
-    $scope.envchosen = true;
-    $scope.btnlistkeysdisabled = false;
-    $scope.btnenvlistdisabled = true;
-    $scope.env = envobj;
+    $scope.FillKeyListTable();
   };
 
   // ----------------------------------------------------------------------
@@ -103,27 +93,36 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
            + "/outputlines?job_id=" + id
     }).success( function(data, status, headers, config) {
 
-      $scope.bob = $.parseJSON(data[0].Text);
-      var servernames = $.parseJSON(data[0].Text);
+      $scope.showkeybtnblockhidden = true;
+      $scope.btnshowkeysdisabled = false;
 
-      // Copy servernames array to objects
-      for( i=0; i<servernames.length; ++i ) {
-        key = Object.keys(servernames[i])
-        $scope.servernames[i] = {
-          Name: key[0],
-          Selected: false
-        };
-      }
+      //$scope.bob = $.parseJSON(data[0].Text);
+      var keylist = $.parseJSON(data[0].Text);
+
+      $scope.keylist = keylist;
+
+      // Copy keylist array to objects
+      //for( i=0; i<keylist.length; ++i ) {
+      //  key = Object.keys(keylist[i])
+      //  $scope.keylist[i] = {
+      //    Name: key[0],
+      //    Selected: false
+      //  };
+      //}
 
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
+      } else if (status==401) {
         $scope.login.errtext = "Session expired.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";
@@ -152,9 +151,8 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
             $scope.PollForJobFinish(id,1000);
           }
           if(job.Status == 5) {
-            $scope.serverlist_ready = true;
-            $scope.serverlist_empty = false;
-            $scope.btnlistkeysdisabled = false;
+            $scope.keylist_ready = true;
+            $scope.keylist_empty = false;
 
             $scope.GetOutputLine( id );
           }
@@ -163,10 +161,14 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
             $scope.login.errtext = "Server error.";
             $scope.login.error = true;
             $scope.login.pageurl = "login.html";
-          } else if (status>=400) {
+          } else if (status==401) {
             $scope.login.errtext = "Session expired.";
             $scope.login.error = true;
             $scope.login.pageurl = "login.html";
+          } else if (status>=400) {
+            clearMessages();
+            $scope.message = "Server said: " + data['Error'];
+            $scope.error = true;
           } else if (status==0) {
             // This is a guess really
             $scope.login.errtext = "Could not connect to server.";
@@ -182,13 +184,13 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
-  $scope.FillServerListTable = function() {
+  $scope.FillKeyListTable = function() {
   // ----------------------------------------------------------------------
 
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltnewserver/servers?env_id=" + $scope.env.Id
+           + "/saltkeymanager/saltkeys"
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,100);
     }).error( function(data,status) {
@@ -196,10 +198,14 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
         $scope.login.errtext = "Server error.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
+      } else if (status==401) {
         $scope.login.errtext = "Session expired.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";
@@ -225,16 +231,20 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       $scope.environments = data;
       if( data.length == 0 ) {
         $scope.serverlist_empty = true;
-    }
+        $scope.btnenvlistdisabled = true;
+      }
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
+      } else if (status==401) {
         $scope.login.errtext = "Session expired.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.mainmessage = "Server said: " + data['Error'];
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";

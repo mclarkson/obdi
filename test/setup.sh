@@ -502,21 +502,21 @@ curl -k -d '{
     "Url":"systemlog/js/controllers/systemlog.js"
 }' $proto://$ipport/api/admin/$guid/files
 
-curl -k -d '{
-    "Name":"saltkeymanager",
-    "Desc":"Salt key management plugin",
-    "HasView":1,
-    "Parent":"salt"
-}' $proto://$ipport/api/admin/$guid/plugins | tee /tmp/fshodifha
-# Grab the id of the last insert
-id=`grep Id /tmp/fshodifha | grep -Eo "[0-9]+"`
-# Add the AJS controller file
-curl -k -d '{
-    "Name":"saltkeymanager.js",
-    "Desc":"Controller for Salt key manager",
-    "Type":1,
-    "PluginId":'"$id"',
-    "Url":"saltkeymanager/js/controllers/saltkeymanager.js"
-}' $proto://$ipport/api/admin/$guid/files
+# curl -k -d '{
+#     "Name":"saltkeymanager",
+#     "Desc":"Salt key management plugin",
+#     "HasView":1,
+#     "Parent":"salt"
+# }' $proto://$ipport/api/admin/$guid/plugins | tee /tmp/fshodifha
+# # Grab the id of the last insert
+# id=`grep Id /tmp/fshodifha | grep -Eo "[0-9]+"`
+# # Add the AJS controller file
+# curl -k -d '{
+#     "Name":"saltkeymanager.js",
+#     "Desc":"Controller for Salt key manager",
+#     "Type":1,
+#     "PluginId":'"$id"',
+#     "Url":"saltkeymanager/js/controllers/saltkeymanager.js"
+# }' $proto://$ipport/api/admin/$guid/files
 
 echo "GUID=$guid"

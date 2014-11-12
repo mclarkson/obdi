@@ -374,6 +374,10 @@
 
     <div class="alert alert-danger" ng-show="message">
       {{message}}
+      <span ng-if="message_jobid">
+      See: <a href="#" ng-click="showOutputlines(message_jobid)">
+      jobid:{{message_jobid}}</a> 
+      </span>
     </div>
     <div class="alert alert-success" ng-show="okmessage">
       {{okmessage}}
