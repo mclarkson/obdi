@@ -209,9 +209,15 @@ td a .fa-trash-o,
 td a .fa-ban,
 td a .fa-tasks,
 td a .fa-plus-square,
+td a .fa-close,
+td a .fa-times,
+td a .fa-check,
 td a .fa-cog
 {
   padding-left: 6px
+}
+.green {
+  color: #22AA22;
 }
 .red {
   color: red;
