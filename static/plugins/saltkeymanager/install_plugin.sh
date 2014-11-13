@@ -114,3 +114,31 @@ curl -k -d '{
 
 # --
 
+source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-deletekeys.sh | base64 -w 0`
+
+curl -k -d '{
+    "Desc": "Delete a server key. Arg1 - Name of the server.",
+    "Name": "saltkey-deletekeys.sh",
+    "Source": "'"$source"'"
+}' $proto://$ipport/api/admin/$guid/scripts
+
+# --
+
+source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-acceptkeys.sh | base64 -w 0`
+
+curl -k -d '{
+    "Desc": "Accept a server key. Arg1 - Name of the server.",
+    "Name": "saltkey-acceptkeys.sh",
+    "Source": "'"$source"'"
+}' $proto://$ipport/api/admin/$guid/scripts
+
+# --
+
+source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-rejectkeys.sh | base64 -w 0`
+
+curl -k -d '{
+    "Desc": "Reject a server key. Arg1 - Name of the server.",
+    "Name": "saltkey-rejectkeys.sh",
+    "Source": "'"$source"'"
+}' $proto://$ipport/api/admin/$guid/scripts
+

@@ -85,8 +85,7 @@ type Args struct {
 }
 
 type PostedData struct {
-  Grain         string
-  Text          string
+  Hostname      string
 }
 
 // ***************************************************************************
@@ -232,11 +231,6 @@ func (t *Plugin) RunScript(args *Args, response *[]byte) (int64,error) {
 
   env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
-  if len(args.QueryString["salt_id"]) == 0 {
-    ReturnError( "'salt_id' must be set", response )
-    return 0,ApiError{"Error"}
-  }
-
   var postedData PostedData
 
   if err := json.Unmarshal(args.PostData,&postedData); err != nil {
@@ -247,7 +241,7 @@ func (t *Plugin) RunScript(args *Args, response *[]byte) (int64,error) {
   }
 
   // Get the ScriptId from the scripts table for:
-  scriptName := "salt-set-grains.sh"
+  scriptName := "saltkey-deletekeys.sh"
   scripts := []Script{}
   resp, err := GET("https://127.0.0.1/api/" +
     args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
@@ -269,8 +263,7 @@ func (t *Plugin) RunScript(args *Args, response *[]byte) (int64,error) {
     return 0,ApiError{"Error"}
   }
 
-  cmdargs := args.QueryString["salt_id"][0] + " " +
-             postedData.Grain + "," + postedData.Text
+  cmdargs := postedData.Hostname
 
   // Set up some fields for the Job struct we'll send to the master
   job := Job{
@@ -326,15 +319,16 @@ func ReturnError(text string, response *[]byte) {
 // --------------------------------------------------------------------------
 func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 // --------------------------------------------------------------------------
+// List all keys
 
   // Check for required query string entries
 
-  //if len(args.QueryString["env_id"]) == 0 {
-  //  ReturnError( "'env_id' must be set", response )
-  //  return nil
-  //}
+  if len(args.QueryString["env_id"]) == 0 {
+    ReturnError( "'env_id' must be set", response )
+    return nil
+  }
 
-  //env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+  env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
   //if len(args.QueryString["salt_id"]) == 0 {
   //  ReturnError( "'salt_id' must be set", response )
@@ -417,37 +411,192 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 // --------------------------------------------------------------------------
 
-  // Decode the post data into struct
+  // Check for required query string entries
 
-  var postedData PostedData
-
-  if err := json.Unmarshal(args.PostData,&postedData); err != nil {
-    txt := fmt.Sprintf("Error decoding JSON ('%s')"+ ".", err.Error())
-    ReturnError( "Error decoding the POST data (" +
-      fmt.Sprintf("%s",args.PostData) + "). " + txt, response )
+  if len(args.QueryString["hostname"]) == 0 {
+    ReturnError( "'type' must be set", response )
     return nil
   }
 
-  // Use salt to change the version, if it's changed
+  if len(args.QueryString["type"]) == 0 {
+    ReturnError( "'type' must be set", response )
+    return nil
+  }
 
-  var jobid int64
-  if len(postedData.Grain)>0 && len(postedData.Text)>0 {
-    var err error
-    if jobid,err = t.RunScript(args,response); err != nil {
-      // RunScript wrote the error
-      return nil
-    }
+  if len(args.QueryString["env_id"]) == 0 {
+    ReturnError( "'env_id' must be set", response )
+    return nil
+  }
+
+  env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+
+  //if len(args.QueryString["salt_id"]) == 0 {
+  //  ReturnError( "'salt_id' must be set", response )
+  //  return nil
+  //}
+
+  // Get the ScriptId from the scripts table for:
+  scriptName := ""
+  if args.QueryString["type"][0] == "accept" {
+    scriptName = "saltkey-acceptkeys.sh"
   } else {
-    ReturnError( "No POST data received. Nothing to do.", response )
+    scriptName = "saltkey-rejectkeys.sh"
+  }
+  scripts := []Script{}
+  resp, err := GET("https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
+    "?nosource=1&name=" + scriptName )
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return nil
+  } else {
+    json.Unmarshal(b,&scripts)
+  }
+  // If scripts is empty then we don't have permission to see it
+  // or the script does not exist (well, scripts don't have permissions
+  // but lets say the same thing anyway)
+  if len(scripts) == 0 {
+    txt := "The requested script, '" + scriptName + "', does not exist" +
+      " or the permissions to access it are insufficient."
+    ReturnError( txt, response )
     return nil
   }
 
-  reply := Reply{ jobid,SUCCESS,"" }
+  // Set up some fields for the Job struct we'll send to the master
+  job := Job{
+    ScriptId:         scripts[0].Id,
+    EnvId:            env_id,
+    Args:             args.QueryString["hostname"][0],
+
+    // Type 1 - User Job - Output is
+    //     sent back as it's created
+    // Type 2 - System Job - All output
+    //     is saved in one single line.
+    //     Good for json etc.
+    Type:             2,
+  }
+
+  // Send the job POST request to the master
+  jsonjob, err := json.Marshal(job)
+  resp, err = POST(jsonjob, "https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "jobs")
+  if err != nil {
+    txt := "Could not send job to worker. ('" + err.Error() + "')"
+    ReturnError( txt, response )
+    return nil
+  }
+  defer resp.Body.Close()
+  // Read the worker's response from the master
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return nil
+  } else {
+    json.Unmarshal(b,&job)
+  }
+
+  // Send the Job ID as the RPC reply (back to the master)
+
+  id := job.Id
+  reply := Reply{ id,SUCCESS,"" }
   jsondata, err := json.Marshal(reply)
+
   if err != nil {
     ReturnError( "Marshal error: "+err.Error(), response )
     return nil
   }
+
+  *response = jsondata
+
+  return nil
+}
+
+// --------------------------------------------------------------------------
+func (t *Plugin) DeleteRequest(args *Args, response *[]byte) error {
+// --------------------------------------------------------------------------
+
+  // Check for required query string entries
+
+  if len(args.QueryString["env_id"]) == 0 {
+    ReturnError( "'env_id' must be set", response )
+    return nil
+  }
+
+  env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+
+  //if len(args.QueryString["salt_id"]) == 0 {
+  //  ReturnError( "'salt_id' must be set", response )
+  //  return nil
+  //}
+
+  // Get the ScriptId from the scripts table for:
+  scriptName := "saltkey-deletekeys.sh"
+  scripts := []Script{}
+  resp, err := GET("https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "scripts" +
+    "?nosource=1&name=" + scriptName )
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return nil
+  } else {
+    json.Unmarshal(b,&scripts)
+  }
+  // If scripts is empty then we don't have permission to see it
+  // or the script does not exist (well, scripts don't have permissions
+  // but lets say the same thing anyway)
+  if len(scripts) == 0 {
+    txt := "The requested script, '" + scriptName + "', does not exist" +
+      " or the permissions to access it are insufficient."
+    ReturnError( txt, response )
+    return nil
+  }
+
+  // Set up some fields for the Job struct we'll send to the master
+  job := Job{
+    ScriptId:         scripts[0].Id,
+    EnvId:            env_id,
+    Args:             args.PathParams["id"],
+
+    // Type 1 - User Job - Output is
+    //     sent back as it's created
+    // Type 2 - System Job - All output
+    //     is saved in one single line.
+    //     Good for json etc.
+    Type:             2,
+  }
+
+  // Send the job POST request to the master
+  jsonjob, err := json.Marshal(job)
+  resp, err = POST(jsonjob, "https://127.0.0.1/api/" +
+    args.PathParams["login"] + "/" + args.PathParams["GUID"], "jobs")
+  if err != nil {
+    txt := "Could not send job to worker. ('" + err.Error() + "')"
+    ReturnError( txt, response )
+    return nil
+  }
+  defer resp.Body.Close()
+  // Read the worker's response from the master
+  if b, err := ioutil.ReadAll(resp.Body); err != nil {
+    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+    ReturnError( txt, response )
+    return nil
+  } else {
+    json.Unmarshal(b,&job)
+  }
+
+  // Send the Job ID as the RPC reply (back to the master)
+
+  id := job.Id
+  reply := Reply{ id,SUCCESS,"" }
+  jsondata, err := json.Marshal(reply)
+
+  if err != nil {
+    ReturnError( "Marshal error: "+err.Error(), response )
+    return nil
+  }
+
   *response = jsondata
 
   return nil
@@ -463,6 +612,8 @@ func (t *Plugin) HandleRequest(args *Args, response *[]byte) error {
       case "GET": t.GetRequest(args, response)
                   return nil
       case "POST": t.PostRequest(args, response)
+                   return nil
+      case "DELETE": t.DeleteRequest(args, response)
                    return nil
     }
     ReturnError( "Internal error: Invalid HTTP request type for this plugin " +

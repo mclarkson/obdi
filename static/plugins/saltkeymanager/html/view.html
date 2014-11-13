@@ -75,78 +75,106 @@
   <div class="row" ng-if="envchosen">
     <div class="col-sm-12">
 
-    <h4 class="page-header">{{env.DcDispName}} - {{env.DispName}}</h4>
+      <h4 class="page-header">{{env.DcDispName}} - {{env.DispName}}</h4>
 
-    <p ng-if="!btnshowkeysdisabled">Press the Show Server Keys button above to
-    get the list of keys from Salt.</p>
+      <p ng-if="!btnshowkeysdisabled">Press the Show Server Keys button above
+      to get the list of keys from Salt.</p>
 
-    <div ng-if="!reviewpage.enabled && !applypage.enabled">
       <div ng-if="listbtnpressed">
-        <p ng-if="!serverlist_ready && !message">Getting the list of
-        servers. This might take a while
+        <p ng-if="!keylist_ready && !message">Getting the list of
+        server keys. This might take a while
         <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
-        <p ng-if="serverlist_ready && serverlist_empty">Salt reports that this
-        environment contains no servers!<br />
-        &nbsp;<br />
-        Check that the keys have been accepted in
-        &#8216;Key Management&#8217;.</p>
+        <p ng-if="keylist_ready && keylist_empty">Salt reports that this
+        environment contains no server keys!<br />
+        </p>
 
-        <div ng-if="serverlist_ready && !serverlist_empty">
+        <div ng-if="keylist_ready && !keylist_empty">
 
-          <p>Choose the servers that you would like to configure.</p>
+          <p class="big green">Accepted Keys</p>
 
+          <div ng-if="!keylist_accept_empty">
           <div class="table-responsive" style="margin-top: 8px;">
             <table class="table table-striped table-bordered">
               <thead>
               <tr>
-                <th style="text-align: center;">
-                  <input type="checkbox" ng-click="SelectAllNone()"
-                  ng-model="checkbox_allnone">
-                </th>
                 <th>Host Name</th>
-                <th>Version</th>
-                <th>Status</th>
                 <th>Action</th>
               </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="server in filteredItems = (servernames | filter:hostfilter)"
-                  class="{{style(server.Responded,server.Selected)}}">
-                <td style="text-align: center;">
-                  <input type="checkbox" ng-selected="server.Selected"
-                  ng-model="server.Selected"
-                  ng-click="Selected(server.Name)"
-                  ng-if="server.Responded">
-                </td>
-                <td>{{server.Name}}</td>
-                <td>{{server.Version}}
-                  <a href="#" ng-click="ChangeServerVersion(server)"
-                  ng-if="server.Selected">
-                    <i class="fa fa-plus-square" title="Change Version"></i></a>
-                </td>
+                <tr ng-repeat="name in keylist.minions | filter:keyfilter">
+                <td>{{name}}</td>
                 <td>
-                  <span ng-if="server.Responded == true">up</span>
-                  <span ng-if="server.Responded == false"
-                  class="mypopover" popover-trigger="mouseenter"
-                  popover="Could not connect to the salt-minion daemon.
-                  Either the server is down or the daemon is stopped.
-                  Remove the key if this server is decommissioned.">
-                    down
-                  </span>
-                </td>
-                <td>
-                  <a href="#" ng-click="ViewDetails(server)">
-                    <i class="fa fa-eye" title="View Server Grains"></i></a>
-                  <a href="#" ng-click="ViewConfig(server)"
-                  ng-if="server.Selected">
-                    <i class="fa fa-cog" title="Server Configuration"></i></a>
+                  <a href="#" ng-click="Delete(name)">
+                    <i class="fa fa-trash-o" title="Delete Key"></i></a>
+                  <a href="#" ng-click="EnvConfig(name)">
+                    <i class="fa fa-cog" title="Environment Setting"></i></a>
                 </td>
               </tr>
-              {{copyToController(filteredItems)}}
               </tbody>
             </table>
-          </div> <!-- /table-responsive -->
+          </div> <!-- table-responsive -->
+          </div> <!-- keylist_accept_empty -->
+          <div ng-if="keylist_accept_empty">
+            <p>There are no accepted keys.</p>
+          </div>
+
+          <p class="big red">Unaccepted Keys</p>
+
+          <div ng-if="!keylist_unaccepted_empty">
+          <div class="table-responsive" style="margin-top: 8px;">
+            <table class="table table-striped table-bordered">
+              <thead>
+              <tr>
+                <th>Host Name</th>
+                <th>Action</th>
+              </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="name in keylist.minions_pre | filter:keyfilter">
+                <td>{{name}}</td>
+                <td>
+                  <a href="#" ng-click="Accept(name)">
+                    <i class="fa fa-check" title="Accept Key"></i></a>
+                  <a href="#" ng-click="Reject(name)">
+                    <i class="fa fa-times" title="Reject Key"></i></a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div> <!-- table-responsive -->
+          </div> <!-- keylist_accept_empty -->
+          <div ng-if="keylist_unaccepted_empty">
+            <p>There are no unaccepted keys.</p>
+          </div>
+
+          <p class="big blue">Rejected Keys</p>
+
+          <div ng-if="!keylist_reject_empty">
+          <div class="table-responsive" style="margin-top: 8px;">
+            <table class="table table-striped table-bordered">
+              <thead>
+              <tr>
+                <th>Host Name</th>
+                <th>Action</th>
+              </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="name in keylist.minions_rejected | filter:keyfilter">
+                <td>{{name}}</td>
+                <td>
+                  <a href="#" ng-click="Delete(name)">
+                    <i class="fa fa-trash-o" title="Delete Key"></i></a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div> <!-- table-responsive -->
+          </div> <!-- keylist_accept_empty -->
+          <div ng-if="keylist_reject_empty">
+            <p>There are no rejected keys.</p>
+          </div>
 
         </div> <!-- serverlist_ready -->
 
