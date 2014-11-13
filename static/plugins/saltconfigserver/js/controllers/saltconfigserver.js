@@ -408,6 +408,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     // Disable the Apply button
     $scope.changeversionview.changed = false;
 
+    saltid = $scope.changeversionview.saltid;
+
     $http({
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
@@ -484,6 +486,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
 
     // Disable the Apply button
     $scope.configview.changed = false;
+
+    saltid = $scope.changeversionview.saltid;
 
     $http({
       method: 'POST',

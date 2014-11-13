@@ -44,8 +44,14 @@ def getGrains( dc, env, __opts__ ):
             #matchObj = re.match( env, items[key]['env'], re.I)
             #if items[key]['dc'] == dc and matchObj:
             #print items[key]['dc'],  items[key]['env']
-            itemdc = items[key]['dc'].lower()
-            itemenv = items[key]['env'].lower()
+            if 'dc' in items[key]:
+                itemdc = items[key]['dc'].lower()
+            else:
+                continue
+            if 'env' in items[key]:
+                itemenv = items[key]['env'].lower()
+            else:
+                continue
             dc = dc.lower()
             env = env.lower()
             if itemdc == dc and itemenv  == env:
@@ -53,7 +59,10 @@ def getGrains( dc, env, __opts__ ):
                 ++i
     elif len(dc) > 0:
         for key in items:
-            itemdc = items[key]['dc'].lower()
+            if 'dc' in items[key]:
+                itemdc = items[key]['dc'].lower()
+            else:
+                continue
             dc = dc.lower()
             if itemdc == dc:
                 arr.append( items[key]['id'] )
