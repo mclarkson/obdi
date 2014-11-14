@@ -48,7 +48,7 @@ BUILD_NUMBER=1 ./dist/jenkins-build.sh
 Front-end
 
 * Versioning plugin
-* Key Management plugin
+* ~~Key Management plugin~~
 * Salt job viewer plugin
 * Scripting plugin (chainable)
 * System Log plugin
