@@ -1010,11 +1010,13 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
            + "&dc=" + $scope.env.DcSysName
     }).success( function(data, status, headers, config) {
       $scope.config = $.parseJSON(data['EncData']);
-      $scope.config.Classes.sort(function(a, b){
-        if(a < b) return -1;
-        if(a > b) return 1;
-        return 0;
-      });
+      if( $scope.config.Classes != null ) {
+        $scope.config.Classes.sort(function(a, b){
+          if(a < b) return -1;
+          if(a > b) return 1;
+          return 0;
+        });
+      }
       $scope.configview.gotconfig = true;
     }).error( function(data,status) {
       if (status>=500) {
