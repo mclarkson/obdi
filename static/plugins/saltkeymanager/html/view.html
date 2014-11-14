@@ -24,26 +24,45 @@
     <div class="col-lg-12">
       <h3 class="page-header">Key Management
       <button class="btn btn-sm btn-success pull-right" type="button"
-        ng-click="Restart()" style="margin-top: -5px;">
-        <i class="fa fa-refresh"> </i> Restart</button></h3>
+        ng-if="envchosen.shown" ng-click="Restart()" style="margin-top: -5px;">
+        <i class="fa fa-refresh"> </i> Restart</button>
+      <button class="btn btn-sm btn-default pull-right" type="button"
+      ng-if="envsetting.shown" ng-click="GoBack()"
+      style="margin-top: -5px;">
+        <i class="fa fa-arrow-left"> </i> Go Back</button>
+      <button class="btn btn-sm btn-success pull-right" type="button"
+      ng-if="envsetting.shown" ng-disabled=""
+      ng-click="ApplySettings()"
+      style="margin-top: -5px; margin-right:8px;">
+        <i class="fa fa-check"> </i> Apply</button>
+      </h3>
     </div>
   </div>
 
   <div class="row">
     <div class="col-sm-12">
+      <div class="alert alert-success alert-dismissable" ng-show="okmessage">
+        <button type="button" class="close" data-dismiss="alert"
+          aria-hidden="true">&times;</button>
+        {{okmessage}}
+      </div>
       <div class="alert alert-danger alert-dismissable" ng-show="message">
         <button type="button" class="close" data-dismiss="alert"
           aria-hidden="true">&times;</button>
         {{message}}
+        <span ng-if="message_jobid">
+        See: <a href="#" ng-click="showOutputlines(message_jobid)">
+        jobid:{{message_jobid}}</a> 
+        </span>
       </div>
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" ng-if="!envsetting.shown">
     <div class="col-sm-12">
 
-      This page is used for managing the Salt SSL keys and assigning servers to
-      environments.
+      This page is used for managing the Salt SSL keys and assigning servers
+      to environments.
 
     </div>
   </div>
@@ -72,7 +91,9 @@
     </div>
   </div>
 
-  <div class="row" ng-if="envchosen">
+  <!-- MAIN KEY MGMT PAGE -->
+
+  <div class="row" ng-if="envchosen.shown">
     <div class="col-sm-12">
 
       <h4 class="page-header">{{env.DcDispName}} - {{env.DispName}}</h4>
@@ -179,6 +200,68 @@
         </div> <!-- serverlist_ready -->
 
       </div> <!-- listbtnpressed -->
+    </div> <!-- col-sm-12 -->
+  </div> <!-- row -->
+
+  <!-- ENVIRONTMENT SETTING PAGE -->
+
+  <div class="row" ng-if="envsetting.shown">
+    <div class="col-sm-12">
+
+      <div ng-if="!envsetting.gotgrains && !message">
+        <h5>
+          Getting grains details from server
+          <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+        </h5>
+      </div>
+
+      <div ng-if="envsetting.gotgrains && !message">
+
+        <p class="big">Showing settings for {{envsetting.saltid}}</p>
+
+        <p class="append-sm-2">The Datacentre, Environment and Version fields
+        shown below correspond respectively to the grains: dc, env and
+        version, on the remote server, {{envsetting.saltid}}.</p>
+
+<div class="form-horizontal prepend-xs-1" role="form">
+
+  <!-- Login -->
+
+  <div class="form-group">
+    <label for="dc" class="col-sm-offset-1 col-sm-2 control-label">
+      Datacentre</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="dc" ng-model="envsetting.dc"
+      placeholder="Datacentre short name" type="text" required>
+    </div>
+  </div>
+
+  <!-- Forename -->
+
+  <div class="form-group">
+    <label for="env" class="col-sm-offset-1 col-sm-2 control-label">
+      Environment</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="env" ng-model="envsetting.env"
+      placeholder="Environment short name" type="text">
+    </div>
+  </div>
+
+  <!-- Surname -->
+
+  <div class="form-group">
+    <label for="version" class="col-sm-offset-1 col-sm-2 control-label">
+      Version</label>
+    <div class="col-sm-7">
+      <input class="form-control" id="version" ng-model="envsetting.version"
+      placeholder="The branch/tag, e.g. 1.2.10" type="text">
+    </div>
+  </div>
+
+</div>
+
+      </div>
+
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->
 

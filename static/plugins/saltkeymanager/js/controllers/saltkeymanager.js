@@ -26,6 +26,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   $scope.keyfilter = "";
   $scope.env = {};
   $scope.status = {};  // For env chooser button
+  $scope.grains = [];
 
   // Alerting
   $scope.message = "";
@@ -34,7 +35,14 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   $scope.login.error = false;
 
   // Button enabling/disabling and content showing/hiding vars
-  $scope.envchosen = false;
+  $scope.envchosen = {};
+  $scope.envchosen.shown = false;
+  $scope.envsetting = {};
+  $scope.envsetting.shown = false;
+  $scope.envsetting.dc = "";
+  $scope.envsetting.env = "";
+  $scope.envsetting.version = "";
+  $scope.envsetting.numupdated = 0;
   $scope.listbtnpressed = false;
   $scope.btnenvlistdisabled = false;
   $scope.showkeybtnblockhidden = false;
@@ -62,7 +70,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     $event.preventDefault();
     $event.stopPropagation();
     $scope.status.isopen = !$scope.status.isopen;
-    $scope.envchosen = true;
+    $scope.envchosen.shown = true;
     $scope.btnshowkeysdisabled = false;
     $scope.btnenvlistdisabled = true;
     $scope.env = envobj;
@@ -257,6 +265,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   $scope.GetServerSettingOutputLine = function( id ) {
   // ----------------------------------------------------------------------
 
+    //$scope.okmessage = "Server configuration was updated successfully.";
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
@@ -272,12 +281,15 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       }
 
       if( result.length == 0  ||
-          typeof( result[$scope.changeversionview.saltid] ) == undefined ) {
+          typeof( result[$scope.envsetting.saltid] ) == undefined ) {
         $scope.message = "The configuration did not complete.";
         $scope.message_jobid = id;
       }
 
-      $scope.okmessage = "Server configuration was updated successfully.";
+      $scope.envsetting.numupdated += 1;
+      if( $scope.envsetting.numupdated == 3 ) {
+        $scope.okmessage = "Server configuration was updated successfully.";
+      }
 
     }).error( function(data,status) {
       if (status>=500) {
@@ -306,9 +318,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   // ----------------------------------------------------------------------
   // Send { Grain:"version",Text:"0.1.2" }
 
-    clearMessages();
-
-    config = {};
+    var config = {};
     config.Grain = grain;
     config.Text = data;
 
@@ -319,11 +329,8 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
            + "&env_id=" + $scope.env.Id,
       data: config
     }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(
-        data.JobId,
-        50,
-        0,
-        $scope.GetServerSettingOutputLine);
+      $scope.PollForJobFinish( data.JobId, 50, 0,
+        $scope.GetServerSettingOutputLine );
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -350,18 +357,192 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     });
   };
 
+  // ----------------------------------------------------------------------
+  $scope.ApplySettings = function() {
+  // ----------------------------------------------------------------------
+
+    clearMessages();
+
+    $scope.envsetting.numupdated = 0;
+
+    $scope.ApplyGrain( $scope.envsetting.saltid, "dc",
+        $scope.envsetting.dc );
+
+    $scope.ApplyGrain( $scope.envsetting.saltid, "env",
+        $scope.envsetting.env );
+
+    $scope.ApplyGrain( $scope.envsetting.saltid, "version",
+        $scope.envsetting.version );
+  }
+
   // ENV MANAGEMENT
 
   // ----------------------------------------------------------------------
   $scope.EnvConfig = function( name ) {
   // ----------------------------------------------------------------------
+
+    clearMessages();
+    $scope.envchosen.shown = false;
+    $scope.envsetting.shown = true;
+    $scope.envsetting.gotgrains = false;
+    $scope.envsetting.saltid = name;
+
+    $scope.FillGrainsTable( name );
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.GetGrainsListOutputLine = function( id ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/outputlines?job_id=" + id
+    }).success( function(data, status, headers, config) {
+
+      var grains = [];
+
+      // Extract data into array
+      //
+      try {
+        grains = $.parseJSON(data[0].Text);
+      } catch (e) {
+        clearMessages();
+        $scope.message = "Error: " + e;
+        $scope.message_jobid = id;
+      }
+
+      // The first (and only) item in the array is the hostname
+      // Save it to use later.
+
+      var names = [];
+
+      for(var key in grains){
+        names.push(key);
+      }
+
+      // Save the key/value under the hostname in a new array.
+
+      i = 0;
+      for(var key in grains[names[0]]){
+        $scope.grains[i] = {};
+        $scope.grains[i].key = key;
+        $scope.grains[i].value = grains[names[0]][key];
+        i = i + 1;
+      }
+
+      // Sort the array by key
+
+      $scope.grains.sort(function(a, b){
+        if(a.key < b.key) return -1;
+        if(a.key > b.key) return 1;
+        return 0;
+      });
+
+      // Let the view know
+
+      $scope.envsetting.gotgrains = true;
+
+      // DC
+
+      var item = $.grep($scope.grains,
+        function(e){ return e.key == 'dc'; });
+
+      if( item.length > 0 ) {
+        $scope.envsetting.dc = item[0].value;
+      }
+
+      // ENV
+
+      var item = $.grep($scope.grains,
+        function(e){ return e.key == 'env'; });
+
+      if( item.length > 0 ) {
+        $scope.envsetting.env = item[0].value;
+      }
+
+      // VERSION
+
+      var item = $.grep($scope.grains,
+        function(e){ return e.key == 'version'; });
+
+      if( item.length > 0 ) {
+        $scope.envsetting.version = item[0].value;
+      }
+
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
+  $scope.FillGrainsTable = function( saltid ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/saltconfigserver/grains?salt_id=" + saltid
+           + "&env_id=" + $scope.env.Id
+    }).success( function(data, status, headers, config) {
+      $scope.PollForJobFinish(data.JobId,50,0,$scope.GetGrainsListOutputLine);
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
+  $scope.GoBack = function( ) {
+  // ----------------------------------------------------------------------
+    clearMessages();
+    $scope.envchosen.shown = true;
+    $scope.envsetting.shown = false;
+    $rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
   }
 
   // ----------------------------------------------------------------------
   $scope.Restart = function() {
   // ----------------------------------------------------------------------
     clearMessages();
-    $scope.envchosen = false;
+    $scope.envchosen.shown = false;
     $scope.listbtnpressed = false;
     $scope.btnenvlistdisabled = false;
     $scope.showkeybtnblockhidden = false;
@@ -380,6 +561,16 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
 
     $scope.FillKeyListTable();
   };
+
+  // ----------------------------------------------------------------------
+  $scope.showOutputlines = function( id ) {
+  // ----------------------------------------------------------------------
+  // Redirect the user to the Jobs->Outputlines plugin
+
+    $rootScope.outputlines_plugin = {};
+    $rootScope.outputlines_plugin.id = id;
+    $scope.setView( "plugins/jobs/html/outputlines.html" );
+  }
 
   // ----------------------------------------------------------------------
   $scope.PollForJobFinish = function( id,delay,count,func ) {
