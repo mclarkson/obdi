@@ -184,7 +184,7 @@ func (api *Api) execCmd( job JobIn ) {
         }
         if err := api.sendStatus( job, JobOut{
             Status:         status,
-            StatusReason:   fmt.Sprintf("Wait error ('%s')", err.Error()),
+            StatusReason:   fmt.Sprintf("Script exited with error status ('%s')", err.Error()),
             StatusPercent:  0,
             Errors:         0,
             } ); err != nil {
