@@ -56,7 +56,8 @@
     <div class="col-lg-12">
       <h3 class="page-header">Configure Server
         <button class="btn btn-sm btn-success pull-right" type="button"
-        ng-if="mainview" ng-click="Restart()" style="margin-top: -5px;">
+        ng-if="mainview && envchosen" ng-click="Restart()"
+        style="margin-top: -5px;">
           <i class="fa fa-refresh"> </i> Restart</button>
         <button class="btn btn-sm btn-default pull-right" type="button"
         ng-if="grainsview.show || configview.show ||
