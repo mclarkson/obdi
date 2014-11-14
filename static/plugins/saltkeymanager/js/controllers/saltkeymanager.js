@@ -365,14 +365,26 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
 
     $scope.envsetting.numupdated = 0;
 
-    $scope.ApplyGrain( $scope.envsetting.saltid, "dc",
-        $scope.envsetting.dc );
+    if( $scope.envsetting.dc ) {
+      $scope.ApplyGrain( $scope.envsetting.saltid, "dc",
+          $scope.envsetting.dc );
+    } else {
+      $scope.envsetting.numupdated += 1;
+    }
 
-    $scope.ApplyGrain( $scope.envsetting.saltid, "env",
-        $scope.envsetting.env );
+    if( $scope.envsetting.env ) {
+      $scope.ApplyGrain( $scope.envsetting.saltid, "env",
+          $scope.envsetting.env );
+    } else {
+      $scope.envsetting.numupdated += 1;
+    }
 
-    $scope.ApplyGrain( $scope.envsetting.saltid, "version",
-        $scope.envsetting.version );
+    if( $scope.envsetting.version ) {
+      $scope.ApplyGrain( $scope.envsetting.saltid, "version",
+          $scope.envsetting.version );
+    } else {
+      $scope.envsetting.numupdated += 1;
+    }
   }
 
   // ENV MANAGEMENT
