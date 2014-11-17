@@ -39,6 +39,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
 
   $scope.statedescs = [];
   $scope.statedescs_names = [];
+  $scope.get_desc_in_progress = false;
   $scope.environments = [];
   $scope.env = {};
   $scope.servernames = [];
@@ -164,7 +165,11 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         function(e){ return (e.FormulaName==name && !e.StateFileName); });
 
       if( desc.length > 0 ) {
-        return desc[0].Desc;
+        if( desc[0].Desc.length > 0 ) {
+            return desc[0].Desc;
+        } else {
+          return "No description available.";
+        }
       }
     }
 
@@ -173,10 +178,18 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       function(e){ return e.StateFileName == name.split(".")[1]; });
 
     if( desc.length > 0 ) {
-      return desc[0].Desc;
+      if( desc[0].Desc.length > 0 ) {
+          return desc[0].Desc;
+      } else {
+        return "No description available.";
+      }
     }
 
-    return "";
+    if( $scope.get_desc_in_progress ) {
+        return "Getting description...";
+    } else {
+        return "No description available.";
+    }
 
   }
 
@@ -487,7 +500,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     // Disable the Apply button
     $scope.configview.changed = false;
 
-    saltid = $scope.changeversionview.saltid;
+    saltid = $scope.configview.saltid;
 
     $http({
       method: 'POST',
@@ -1187,6 +1200,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         return 0;
       });
 
+      $scope.get_desc_in_progress = false;
+
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -1212,6 +1227,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   // ----------------------------------------------------------------------
   $scope.FillDescriptionTable = function() {
   // ----------------------------------------------------------------------
+
+    $scope.get_desc_in_progress = true;
 
     $scope.statedescs = [];
     $scope.statedescs_names = [];

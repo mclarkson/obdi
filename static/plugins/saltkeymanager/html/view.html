@@ -31,7 +31,7 @@
       style="margin-top: -5px;">
         <i class="fa fa-arrow-left"> </i> Go Back</button>
       <button class="btn btn-sm btn-success pull-right" type="button"
-      ng-if="envsetting.shown" ng-disabled=""
+      ng-if="envsetting.shown" ng-disabled="forminvalid"
       ng-click="ApplySettings()"
       style="margin-top: -5px; margin-right:8px;">
         <i class="fa fa-check"> </i> Apply</button>
@@ -223,44 +223,50 @@
         shown below correspond respectively to the grains: dc, env and
         version, on the remote server, {{envsetting.saltid}}.</p>
 
-<div class="form-horizontal prepend-xs-1" role="form">
+        <form name="userForm" novalidate ng-submit="ApplySettings()">
 
-  <!-- Login -->
+          <div class="form-horizontal prepend-xs-1" role="form">
 
-  <div class="form-group">
-    <label for="dc" class="col-sm-offset-1 col-sm-2 control-label">
-      Datacentre</label>
-    <div class="col-sm-7">
-      <input class="form-control" id="dc" ng-model="envsetting.dc"
-      placeholder="Datacentre short name" type="text" required>
-    </div>
-  </div>
+            <!-- DC -->
 
-  <!-- Forename -->
+            <div class="form-group">
+              <label for="dc" class="col-sm-offset-1 col-sm-2 control-label">
+                Datacentre</label>
+              <div class="col-sm-7">
+                <input class="form-control" id="dc" ng-model="envsetting.dc"
+                placeholder="Datacentre short name" type="text" required>
+              </div>
+            </div>
 
-  <div class="form-group">
-    <label for="env" class="col-sm-offset-1 col-sm-2 control-label">
-      Environment</label>
-    <div class="col-sm-7">
-      <input class="form-control" id="env" ng-model="envsetting.env"
-      placeholder="Environment short name" type="text">
-    </div>
-  </div>
+            <!-- Env -->
 
-  <!-- Surname -->
+            <div class="form-group">
+              <label for="env" class="col-sm-offset-1 col-sm-2 control-label">
+                Environment</label>
+              <div class="col-sm-7">
+                <input class="form-control" id="env" ng-model="envsetting.env"
+                placeholder="Environment short name" type="text" required>
+              </div>
+            </div>
 
-  <div class="form-group">
-    <label for="version" class="col-sm-offset-1 col-sm-2 control-label">
-      Version</label>
-    <div class="col-sm-7">
-      <input class="form-control" id="version" ng-model="envsetting.version"
-      placeholder="The branch/tag, e.g. 1.2.10 - Can be empty" type="text">
-    </div>
-  </div>
+            <!-- Version -->
 
-</div>
+            <div class="form-group">
+              <label for="version" class="col-sm-offset-1 col-sm-2 control-label">
+                Version</label>
+              <div class="col-sm-7">
+                <input class="form-control" id="version" ng-model="envsetting.version"
+                placeholder="The branch/tag, e.g. 1.2.10 - Can be empty" type="text">
+              </div>
+            </div>
 
-      </div>
+            {{copyToController(userForm.$invalid)}}
+
+          </div> <!-- form-horizontal -->
+
+        </form>
+
+      </div> <!-- envsetting.gotgrains -->
 
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->

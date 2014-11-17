@@ -27,6 +27,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   $scope.env = {};
   $scope.status = {};  // For env chooser button
   $scope.grains = [];
+  $scope.forminvalid = true; // For grains setting (dc,env,ver)
 
   // Alerting
   $scope.message = "";
@@ -61,6 +62,12 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     $scope.okmessage = "";
     $scope.login.error = false;
     $scope.error = false;
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.copyToController = function( isit ) {
+  // ----------------------------------------------------------------------
+      $scope.forminvalid = isit;
   }
 
   // ----------------------------------------------------------------------
@@ -547,6 +554,9 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     clearMessages();
     $scope.envchosen.shown = true;
     $scope.envsetting.shown = false;
+    $scope.envsetting.dc = "";
+    $scope.envsetting.env = "";
+    $scope.envsetting.version = "";
     $rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
   }
 

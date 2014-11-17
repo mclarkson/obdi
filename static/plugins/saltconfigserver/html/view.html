@@ -427,16 +427,16 @@
             -->
             <tr>
               <!-- <td style="width:200px"> -->
-              <td>
+              <td style="border-color: white">
                 <select ng-model="configview.newclass" class="selectpicker"
                 ng-options="item for item in statedescs_names"
                 required >
                   <option value="">Choose option</option>
                 </select>
               </td>
-              <td style="white-space: pre-wrap;">{{GetDescription(configview.newclass)}}</td>
+              <td style="border-color: white; white-space: pre-wrap;">{{GetDescription(configview.newclass)}}</td>
               <!-- <td style="width:20px;"> -->
-              <td>
+              <td style="border-color: white">
                 <a href="#" ng-click="AddClass(configview.newclass)"><i class="fa fa-plus-circle green" title="Add Item"></i></a>
               </td>
             </tr>

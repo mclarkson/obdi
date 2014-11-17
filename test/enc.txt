@@ -20,7 +20,7 @@ INSERT INTO "regex_sls_maps" VALUES(6,4,'salt','master');
 CREATE INDEX idx_enc_salt_id ON "encs"("salt_id");
 COMMIT;
 
-INSERT INTO "regexes" VALUES('test',2,'.*','OFFICE-MARKVMS');
+INSERT INTO "regexes" (env,regex,dc) VALUES('test',2,'.*','OFFICE-MARKVMS');
 insert into regex_sls_maps values ( null, 2, "salt", "" );
 insert into regex_sls_maps values ( null, 2, "salt", "cron" );
 insert into regex_sls_maps values ( null, 2, "logrotate", "" );
@@ -34,3 +34,18 @@ insert into regex_sls_maps values ( null, 2, "man", "" );
 insert into regex_sls_maps values ( null, 2, "cron", "" );
 insert into regex_sls_maps values ( null, 2, "timezone", "" );
 insert into regex_sls_maps values ( null, 2, "locale", "" );
+
+INSERT INTO "regexes" (env,regex,dc) VALUES('test','.*','TEST');
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1,"salt", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "salt", "cron" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "logrotate", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "tree", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "screen", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "vim", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "snmpd", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "dmidecode", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "pciutils", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "man", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "cron", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "timezone", "" );
+insert into regex_sls_maps (regex_id,formula,state_file) values ( 1, "locale", "" );
