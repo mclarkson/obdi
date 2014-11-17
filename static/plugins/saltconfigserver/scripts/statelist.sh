@@ -45,6 +45,9 @@ fi
 
 # Fill the salt git cache
 
+# Since 2014.7.0 directory must exist first
+mkdir -p /var/cache/salt/master/gitfs/refs/$ENV
+
 output=`python < <(cat <<EnD
 # Import python libs
 import os
@@ -80,6 +83,7 @@ EnD
 
 # Does the env exist now?
 
+# TODO: get this to check for at least one file now we have to create the dir.
 [[ ! -d /var/cache/salt/master/gitfs/refs/$ENV ]] && {
     echo '{ "Error":"Unable to fill git cache", "Output":"'"$output"'" }'
     exit 1
