@@ -55,6 +55,8 @@ Front-end
 * Regex manager
 * Monitoring plugin
 * Plugin loader (from Git)
+* Bulk Tools
+  * For example, change version for many servers at once.
 
 Back-end
 
