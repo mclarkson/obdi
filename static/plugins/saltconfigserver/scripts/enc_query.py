@@ -67,18 +67,23 @@ def getGrainsFromCache( g, __opts__ ):
         items = runner.cmd("cache.grains", [g['salt_id']])
     sys.stdout = stdout_bak
 
-    if 'dc' in items[g['salt_id']]:
-        dc = items[g['salt_id']]['dc']
-    else:
-        dc = 'null'
-    if 'env' in items[g['salt_id']]:
-        env = items[g['salt_id']]['env']
-    else:
-        env = 'null'
-    if 'version' in items[g['salt_id']]:
-        version = items[g['salt_id']]['version']
-    else:
-        version = 'null'
+    dc = ""
+    env = ""
+    version = ""
+
+    if g['salt_id'] in items:
+        if 'dc' in items[g['salt_id']]:
+            dc = items[g['salt_id']]['dc']
+        else:
+            dc = 'null'
+        if 'env' in items[g['salt_id']]:
+            env = items[g['salt_id']]['env']
+        else:
+            env = 'null'
+        if 'version' in items[g['salt_id']]:
+            version = items[g['salt_id']]['version']
+        else:
+            version = 'null'
 
     return dc,env,version
 
