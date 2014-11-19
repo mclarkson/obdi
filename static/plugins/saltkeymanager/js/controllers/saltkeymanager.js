@@ -728,4 +728,46 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
 
   $scope.FillEnvironmentsTable();
 
+  // --------------------------------------------------------------------
+  $scope.dialog = function (servername) {
+  // --------------------------------------------------------------------
+
+    $scope.servername = servername;
+
+    var modalInstance = $modal.open({
+      templateUrl: 'myModalContent.html',
+      controller: $scope.ModalInstanceCtrl,
+      size: 'sm',
+      resolve: {
+        // the servername variable is passed to the ModalInstanceCtrl
+        servername: function () {
+          return $scope.servername;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (servername) {
+      $log.info('Will delete: ' + $scope.servername + '(' + $scope.servername + ')' );
+      $scope.Delete($scope.servername);
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
+  };
+
+  // --------------------------------------------------------------------
+  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, servername) {
+  // --------------------------------------------------------------------
+
+    // So the template can access 'servername' in this new scope
+    $scope.servername = servername;
+
+    $scope.ok = function () {
+      $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  };
+
 });

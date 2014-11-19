@@ -18,6 +18,19 @@
 
 <!-- tool_content -->
 
+<script type="text/ng-template" id="myModalContent.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Delete Key</h3>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete '{{servername}}'?
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" ng-click="ok()">Yes</button>
+        <button class="btn btn-primary" ng-click="cancel()">No</button>
+    </div>
+</script>
+
 <div ng-controller="saltkeymgrCtrl">
 
   <div class="row">
@@ -128,7 +141,7 @@
                 <tr ng-repeat="name in keylist.minions | filter:keyfilter">
                 <td>{{name}}</td>
                 <td>
-                  <a href="#" ng-click="Delete(name)">
+                  <a href="#" ng-click="dialog(name)">
                     <i class="fa fa-trash-o red" title="Delete Key"></i></a>
                   <a href="#" ng-click="EnvConfig(name)">
                     <i class="fa fa-cog" title="Environment Setting"></i></a>
@@ -186,7 +199,7 @@
                 <tr ng-repeat="name in keylist.minions_rejected | filter:keyfilter">
                 <td>{{name}}</td>
                 <td>
-                  <a href="#" ng-click="Delete(name)">
+                  <a href="#" ng-click="dialog(name)">
                     <i class="fa fa-trash-o red" title="Delete Key"></i></a>
                 </td>
               </tr>
