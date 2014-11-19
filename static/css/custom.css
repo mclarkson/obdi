@@ -212,9 +212,14 @@ td a .fa-plus-square,
 td a .fa-close,
 td a .fa-times,
 td a .fa-check,
+td a .fa-plus-circle,
 td a .fa-cog
 {
   padding-left: 6px
+}
+td[class~="white"] {
+  border-color: white !important;
+  background-color: white !important;
 }
 .green {
   color: #22AA22;

@@ -194,6 +194,46 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
+  $scope.GetDescriptionChooser = function( name ) {
+  // ----------------------------------------------------------------------
+
+    if( typeof(name) == 'undefined' ) return "";
+
+    // Search in formula's
+    if( ! name.split(".")[1] ) {
+      var desc = $.grep($scope.statedescs,
+        function(e){ return (e.FormulaName==name && !e.StateFileName); });
+
+      if( desc.length > 0 ) {
+        if( desc[0].Desc.length > 0 ) {
+            return desc[0].Desc;
+        } else {
+          return "";
+        }
+      }
+    }
+
+    // Search in state files
+    desc = $.grep($scope.statedescs,
+      function(e){ return e.StateFileName == name.split(".")[1]; });
+
+    if( desc.length > 0 ) {
+      if( desc[0].Desc.length > 0 ) {
+          return desc[0].Desc;
+      } else {
+        return "No description available.";
+      }
+    }
+
+    if( $scope.get_desc_in_progress ) {
+        return "Getting description...";
+    } else {
+        return "";
+    }
+
+  }
+
+  // ----------------------------------------------------------------------
   $scope.SelectAllNone = function( ) {
   // ----------------------------------------------------------------------
 
@@ -480,6 +520,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     // Add it
     $scope.configview.changed = true;
     $scope.configview.classeschanged = true;
+    $scope.configview.newclass = ""; // reset select box
     $scope.config.Classes.push( classname );
   };
 
