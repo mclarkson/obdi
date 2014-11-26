@@ -1360,6 +1360,14 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   // Modal dialog
 
   // --------------------------------------------------------------------
+  $scope.DeleteAll = function (classname) {
+  // --------------------------------------------------------------------
+     $scope.config.Classes = [];
+     $scope.configview.changed = true;
+     $scope.configview.classeschanged = true;
+  }
+
+  // --------------------------------------------------------------------
   $scope.Delete = function (classname) {
   // --------------------------------------------------------------------
      $scope.config.Classes = $.grep( $scope.config.Classes,
@@ -1371,10 +1379,14 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   }
 
   // --------------------------------------------------------------------
-  $scope.dialog = function (classname) {
+  $scope.dialog = function (classname,delete_all) {
   // --------------------------------------------------------------------
 
     $scope.classname = classname;
+
+    if( delete_all == true ) {
+        $scope.classname = "ALL CLASSES"
+    }
 
     var modalInstance = $modal.open({
       templateUrl: 'myModalContent.html',
@@ -1389,8 +1401,12 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     });
 
     modalInstance.result.then(function (classname) {
-      $log.info('Will delete: ' + $scope.classname + '(' + $scope.classname + ')' );
-      $scope.Delete($scope.classname);
+      $log.info('Will delete: ' + $scope.classname );
+      if( delete_all == true ) {
+          $scope.DeleteAll($scope.classname);
+      } else {
+          $scope.Delete($scope.classname);
+      }
     }, function () {
       $log.info('Modal dismissed at: ' + new Date());
     });

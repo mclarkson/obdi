@@ -384,11 +384,16 @@
       {{okmessage}}
     </div>
 
+    <!-- The logic has changed. Now all regex queries to enc are
+         automatically saved as fully realised enc entries, so this
+         alert is now redundant.
+
     <div class="alert alert-info" ng-show="config.Customised">
       This server configuration has been customised so regular expression
       matching will not apply to this server. Delete all items to get
       regular expression matching back!
     </div>
+    -->
 
     <div ng-if="!configview.gotconfig && !message">
       <h5>
@@ -398,7 +403,9 @@
     </div>
 
     <div ng-if="configview.gotconfig">
-        <p>Showing configuration for {{configview.saltid}}.</p>
+        <p>Showing configuration for {{configview.saltid}}.
+        <a href='#' ng-click="dialog('dummy',true)"
+          class="pull-right">delete all classes</a></p>
 
       <div class="table-responsive" style="margin-top: -16px;width:100%;overflow:auto">
         <table class="table table-striped table-bordered prepend-sm-1"
@@ -415,7 +422,7 @@
               <td>{{item}}</td>
               <td style="white-space: pre-wrap;">{{GetDescription(item)}}</td>
               <td>
-                <a href="#" ng-click="dialog(item)">
+                <a href="#" ng-click="dialog(item,false)">
                   <i class="fa fa-trash-o red" title="Delete"></i></a>
               </td>
             </tr>

@@ -403,8 +403,8 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
   if len(encs) == 0 {
 
     // ENC entry does not exist. Make one on the fly from regexes
-    // and return it to the user. ENC entries are only created
-    // to override regexes.
+    // and return it to the user. Also fully realise the enc entry
+    // from the regex.
 
     // Get all regexes for this dc and env
     regexes := []Regex{}
@@ -443,7 +443,9 @@ i_loop:
           for j := range regexSlsMaps {
               matched = true
 
+              // Should end with '.sls' but strip just in case
               stripped := strings.TrimSuffix(regexSlsMaps[j].StateFile, ".sls")
+
               item := ""
               if len(stripped) > 0 {
                 item = regexSlsMaps[j].Formula + "." + stripped
@@ -456,7 +458,25 @@ i_loop:
                   continue i_loop
                 }
               }
+
               encClasses = append(encClasses, item)
+
+              // And also write to encs table
+
+              enc := Enc{
+                SaltId:         salt_id,
+                Formula:        regexSlsMaps[j].Formula,
+                StateFile:      regexSlsMaps[j].StateFile,
+                Dc:             dc_name,
+                Env:            env_name,
+              }
+              Lock()
+              if err := db.Create(&enc); err.Error != nil {
+                Unlock()
+                ReturnError( err.Error.Error(), response )
+                return nil
+              }
+              Unlock()
           }
         }
       } else {
@@ -649,7 +669,6 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 
   // Add the ENC classes
 
-  Lock()
   for i := range postedData.Classes {
     classes := strings.Split(postedData.Classes[i],".")
     formula := ""
@@ -667,13 +686,14 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
       Dc:             postedData.Dc,
       Env:            postedData.Environment,
     }
+    Lock()
     if err := db.Create(&enc); err.Error != nil {
       Unlock()
       ReturnError( err.Error.Error(), response )
       return nil
     }
+    Unlock()
   }
-  Unlock()
 
   reply := Reply{ "",SUCCESS,"" }
   jsondata, err := json.Marshal(reply)
