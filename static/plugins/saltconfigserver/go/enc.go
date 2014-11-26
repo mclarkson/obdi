@@ -28,9 +28,10 @@ import (
   "regexp"
   "github.com/jinzhu/gorm"
   _ "github.com/mattn/go-sqlite3"
-  "syscall" // for flock
-  "path"
+  //"syscall" // for flock
+  "strconv"
   "time"
+  //"math"
 )
 
 // ***************************************************************************
@@ -66,8 +67,8 @@ var config *Config
 
 type Config struct {
   Dbname    string
-  Flock     FLock
-  Lockfile  string
+  Portlock  *PortLock
+  Port      int
 }
 
 // --------------------------------------------------------------------------
@@ -178,46 +179,89 @@ func logit(msg string) {
 }
 
 // ***************************************************************************
-// FILE LOCKING
+// PORT LOCKING
 // ***************************************************************************
 
-// FLock is a file-based lock
-type FLock struct {
-  fh *os.File
+// PortLock is a locker which locks by binding to a port on the loopback IPv4 interface
+type PortLock struct {
+  hostport string
+  ln net.Listener
 }
 
+// --------------------------------------------------------------------------
+func NewPortLock(port int) *PortLock {
+// --------------------------------------------------------------------------
 // NewFLock creates new Flock-based lock (unlocked first)
-func NewFLock(path string) (FLock, error) {
-  //os.Create(path)
-  fh, err := os.Open(path)
-  if err != nil {
-    return FLock{}, err
-  }
-  return FLock{fh: fh}, nil
+  return &PortLock{hostport: net.JoinHostPort("127.0.0.1", strconv.Itoa(port))}
 }
 
+// --------------------------------------------------------------------------
+func (p *PortLock) Lock() {
+// --------------------------------------------------------------------------
 // Lock acquires the lock, blocking
-func (lock FLock) Lock() error {
-  return syscall.Flock(int(lock.fh.Fd()), syscall.LOCK_EX)
-}
-
-// TryLock acquires the lock, non-blocking
-func (lock FLock) TryLock() (bool, error) {
-  err := syscall.Flock(int(lock.fh.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
-  switch err {
-  case nil:
-    return true, nil
-  case syscall.EWOULDBLOCK:
-    return false, nil
+  t := 50 * time.Millisecond
+  for {
+    if l, err := net.Listen("tcp", p.hostport); err == nil {
+      p.ln = l // thanks to zhangpy
+      return
+    }
+    //log.Printf("spinning lock on %s (%s)", p.hostport, err)
+    time.Sleep(t)
+    //t = time.Duration(
+    //  math.Min( float64(time.Duration(float32(t) * 1.5)), 2000 ))
   }
-  return false, err
 }
 
+// --------------------------------------------------------------------------
+func (p *PortLock) Unlock() {
+// --------------------------------------------------------------------------
 // Unlock releases the lock
-func (lock FLock) Unlock() error {
-  lock.fh.Close()
-  return syscall.Flock(int(lock.fh.Fd()), syscall.LOCK_UN)
+  if p.ln != nil {
+    p.ln.Close()
+  }
 }
+
+// // ***************************************************************************
+// // FILE LOCKING
+// // ***************************************************************************
+// 
+// // FLock is a file-based lock
+// type FLock struct {
+//   fh *os.File
+// }
+// 
+// // NewFLock creates new Flock-based lock (unlocked first)
+// func NewFLock(path string) (FLock, error) {
+//   //os.Create(path)
+//   fh, err := os.Open(path)
+//   if err != nil {
+//     return FLock{}, err
+//   }
+//   return FLock{fh: fh}, nil
+// }
+// 
+// // Lock acquires the lock, blocking
+// func (lock FLock) Lock() error {
+//   return syscall.Flock(int(lock.fh.Fd()), syscall.LOCK_EX)
+// }
+// 
+// // TryLock acquires the lock, non-blocking
+// func (lock FLock) TryLock() (bool, error) {
+//   err := syscall.Flock(int(lock.fh.Fd()), syscall.LOCK_EX|syscall.LOCK_NB)
+//   switch err {
+//   case nil:
+//     return true, nil
+//   case syscall.EWOULDBLOCK:
+//     return false, nil
+//   }
+//   return false, err
+// }
+// 
+// // Unlock releases the lock
+// func (lock FLock) Unlock() error {
+//   lock.fh.Close()
+//   return syscall.Flock(int(lock.fh.Fd()), syscall.LOCK_UN)
+// }
 
 // ***************************************************************************
 // GO RPC PLUGIN
@@ -249,43 +293,15 @@ type Reply struct {
 }
 
 // --------------------------------------------------------------------------
-func Unlock(response *[]byte) {
+func Unlock() {
 // --------------------------------------------------------------------------
-  if err := config.Flock.Unlock(); err != nil {
-    ReturnError( err.Error(), response )
-    os.Exit(1)
-  }
+  config.Portlock.Unlock()
 }
 
 // --------------------------------------------------------------------------
-func Lock(response *[]byte) {
+func Lock() {
 // --------------------------------------------------------------------------
-  //if err := config.Flock.Lock(); err != nil {
-  //  ReturnError( err.Error(), response )
-  //  os.Exit(1)
-  //}
-
-  retry_delay := 100 // milliseconds
-  fail_within := 1 // seconds (based on delay - approximate)
-
-  for x:=0;;x++ {
-    wouldblock, err := config.Flock.TryLock()
-    if err != nil {
-      ReturnError( err.Error(), response )
-      os.Exit(1)
-    }
-    if wouldblock == true {
-      if x>=(fail_within*(1000/retry_delay)) {
-        ReturnError( "Could not gain lock on "+config.Lockfile, response )
-        os.Exit(1)
-      }
-      time.Sleep( time.Duration(retry_delay) * time.Millisecond )
-      continue
-    } else {
-      // LOCK IT HERE - THIS IS FLAWED
-    }
-    break
-  }
+  config.Portlock.Lock()
 }
 
 // --------------------------------------------------------------------------
@@ -368,16 +384,16 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
   // Search the encs DB
 
-  Lock(response)
+  Lock()
   if err := db.Find(&encs, "salt_id = ? and dc = ? and env = ?",
   salt_id, dc_name, env_name); err.Error != nil {
       if !err.RecordNotFound() {
-        Unlock( response )
+        Unlock()
         ReturnError( err.Error.Error(), response )
         return nil
       }
   }
-  Unlock( response )
+  Unlock()
 
   var encClasses      []string
   var encEnvironment  string
@@ -392,16 +408,16 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
     // Get all regexes for this dc and env
     regexes := []Regex{}
-    Lock(response)
+    Lock()
     if err := db.Find(&regexes, "dc = ? and env = ?",
     dc_name, env_name); err.Error != nil {
         if !err.RecordNotFound() {
-          Unlock( response )
+          Unlock()
           ReturnError( err.Error.Error(), response )
           return nil
         }
     }
-    Unlock( response )
+    Unlock()
 
     // Apply regexes to salt id - see which regexes qualify
 
@@ -413,17 +429,17 @@ i_loop:
       if err == nil {
         if tryRegex.MatchString( salt_id ) {
           // Add classes to the EncData ??
-          Lock( response )
+          Lock()
           regexSlsMaps := []RegexSlsMap{}
           if err := db.Find(&regexSlsMaps,
           "regex_id = ?",regexes[i].Id); err.Error != nil {
               if !err.RecordNotFound() {
-                Unlock( response )
+                Unlock()
                 ReturnError( err.Error.Error(), response )
                 return nil
               }
           }
-          Unlock( response )
+          Unlock()
           for j := range regexSlsMaps {
               matched = true
 
@@ -619,21 +635,21 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 
   db := gormInst.DB() // shortcut
 
-  Lock( response )
+  Lock()
   if err := db.Where("salt_id = ? and dc = ? and env = ?",
   salt_id,postedData.Dc,postedData.Environment).Delete(Enc{});
   err.Error != nil {
       if !err.RecordNotFound() {
-        Unlock( response )
+        Unlock()
         ReturnError( err.Error.Error(), response )
         return nil
       }
   }
-  Unlock( response )
+  Unlock()
 
   // Add the ENC classes
 
-  Lock( response )
+  Lock()
   for i := range postedData.Classes {
     classes := strings.Split(postedData.Classes[i],".")
     formula := ""
@@ -652,12 +668,12 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
       Env:            postedData.Environment,
     }
     if err := db.Create(&enc); err.Error != nil {
-      Unlock( response )
+      Unlock()
       ReturnError( err.Error.Error(), response )
       return nil
     }
   }
-  Unlock( response )
+  Unlock()
 
   reply := Reply{ "",SUCCESS,"" }
   jsondata, err := json.Marshal(reply)
@@ -706,15 +722,8 @@ func main() {
   NewConfig()
 
   // Create a lock file to use for synchronisation
-  path := path.Join( os.TempDir()+"/obdi_enc.lock" )
-  flock,err := NewFLock( path )
-  if err != nil {
-      txt := fmt.Sprintf( "Error creating lock file. ", err )
-      logit( txt )
-      return
-  }
-  config.Flock = flock
-  config.Lockfile = path
+  config.Port = 49993
+  config.Portlock = NewPortLock( config.Port )
 
   plugin := new(Plugin)
   rpc.Register(plugin)

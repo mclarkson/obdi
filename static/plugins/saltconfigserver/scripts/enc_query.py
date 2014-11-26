@@ -171,22 +171,26 @@ def main():
 
     done = False
     tries = 0
-    pid_file = '/var/tmp/enc_query.py.pid'
+    lock_file = '/var/tmp/enc_query.py.lock'
 
     while done == False:
-        fp = open(pid_file, 'w')
+        fp = open(lock_file, 'w')
         try:
             fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
             done = True
         except IOError:
             # another instance is running
             if tries > 100:
-                print "Could not gain lock on " + pid_file
+                print "Could not gain lock on " + lock_file
                 sys.exit(1)
             tries += 1
             time.sleep( 0.1 )
 
     g['guid'] = login( g )
+
+    # Unlock the lockfile, only 'login' matters
+    fcntl.lockf(fp, fcntl.LOCK_UN)
+    fp.close()
 
     resp = enc_query( g )
 
