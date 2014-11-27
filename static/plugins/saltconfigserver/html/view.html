@@ -413,7 +413,7 @@
         created for this host for any client (such as this one) that issues an
         ENC query, if relevant entries exist in the classes-to-host map.</p>
 
-      <div class="table-responsive" style="margin-top: -16px;width:100%;overflow:auto">
+      <div class="table-responsive" style="width:100%;overflow:auto">
         <table class="table table-striped table-bordered prepend-sm-1"
           style="width:100%;overflow:auto">
           <thead>
@@ -424,7 +424,8 @@
           </tr>
           </thead>
           <tbody>
-            <tr ng-repeat="item in config.Classes">
+              <tr ng-repeat="item in config.Classes"
+                class="{{ClassStyle(item)}}">
               <td>{{item}}</td>
               <td style="white-space: pre-wrap;">{{GetDescription(item)}}</td>
               <td>

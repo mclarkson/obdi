@@ -154,6 +154,20 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
+  $scope.ClassStyle = function( name ) {
+  // ----------------------------------------------------------------------
+
+    if( typeof(name) == 'undefined' ) return "";
+
+    for( var i=0; i<$scope.config.Styles.length; i++ ) {
+      if( $scope.config.Styles[i].classname == name )
+        return $scope.config.Styles[i].style;
+    }
+
+    return "";
+  }
+
+  // ----------------------------------------------------------------------
   $scope.GetDescription = function( name ) {
   // ----------------------------------------------------------------------
 
@@ -168,6 +182,12 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         if( desc[0].Desc.length > 0 ) {
             return desc[0].Desc;
         } else {
+          for( var i=0; i<$scope.config.Classes.length; i++ ) {
+            if( $scope.config.Classes[i] == name ) {
+              $scope.config.Styles[i].style = "warning";
+              break;
+            }
+          }
           return "No description available.";
         }
       }
@@ -181,6 +201,12 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       if( desc[0].Desc.length > 0 ) {
           return desc[0].Desc;
       } else {
+        for( var i=0; i<$scope.config.Classes.length; i++ ) {
+          if( $scope.config.Classes[i] == name ) {
+            $scope.config.Styles[i].style = "warning";
+            break;
+          }
+        }
         return "No description available.";
       }
     }
@@ -188,6 +214,12 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     if( $scope.get_desc_in_progress ) {
         return "Getting description...";
     } else {
+        for( var i=0; i<$scope.config.Classes.length; i++ ) {
+          if( $scope.config.Classes[i] == name ) {
+            $scope.config.Styles[i].style = "warning";
+            break;
+          }
+        }
         return "No description available.";
     }
 
@@ -505,6 +537,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     if( !$scope.config.Classes ) {
         $scope.config = {};
         $scope.config.Classes = [];
+        $scope.config.Styles = [];
         $scope.config.Environment = $scope.env.SysName;
     }
 
@@ -522,6 +555,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     $scope.configview.classeschanged = true;
     $scope.configview.newclass = ""; // reset select box
     $scope.config.Classes.push( classname );
+    $scope.config.Styles.push( {"classname":classname, "style":""} );
   };
 
   // ----------------------------------------------------------------------
@@ -1070,6 +1104,11 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
           if(a > b) return 1;
           return 0;
         });
+      }
+      $scope.config.Styles = [];
+      for( var i=0; i<$scope.config.Classes.length; i++ ) {
+          $scope.config.Styles.push(
+              {"classname":$scope.config.Classes[i], "style":""} );
       }
       $scope.configview.gotconfig = true;
     }).error( function(data,status) {
