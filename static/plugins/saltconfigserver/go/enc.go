@@ -49,9 +49,11 @@ type Enc struct {
 
 type Regex struct {
   Id        int64
-  Regex     string
-  Dc        string
-  Env       string
+  Regex     string    // The regular expression
+  Dc        string    // Data centre name
+  Env       string    // Environment name
+  Name      string    // Short name for the regex, no spaces
+  Desc      string    // Description of the regex
 }
 
 type RegexSlsMap struct {
