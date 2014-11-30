@@ -332,7 +332,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     $http({
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltconfigserver/grains?salt_id=" + saltid
+           + "/saltkeymanager/grains?salt_id=" + saltid
            + "&env_id=" + $scope.env.Id,
       data: config
     }).success( function(data, status, headers, config) {
@@ -518,7 +518,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltconfigserver/grains?salt_id=" + saltid
+           + "/saltkeymanager/grains?salt_id=" + saltid
            + "&env_id=" + $scope.env.Id
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetGrainsListOutputLine);
