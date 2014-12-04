@@ -38,7 +38,7 @@ shift
 }
 
 for i in "$@"; do
-  cmd="salt --output=json $salt_id grains.setval ${i%%,*} ${i##*,}"
+  cmd="salt -t 60 --output=json $salt_id grains.setval ${i%%,*} ${i##*,}"
   output=`env $cmd`
 
   [[ -z $output ]] && {
