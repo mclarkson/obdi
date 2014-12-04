@@ -104,6 +104,26 @@ curl -k -d '{
 # Add the scripts, removing comment lines (#) and empty lines
 #
 
+source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-grains.sh | base64 -w 0`
+
+curl -k -d '{
+    "Desc": "Return the grains for a server. Arg1 - Salt ID",
+    "Name": "saltkey-grains.sh",
+    "Source": "'"$source"'"
+}' $proto://$ipport/api/admin/$guid/scripts
+
+# --
+
+source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-set-grains.sh | base64 -w 0`
+
+curl -k -d '{
+    "Desc": "Set grains. Arg1 - salt_id, Arg2 - grain,value .. ArgN - grain,value",
+    "Name": "saltkey-set-grains.sh",
+    "Source": "'"$source"'"
+}' $proto://$ipport/api/admin/$guid/scripts
+
+# --
+
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-showkeys.sh | base64 -w 0`
 
 curl -k -d '{
