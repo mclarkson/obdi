@@ -613,18 +613,6 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 
   salt_id := args.QueryString["salt_id"][0]
 
-  // Needed if the salt version has been changed
-  if len(args.QueryString["env_id"]) == 0 {
-    ReturnError( "'env_id' must be set", response )
-    return nil
-  }
-
-  if err != nil {
-    ReturnError( "Invalid env_id ('"+args.QueryString["env_id"][0]+"')",
-    response )
-    return nil
-  }
-
   // PluginDatabasePath is required to open our private db
   if len(args.PathParams["PluginDatabasePath"]) == 0 {
     ReturnError( "Internal Error: 'PluginDatabasePath' must be set",response )
