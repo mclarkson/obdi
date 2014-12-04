@@ -72,7 +72,9 @@ mkdir -p src/github.com/mclarkson/obdi
 ln -s ../../../../external src/github.com/mclarkson/obdi/external 
 
 # Build
+cd obdi
 go build -o obdi
+cd ..
 cd obdi-worker
 go build -o obdi-worker
 
@@ -86,7 +88,7 @@ install -D -m 640 conf/obdi.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi/obdi.conf
 install -D -m 640 conf/obdi-worker.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi-worker/obdi-worker.conf
 
 # Golang single binary (/usr/sbin)
-install -D -m 755 obdi ${RPM_BUILD_ROOT}%{_sbindir}/obdi
+install -D -m 755 obdi/obdi ${RPM_BUILD_ROOT}%{_sbindir}/obdi
 install -D -m 755 obdi-worker/obdi-worker ${RPM_BUILD_ROOT}/%{_sbindir}/obdi-worker
 
 # Initrd
