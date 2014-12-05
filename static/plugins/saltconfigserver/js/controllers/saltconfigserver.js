@@ -364,7 +364,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     $http({
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltconfigserver/salthighstate",
+           + "/saltconfigserver/salthighstate"
+           + "?env_id=" + $scope.env.Id,
       data: saltids
     }).success( function(data, status, headers, config) {
       // salthighstate returns a list of salt jobs
