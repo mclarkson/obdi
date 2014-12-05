@@ -22,7 +22,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
       $timeout,baseUrl,$rootScope) {
 
   $scope.environments = [];
-  $scope.keylist = {};
+  $scope.regexlist = {};
   $scope.keyfilter = "";
   $scope.env = {};
   $scope.status = {};  // For env chooser button
@@ -48,11 +48,8 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.btnenvlistdisabled = false;
   $scope.showkeybtnblockhidden = false;
   $scope.btnshowkeysdisabled = true;
-  $scope.keylist_ready = false;
-  $scope.keylist_empty = true;
-  $scope.keylist_accept_empty = true;
-  $scope.keylist_reject_empty = true;
-  $scope.keylist_unaccepted_empty = true;
+  $scope.regexlist_ready = false;
+  $scope.regexlist_empty = true;
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -204,67 +201,6 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
 
     $scope.FillKeyListTable();
   }
-
-  // ----------------------------------------------------------------------
-  $scope.GetKeyListOutputLine = function( id ) {
-  // ----------------------------------------------------------------------
-
-    $http({
-      method: 'GET',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/outputlines?job_id=" + id
-    }).success( function(data, status, headers, config) {
-
-      $scope.showkeybtnblockhidden = true;
-
-      var keylist = $.parseJSON(data[0].Text);
-
-      $scope.keylist = keylist;
-
-      if( $scope.keylist.minions.length == 0 ) {
-        $scope.keylist_accept_empty = true;
-      } else {
-        $scope.keylist_accept_empty = false;
-      }
-      if( $scope.keylist.minions_pre.length == 0 ) {
-        $scope.keylist_unaccepted_empty = true;
-      } else {
-        $scope.keylist_unaccepted_empty = false;
-      }
-      if( $scope.keylist.minions_rejected.length == 0 ) {
-        $scope.keylist_reject_empty = true;
-      } else {
-        $scope.keylist_reject_empty = false;
-      }
-
-      $scope.keylist_ready = true;
-      $scope.keylist_empty = false;
-
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==401) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        clearMessages();
-        $scope.message = "Server said: " + data['Error'];
-        $scope.error = true;
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  };
 
   // DC, ENV & VERSION
 
@@ -574,14 +510,14 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
-  $scope.KeyList = function() {
+  $scope.RegexList = function() {
   // ----------------------------------------------------------------------
     $scope.btnshowkeysdisabled = true;
     $scope.listbtnpressed = true;
     $scope.keylist_ready = false;
     $scope.keylist_empty = false;
 
-    $scope.FillKeyListTable();
+    $scope.FillRegexListTable();
   };
 
   // ----------------------------------------------------------------------
@@ -651,16 +587,30 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
-  $scope.FillKeyListTable = function() {
+  $scope.FillRegexListTable = function() {
   // ----------------------------------------------------------------------
 
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltkeymanager/saltkeys"
+           + "/saltregexmanager/regexes"
            + "?env_id=" + $scope.env.Id
     }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyListOutputLine);
+
+      $scope.showkeybtnblockhidden = true;
+
+      var regexlist = $.parseJSON(data.JsonData);
+
+      $scope.regexlist = regexlist;
+
+      if( $scope.regexlist.length == 0 ) {
+        $scope.regexlist_empty = true;
+      } else {
+        $scope.regexlist_empty = false;
+      }
+
+      $scope.regexlist_ready = true;
+
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";

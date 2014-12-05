@@ -98,7 +98,7 @@
       <div class="btn-group">
         <button type="button" class="btn btn-primary dropdown-toggle"
         style="margin-left: 8px;" 
-        ng-click="KeyList()" ng-disabled="btnshowkeysdisabled">
+        ng-click="RegexList()" ng-disabled="btnshowkeysdisabled">
           Show Host Mappings
         </button>
       </div>
@@ -116,30 +116,36 @@
       to get the list of keys from Salt.</p>
 
       <div ng-if="listbtnpressed">
-        <p ng-if="!keylist_ready && !message">Getting the list of
-        server keys. This might take a while
+        <p ng-if="!regexlist_ready && !message">Getting the regular expressions
+        list. This might take a while
         <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
-        <p ng-if="keylist_ready && keylist_empty">Salt reports that this
+        <p ng-if="regexlist_ready && regexlist_empty">Salt reports that this
         environment contains no server keys!<br />
         </p>
 
-        <div ng-if="keylist_ready && !keylist_empty">
+        <div ng-if="regexlist_ready && !regexlist_empty">
 
-          <p class="big green">Accepted Keys</p>
+          <!-- <p class="big"></p> -->
 
-          <div ng-if="!keylist_accept_empty">
           <div class="table-responsive" style="margin-top: 8px;">
             <table class="table table-striped table-bordered">
               <thead>
               <tr>
-                <th>Host Name</th>
+                <th>Name</th>
+                <th>Description</th>
                 <th>Action</th>
               </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="name in keylist.minions | filter:keyfilter">
-                <td>{{name}}</td>
+                <tr ng-repeat="item in regexlist | filter:keyfilter">
+                <td>{{item.Name}}</td>
+                <td>
+                  {{item.Desc}}<br />&nbsp;<br />Regex:
+                  <p style="margin-left: 16px; font-family:monospace;">
+                    {{item.Regex}}
+                  </p>
+                </td>
                 <td>
                   <a href="#" ng-click="dialog(name)">
                     <i class="fa fa-trash-o red" title="Delete Key"></i></a>
@@ -150,65 +156,8 @@
               </tbody>
             </table>
           </div> <!-- table-responsive -->
-          </div> <!-- keylist_accept_empty -->
-          <div ng-if="keylist_accept_empty">
-            <p>There are no accepted keys.</p>
-          </div>
-
-          <p class="big red">Unaccepted Keys</p>
-
-          <div ng-if="!keylist_unaccepted_empty">
-          <div class="table-responsive" style="margin-top: 8px;">
-            <table class="table table-striped table-bordered">
-              <thead>
-              <tr>
-                <th>Host Name</th>
-                <th>Action</th>
-              </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="name in keylist.minions_pre | filter:keyfilter">
-                <td>{{name}}</td>
-                <td>
-                  <a href="#" ng-click="Accept(name)">
-                    <i class="fa fa-check" title="Accept Key"></i></a>
-                  <a href="#" ng-click="Reject(name)">
-                    <i class="fa fa-times" title="Reject Key"></i></a>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div> <!-- table-responsive -->
-          </div> <!-- keylist_accept_empty -->
-          <div ng-if="keylist_unaccepted_empty">
-            <p>There are no unaccepted keys.</p>
-          </div>
-
-          <p class="big blue">Rejected Keys</p>
-
-          <div ng-if="!keylist_reject_empty">
-          <div class="table-responsive" style="margin-top: 8px;">
-            <table class="table table-striped table-bordered">
-              <thead>
-              <tr>
-                <th>Host Name</th>
-                <th>Action</th>
-              </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="name in keylist.minions_rejected | filter:keyfilter">
-                <td>{{name}}</td>
-                <td>
-                  <a href="#" ng-click="dialog(name)">
-                    <i class="fa fa-trash-o red" title="Delete Key"></i></a>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div> <!-- table-responsive -->
-          </div> <!-- keylist_accept_empty -->
-          <div ng-if="keylist_reject_empty">
-            <p>There are no rejected keys.</p>
+          <div ng-if="regexlist_empty">
+            <p>There are no regexes for this environment.</p>
           </div>
 
         </div> <!-- serverlist_ready -->
