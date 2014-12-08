@@ -75,7 +75,9 @@
     <div class="col-sm-12">
 
       Use this page to select classes (formulas and state files) that should
-      be assigned to hosts based on their host names.
+      be assigned to hosts. The assignment is based on comparing host names to
+      lists of regular expressions. These classes will only be applied to new
+      hosts, or for hosts that have had their classes deleted completely.
 
     </div>
   </div>
@@ -142,15 +144,16 @@
                 <td>{{item.Name}}</td>
                 <td>
                   {{item.Desc}}<br />&nbsp;<br />Regex:
-                  <p style="margin-left: 16px; font-family:monospace;">
+                  <p style="margin-left: 16px; font-family:monospace;
+                  color: blue;">
                     {{item.Regex}}
                   </p>
                 </td>
                 <td>
                   <a href="#" ng-click="dialog(name)">
-                    <i class="fa fa-trash-o red" title="Delete Key"></i></a>
+                    <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
                   <a href="#" ng-click="EnvConfig(name)">
-                    <i class="fa fa-cog" title="Environment Setting"></i></a>
+                    <i class="fa fa-cog" title="Configure classes"></i></a>
                 </td>
               </tr>
               </tbody>
