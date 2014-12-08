@@ -407,10 +407,6 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   // ----------------------------------------------------------------------
     clearMessages();
     $scope.envchosen.shown = true;
-    $scope.envsetting.shown = false;
-    $scope.envsetting.dc = "";
-    $scope.envsetting.env = "";
-    $scope.envsetting.version = "";
 
     $scope.mapconfig.map = [];
     $scope.mapconfig.shown = false;
