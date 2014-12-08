@@ -24,9 +24,9 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.environments = [];
   $scope.regexlist = {};
   $scope.keyfilter = "";
+  $scope.mapfilter = "";
   $scope.env = {};
   $scope.status = {};  // For env chooser button
-  $scope.grains = [];
   $scope.forminvalid = true; // For grains setting (dc,env,ver)
 
   // Alerting
@@ -38,12 +38,13 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   // Button enabling/disabling and content showing/hiding vars
   $scope.envchosen = {};
   $scope.envchosen.shown = false;
-  $scope.envsetting = {};
-  $scope.envsetting.shown = false;
-  $scope.envsetting.dc = "";
-  $scope.envsetting.env = "";
-  $scope.envsetting.version = "";
-  $scope.envsetting.numupdated = 0;
+  $scope.mapconfig = {};
+  $scope.mapconfig.map = [];
+  $scope.mapconfig.shown = false;
+  $scope.mapconfig.maplist_empty = true;
+  $scope.mapconfig.maplist_ready = false;
+  $scope.mapconfig.saltid = "";
+  $scope.mapconfig.regx_name = "";
   $scope.listbtnpressed = false;
   $scope.btnenvlistdisabled = false;
   $scope.showkeybtnblockhidden = false;
@@ -333,131 +334,48 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   // ENV MANAGEMENT
 
   // ----------------------------------------------------------------------
-  $scope.EnvConfig = function( name ) {
+  $scope.MapConfig = function( regex_id, name ) {
   // ----------------------------------------------------------------------
 
     clearMessages();
     $scope.envchosen.shown = false;
-    $scope.envsetting.shown = true;
-    $scope.envsetting.gotgrains = false;
-    $scope.envsetting.saltid = name;
+    $scope.mapconfig.shown = true;
+    $scope.mapconfig.saltid = regex_id;
+    $scope.mapconfig.regx_name = name;
 
-    $scope.FillGrainsTable( name );
+    $scope.FillMapsTable( regex_id );
   }
 
   // ----------------------------------------------------------------------
-  $scope.GetGrainsListOutputLine = function( id ) {
+  $scope.FillMapsTable = function( regex_id ) {
   // ----------------------------------------------------------------------
 
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/outputlines?job_id=" + id
+           + "/saltregexmanager/regex_sls_maps?regex_id=" + regex_id
+           + "&env_id=" + $scope.env.Id
     }).success( function(data, status, headers, config) {
 
-      var grains = [];
-
       // Extract data into array
-      //
       try {
-        grains = $.parseJSON(data[0].Text);
+        $scope.mapconfig.map = $.parseJSON(data.JsonData);
       } catch (e) {
         clearMessages();
         $scope.message = "Error: " + e;
         $scope.message_jobid = id;
       }
 
-      // The first (and only) item in the array is the hostname
-      // Save it to use later.
-
-      var names = [];
-
-      for(var key in grains){
-        names.push(key);
+      if( $scope.mapconfig.map.length == 0 ) {
+        $scope.mapconfig.maplist_empty = true;
+      } else {
+        $scope.mapconfig.maplist_empty = false;
       }
-
-      // Save the key/value under the hostname in a new array.
-
-      i = 0;
-      for(var key in grains[names[0]]){
-        $scope.grains[i] = {};
-        $scope.grains[i].key = key;
-        $scope.grains[i].value = grains[names[0]][key];
-        i = i + 1;
-      }
-
-      // Sort the array by key
-
-      $scope.grains.sort(function(a, b){
-        if(a.key < b.key) return -1;
-        if(a.key > b.key) return 1;
-        return 0;
-      });
 
       // Let the view know
 
-      $scope.envsetting.gotgrains = true;
+      $scope.mapconfig.maplist_ready = true;
 
-      // DC
-
-      var item = $.grep($scope.grains,
-        function(e){ return e.key == 'dc'; });
-
-      if( item.length > 0 ) {
-        $scope.envsetting.dc = item[0].value;
-      }
-
-      // ENV
-
-      var item = $.grep($scope.grains,
-        function(e){ return e.key == 'env'; });
-
-      if( item.length > 0 ) {
-        $scope.envsetting.env = item[0].value;
-      }
-
-      // VERSION
-
-      var item = $.grep($scope.grains,
-        function(e){ return e.key == 'version'; });
-
-      if( item.length > 0 ) {
-        $scope.envsetting.version = item[0].value;
-      }
-
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  };
-
-  // ----------------------------------------------------------------------
-  $scope.FillGrainsTable = function( saltid ) {
-  // ----------------------------------------------------------------------
-
-    $http({
-      method: 'GET',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltconfigserver/grains?salt_id=" + saltid
-           + "&env_id=" + $scope.env.Id
-    }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,50,0,$scope.GetGrainsListOutputLine);
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -493,6 +411,14 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.envsetting.dc = "";
     $scope.envsetting.env = "";
     $scope.envsetting.version = "";
+
+    $scope.mapconfig.map = [];
+    $scope.mapconfig.shown = false;
+    $scope.mapconfig.maplist_empty = true;
+    $scope.mapconfig.maplist_ready = false;
+    $scope.mapconfig.saltid = "";
+    $scope.mapconfig.regx_name = "";
+
     $rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
   }
 

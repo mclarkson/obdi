@@ -40,7 +40,7 @@
         ng-if="envchosen.shown" ng-click="Restart()" style="margin-top: -5px;">
         <i class="fa fa-refresh"> </i> Restart</button>
       <button class="btn btn-sm btn-default pull-right" type="button"
-      ng-if="envsetting.shown" ng-click="GoBack()"
+      ng-if="envsetting.shown || mapconfig.shown" ng-click="GoBack()"
       style="margin-top: -5px;">
         <i class="fa fa-arrow-left"> </i> Go Back</button>
       <button class="btn btn-sm btn-success pull-right" type="button"
@@ -49,6 +49,17 @@
       style="margin-top: -5px; margin-right:8px;">
         <i class="fa fa-check"> </i> Apply</button>
       </h3>
+    </div>
+  </div>
+
+  <div class="row" ng-if="!mapconfig.shown">
+    <div class="col-sm-12">
+
+      Use this page to select classes (formulas and state files) that should
+      be assigned to hosts. The assignment is based on comparing host names to
+      lists of regular expressions. These classes will only be applied to new
+      hosts, or for hosts that have had their classes deleted completely.
+
     </div>
   </div>
 
@@ -68,17 +79,6 @@
         jobid:{{message_jobid}}</a> 
         </span>
       </div>
-    </div>
-  </div>
-
-  <div class="row" ng-if="!envsetting.shown">
-    <div class="col-sm-12">
-
-      Use this page to select classes (formulas and state files) that should
-      be assigned to hosts. The assignment is based on comparing host names to
-      lists of regular expressions. These classes will only be applied to new
-      hosts, or for hosts that have had their classes deleted completely.
-
     </div>
   </div>
 
@@ -150,9 +150,9 @@
                   </p>
                 </td>
                 <td>
-                  <a href="#" ng-click="dialog(name)">
+                  <a href="#" ng-click="dialog(item.Name)">
                     <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
-                  <a href="#" ng-click="EnvConfig(name)">
+                  <a href="#" ng-click="MapConfig(item.Id,item.Name)">
                     <i class="fa fa-cog" title="Configure classes"></i></a>
                 </td>
               </tr>
@@ -171,68 +171,65 @@
 
   <!-- ENVIRONTMENT SETTING PAGE -->
 
-  <div class="row" ng-if="envsetting.shown">
+  <div class="row" ng-if="mapconfig.shown">
     <div class="col-sm-12">
 
-      <div ng-if="!envsetting.gotgrains && !message">
+      <div ng-if="!mapconfig.maplist_ready && !message">
         <h5>
-          Getting grains details from server
+          Getting class details from server
           <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
         </h5>
       </div>
 
-      <div ng-if="envsetting.gotgrains && !message">
+      <div ng-if="mapconfig.maplist_ready && !message">
 
-        <p class="big">Showing settings for {{envsetting.saltid}}</p>
+        <p class="big">Showing settings for the '{{mapconfig.regx_name}}'
+        regular expression.</p>
 
+        <!--
         <p class="append-sm-2">The Datacentre, Environment and Version fields
         shown below correspond respectively to the grains: dc, env and
         version, on the remote server, {{envsetting.saltid}}.</p>
+        -->
 
-        <form name="userForm" novalidate ng-submit="ApplySettings()">
+        <p ng-if="mapconfig.maplist_empty">
+        Salt reports that this environment contains no server keys!<br />
+        </p>
 
-          <div class="form-horizontal prepend-xs-1" role="form">
+        <div ng-if="!mapconfig.maplist_empty">
 
-            <!-- DC -->
+          <!-- <p class="big"></p> -->
 
-            <div class="form-group">
-              <label for="dc" class="col-sm-offset-1 col-sm-2 control-label">
-                Datacentre</label>
-              <div class="col-sm-7">
-                <input class="form-control" id="dc" ng-model="envsetting.dc"
-                placeholder="Datacentre short name" type="text" required>
-              </div>
-            </div>
+          <div class="table-responsive" style="margin-top: 8px;">
+            <table class="table table-striped table-bordered">
+              <thead>
+              <tr>
+                <th>Formula</th>
+                <th>State File</th>
+                <th>Action</th>
+              </tr>
+              </thead>
+              <tbody>
+                <tr ng-repeat="item in mapconfig.map | filter:mapfilter">
+                <td>{{item.Formula}}</td>
+                <td>{{item.StateFile}}</td>
+                <td>
+                  <a href="#" ng-click="dialog(item.Name)">
+                    <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
+                  <a href="#" ng-click="MapConfig(item.Id,item.Name)">
+                    <i class="fa fa-cog" title="Configure classes"></i></a>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div> <!-- table-responsive -->
+          <div ng-if="mapconfig.maplist_empty">
+            <p>There are no classes assigned to this regular expression.</p>
+          </div>
 
-            <!-- Env -->
+        </div> <!-- serverlist_ready -->
 
-            <div class="form-group">
-              <label for="env" class="col-sm-offset-1 col-sm-2 control-label">
-                Environment</label>
-              <div class="col-sm-7">
-                <input class="form-control" id="env" ng-model="envsetting.env"
-                placeholder="Environment short name" type="text" required>
-              </div>
-            </div>
-
-            <!-- Version -->
-
-            <div class="form-group">
-              <label for="version" class="col-sm-offset-1 col-sm-2 control-label">
-                Version</label>
-              <div class="col-sm-7">
-                <input class="form-control" id="version" ng-model="envsetting.version"
-                placeholder="The branch/tag, e.g. 1.2.10 - Can be empty" type="text">
-              </div>
-            </div>
-
-            {{copyToController(userForm.$invalid)}}
-
-          </div> <!-- form-horizontal -->
-
-        </form>
-
-      </div> <!-- envsetting.gotgrains -->
+      </div> <!-- mapconfig.maplist_ready -->
 
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->

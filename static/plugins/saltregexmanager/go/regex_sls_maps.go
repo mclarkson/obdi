@@ -400,7 +400,7 @@ func ReturnError(text string, response *[]byte) {
 // --------------------------------------------------------------------------
 func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 // --------------------------------------------------------------------------
-// Return list of all regexes for an environment
+// Return list of all regex_sls_maps for an environment
 
   // Check for required query string entries
 
@@ -412,7 +412,9 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
   }
 
   env_id := args.QueryString["env_id"][0]
-  //env_id_str, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+
+  // env_id is not needed. The following is done just to check that
+  // the user is allowed to access the dc/env.
 
   // Get the Dc (DcSysName) and Env (SysName) for this env_id using REST.
   // The Data Centre name and Environment name are stored in:
@@ -442,8 +444,7 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
     return nil
   }
 
-  dc := envs[0].DcSysName
-  env := envs[0].SysName
+  // If we get this far then the user is allowed access to this env.
 
   // PluginDatabasePath is required to open our private db
   if len(args.PathParams["PluginDatabasePath"]) == 0 {
@@ -467,31 +468,46 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 
   db := gormInst.DB() // shortcut
 
-  // Search the regexes table
+  // Search the regex_sls_maps table
 
-  regexes := []Regex{}
-  Lock()
-  if err := db.Find(&regexes, "dc = ? and env = ?", dc, env);
-  err.Error != nil {
-      if !err.RecordNotFound() {
-        Unlock()
-        ReturnError( err.Error.Error(), response )
-        return nil
-      }
+  maps := []RegexSlsMap{}
+
+  if len(args.QueryString["regex_id"]) == 0 {
+    // No regex_id was sent. Show all maps
+    Lock()
+    if err := db.Find(&maps);
+    err.Error != nil {
+        if !err.RecordNotFound() {
+          Unlock()
+          ReturnError( err.Error.Error(), response )
+          return nil
+        }
+    }
+    Unlock()
+  } else {
+    // Search for a specific regex_id mapping
+    regex_id := args.QueryString["regex_id"][0]
+    Lock()
+    if err := db.Find(&maps, "regex_id = ?", regex_id);
+    err.Error != nil {
+        if !err.RecordNotFound() {
+          Unlock()
+          ReturnError( err.Error.Error(), response )
+          return nil
+        }
+    }
+    Unlock()
   }
-  Unlock()
 
-  //   // Output as JSON
+  // Output as JSON
 
-	u := make([]map[string]interface{}, len(regexes))
-	for i := range regexes {
+	u := make([]map[string]interface{}, len(maps))
+	for i := range maps {
 		u[i] = make(map[string]interface{})
-		u[i]["Id"] = regexes[i].Id
-		u[i]["Regex"] = regexes[i].Regex
-		u[i]["Dc"] = regexes[i].Dc
-		u[i]["Env"] = regexes[i].Env
-		u[i]["Name"] = regexes[i].Name
-		u[i]["Desc"] = regexes[i].Desc
+		u[i]["Id"] = maps[i].Id
+		u[i]["RegexId"] = maps[i].RegexId
+		u[i]["Formula"] = maps[i].Formula
+		u[i]["StateFile"] = maps[i].StateFile
 	}
 
   type JsonOut struct {
