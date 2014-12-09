@@ -410,11 +410,19 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
     return nil
   }
 
+  // If version is 0 then use the main branch, for example, 'test'
+  // rather than 'test_0.1.0'
+
+  version_text := ""
+  if version != "0" {
+    version_text = "_" + version
+  }
+
   // Set up some fields for the Job struct we'll send to the master
   job := Job{
     ScriptId:         scripts[0].Id,
     EnvId:            env_id,
-    Args:             envs[0].SysName + "_" + version,
+    Args:             envs[0].SysName + version_text,
 
     // Type 1 - User Job - Output is
     //     sent back as it's created

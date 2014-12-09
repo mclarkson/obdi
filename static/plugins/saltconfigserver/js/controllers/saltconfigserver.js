@@ -1003,7 +1003,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     $scope.configview.saltid = saltid;
     $scope.configview.show = true;
 
-    $scope.FillDescriptionTable( $scope.env.SysName );
+    $scope.FillDescriptionTable();
     $scope.FillConfigTable( saltid );
   }
 
