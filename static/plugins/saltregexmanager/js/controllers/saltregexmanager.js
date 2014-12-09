@@ -41,6 +41,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.mapconfig = {};
   $scope.mapconfig.map = [];
   $scope.mapconfig.shown = false;
+  $scope.mapconfig.newclass = "";
   $scope.mapconfig.maplist_empty = true;
   $scope.mapconfig.maplist_ready = false;
   $scope.mapconfig.saltid = "";
@@ -81,84 +82,8 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.env = envobj;
   };
 
-  // KEY MANAGEMENT
-
   // ----------------------------------------------------------------------
-  $scope.Accept = function( name ) {
-  // ----------------------------------------------------------------------
-    $http({
-      method: 'POST',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltkeymanager/saltkeys?hostname=" + name
-           + "&type=accept"
-           + "&env_id=" + $scope.env.Id,
-    }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==401) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        clearMessages();
-        $scope.message = "Server said: " + data['Error'];
-        $scope.error = true;
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  }
-
-  // ----------------------------------------------------------------------
-  $scope.Reject = function( name ) {
-  // ----------------------------------------------------------------------
-    $http({
-      method: 'POST',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltkeymanager/saltkeys?hostname=" + name
-           + "&type=reject"
-           + "&env_id=" + $scope.env.Id,
-    }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==401) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        clearMessages();
-        $scope.message = "Server said: " + data['Error'];
-        $scope.error = true;
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  }
-
-  // ----------------------------------------------------------------------
-  $scope.Delete = function( name ) {
+  $scope.DeleteRegex = function( name ) {
   // ----------------------------------------------------------------------
 
     $http({
@@ -195,113 +120,6 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
-  $scope.GetKeyOutputLine = function( id ) {
-  // ----------------------------------------------------------------------
-  // Actually don't bother with the result, just refresh the list
-  // since we know Salt has finished now.
-
-    $scope.FillKeyListTable();
-  }
-
-  // DC, ENV & VERSION
-
-  // ----------------------------------------------------------------------
-  $scope.GetServerSettingOutputLine = function( id ) {
-  // ----------------------------------------------------------------------
-
-    //$scope.okmessage = "Server configuration was updated successfully.";
-    $http({
-      method: 'GET',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/outputlines?job_id=" + id
-    }).success( function(data, status, headers, config) {
-
-      try {
-        var result = $.parseJSON(data[0].Text);
-      } catch (e) {
-        clearMessages();
-        $scope.message = "Error: " + e;
-        $scope.message_jobid = id;
-      }
-
-      if( result.length == 0  ||
-          typeof( result[$scope.envsetting.saltid] ) == undefined ) {
-        $scope.message = "The configuration did not complete.";
-        $scope.message_jobid = id;
-      }
-
-      $scope.envsetting.numupdated += 1;
-      if( $scope.envsetting.numupdated == 3 ) {
-        $scope.okmessage = "Server configuration was updated successfully.";
-      }
-
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  };
-
-  // ----------------------------------------------------------------------
-  $scope.ApplyGrain = function( saltid, grain, data ) {
-  // ----------------------------------------------------------------------
-  // Send { Grain:"version",Text:"0.1.2" }
-
-    var config = {};
-    config.Grain = grain;
-    config.Text = data;
-
-    $http({
-      method: 'POST',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltconfigserver/grains?salt_id=" + saltid
-           + "&env_id=" + $scope.env.Id,
-      data: config
-    }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish( data.JobId, 50, 0,
-        $scope.GetServerSettingOutputLine );
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==401) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        clearMessages();
-        $scope.message = "Server said: " + data['Error'];
-        $scope.error = true;
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  };
-
-  // ----------------------------------------------------------------------
   $scope.ApplySettings = function() {
   // ----------------------------------------------------------------------
 
@@ -331,8 +149,6 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     }
   }
 
-  // ENV MANAGEMENT
-
   // ----------------------------------------------------------------------
   $scope.MapConfig = function( regex_id, name ) {
   // ----------------------------------------------------------------------
@@ -344,6 +160,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.mapconfig.regx_name = name;
 
     $scope.FillMapsTable( regex_id );
+    $scope.FillDescriptionTable();
   }
 
   // ----------------------------------------------------------------------
@@ -416,6 +233,16 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.mapconfig.regx_name = "";
 
     $rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.AddRegex = function( ) {
+  // ----------------------------------------------------------------------
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.AddClass = function( ) {
+  // ----------------------------------------------------------------------
   }
 
   // ----------------------------------------------------------------------
@@ -507,6 +334,146 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
         });
       }, delay );
   };
+
+  // ----------------------------------------------------------------------
+  $scope.GetStatedescOutputLine = function( id ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/outputlines?job_id=" + id
+    }).success( function(data, status, headers, config) {
+
+      try {
+        $scope.statedescs = $.parseJSON(data[0].Text);
+      } catch (e) {
+        clearMessages();
+        $scope.message = "Error: " + e;
+        $scope.message_jobid = id;
+      }
+
+      // Create an array of names for a select box
+      for( var i=0; i < $scope.statedescs.length; ++i ) {
+        $scope.statedescs_names[i] = $scope.statedescs[i].FormulaName;
+        if( $scope.statedescs[i].StateFileName.length > 0 ) {
+          $scope.statedescs_names[i] += "." +
+            $scope.statedescs[i].StateFileName;
+        }
+      }
+      // And sort the list
+      $scope.statedescs_names.sort(function(a, b){
+        if(a < b) return -1;
+        if(a > b) return 1;
+        return 0;
+      });
+
+      $scope.get_desc_in_progress = false;
+
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
+  $scope.FillDescriptionTable = function() {
+  // ----------------------------------------------------------------------
+
+    $scope.get_desc_in_progress = true;
+
+    $scope.statedescs = [];
+    $scope.statedescs_names = [];
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/saltconfigserver/statedescs"
+           + "?env_id=" + $scope.env.Id
+           + "&version=0", // Zero version - use main unversioned branch name
+    }).success( function(data, status, headers, config) {
+      $scope.PollForJobFinish(data.JobId,50,0,$scope.GetStatedescOutputLine);
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Could not load class list for environment version."
+                         + " Server said: " + data['Error'];
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
+  $scope.GetDescriptionChooser = function( name ) {
+  // ----------------------------------------------------------------------
+
+    if( typeof(name) == 'undefined' ) return "";
+
+    // Search in formula's
+    if( ! name.split(".")[1] ) {
+      var desc = $.grep($scope.statedescs,
+        function(e){ return (e.FormulaName==name && !e.StateFileName); });
+
+      if( desc.length > 0 ) {
+        if( desc[0].Desc.length > 0 ) {
+            return desc[0].Desc;
+        } else {
+          return "";
+        }
+      }
+    }
+
+    // Search in state files
+    desc = $.grep($scope.statedescs,
+      function(e){ return e.StateFileName == name.split(".")[1]; });
+
+    if( desc.length > 0 ) {
+      if( desc[0].Desc.length > 0 ) {
+          return desc[0].Desc;
+      } else {
+        return "No description available.";
+      }
+    }
+
+    if( $scope.get_desc_in_progress ) {
+        return "Getting description...";
+    } else {
+        return "";
+    }
+
+  }
 
   // ----------------------------------------------------------------------
   $scope.FillRegexListTable = function() {

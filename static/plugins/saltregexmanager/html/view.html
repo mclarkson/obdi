@@ -107,7 +107,7 @@
     </div>
   </div>
 
-  <!-- MAIN KEY MGMT PAGE -->
+  <!-- MAIN REGEX PAGE -->
 
   <div class="row" ng-if="envchosen.shown">
     <div class="col-sm-12">
@@ -127,6 +127,10 @@
         </p>
 
         <div ng-if="regexlist_ready && !regexlist_empty">
+
+          <button class="btn btn-sm btn-default" type="button"
+            ng-click="AddRegex()">
+            <i class="fa fa-plus-circle"> </i> Add Regular Expression</button>
 
           <!-- <p class="big"></p> -->
 
@@ -169,7 +173,7 @@
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->
 
-  <!-- ENVIRONTMENT SETTING PAGE -->
+  <!-- ADD CLASS TO REGEX PAGE -->
 
   <div class="row" ng-if="mapconfig.shown">
     <div class="col-sm-12">
@@ -216,8 +220,29 @@
                 <td>
                   <a href="#" ng-click="dialog(item.Name)">
                     <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
+                  <!--
                   <a href="#" ng-click="MapConfig(item.Id,item.Name)">
                     <i class="fa fa-cog" title="Configure classes"></i></a>
+                  -->
+                </td>
+              </tr>
+            </table>
+          </div>
+          <table class="table table-bordered" style="width:100%;overflow:auto">
+            <tbody>
+              <tr>
+                <!-- <td style="width:200px"> -->
+                <td class="white">
+                  <select ng-model="mapconfig.newclass" class="selectpicker"
+                  ng-options="item for item in statedescs_names"
+                  required >
+                    <option value="">Choose option</option>
+                  </select>
+                </td>
+                <td class="white" style="white-space: pre-wrap;">{{GetDescriptionChooser(mapconfig.newclass)}}</td>
+                <!-- <td style="width:20px;"> -->
+                <td class="white">
+                  <a href="#" ng-click="AddClass(configview.newclass)"><i class="fa fa-plus-circle green" title="Add Item"></i></a>
                 </td>
               </tr>
               </tbody>
