@@ -27,7 +27,6 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.mapfilter = "";
   $scope.env = {};
   $scope.status = {};  // For env chooser button
-  $scope.forminvalid = true; // For grains setting (dc,env,ver)
 
   // Alerting
   $scope.message = "";
@@ -46,6 +45,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.mapconfig.maplist_ready = false;
   $scope.mapconfig.saltid = "";
   $scope.mapconfig.regx_name = "";
+  $scope.mapconfig.apply_disabled = true;
   $scope.listbtnpressed = false;
   $scope.btnenvlistdisabled = false;
   $scope.showkeybtnblockhidden = false;
@@ -120,33 +120,13 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
-  $scope.ApplySettings = function() {
+  $scope.ApplyMap = function() {
   // ----------------------------------------------------------------------
 
     clearMessages();
 
-    $scope.envsetting.numupdated = 0;
+    $scope.mapconfig.apply_disabled = true;
 
-    if( $scope.envsetting.dc ) {
-      $scope.ApplyGrain( $scope.envsetting.saltid, "dc",
-          $scope.envsetting.dc );
-    } else {
-      $scope.envsetting.numupdated += 1;
-    }
-
-    if( $scope.envsetting.env ) {
-      $scope.ApplyGrain( $scope.envsetting.saltid, "env",
-          $scope.envsetting.env );
-    } else {
-      $scope.envsetting.numupdated += 1;
-    }
-
-    if( $scope.envsetting.version ) {
-      $scope.ApplyGrain( $scope.envsetting.saltid, "version",
-          $scope.envsetting.version );
-    } else {
-      $scope.envsetting.numupdated += 1;
-    }
   }
 
   // ----------------------------------------------------------------------
@@ -243,6 +223,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   // ----------------------------------------------------------------------
   $scope.AddClass = function( ) {
   // ----------------------------------------------------------------------
+    $scope.mapconfig.apply_disabled = false;
   }
 
   // ----------------------------------------------------------------------
@@ -468,7 +449,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     }
 
     if( $scope.get_desc_in_progress ) {
-        return "Getting description...";
+        return "Getting the list of classes...";
     } else {
         return "";
     }
