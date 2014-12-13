@@ -45,9 +45,12 @@ func (api *Api) SetDB(db *gorm.DB) {
 	api.db = db
 }
 
+// Port: Return a port to connect to for RPC and increment it for the
+// next connection
 func (api *Api) Port( ) int64 {
     apimutex.Lock()
     portnum := api.port
+    api.port += 1
     apimutex.Unlock()
     return portnum
 }
@@ -55,12 +58,6 @@ func (api *Api) Port( ) int64 {
 func (api *Api) SetPort( portnum int64 ) {
     apimutex.Lock()
     api.port = portnum
-    apimutex.Unlock()
-}
-
-func (api *Api) IncrementPort( ) {
-    apimutex.Lock()
-    api.port += 1
     apimutex.Unlock()
 }
 

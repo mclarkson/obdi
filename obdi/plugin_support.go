@@ -64,7 +64,7 @@ pluginFile, port, queryType string) ([]byte,error) {
         if err != nil {
             // Retry every millisecond
             time.Sleep( 1 * 1e6 )
-            //logit( "Retrying connection to port " + port )
+            logit( "Retrying connection to port " + port )
             client, err = rpc.Dial("tcp", ":" + port)
             if( numtries > 2000 ) {
                 txt := fmt.Sprintf( "Could not connect to plugin" +
@@ -86,6 +86,17 @@ pluginFile, port, queryType string) ([]byte,error) {
     switch queryType {
       case "GET": //do nowt
       case "POST":
+        // We don't know how to decode the data so save it raw
+        postData, err = ioutil.ReadAll(r.Body)
+        r.Body.Close()
+        if err != nil {
+          txt := fmt.Sprintf( "Could not get post data. %s", err )
+          rest.Error(w, txt, 400)
+          logit( txt )
+          err = cmd.Wait()
+          return reply,ApiError{"Error"}
+        }
+      case "PUT":
         // We don't know how to decode the data so save it raw
         postData, err = ioutil.ReadAll(r.Body)
         r.Body.Close()
@@ -183,7 +194,6 @@ func (api *Api) GenericGetEndpoint(w rest.ResponseWriter, r *rest.Request) {
 
     // Reserve the tcp plugin port now
     port := strconv.FormatInt( api.Port(),10 )
-    api.IncrementPort()
     defer api.DecrementPort()
 
     // Check credentials
@@ -262,7 +272,6 @@ func (api *Api) GenericPostEndpoint(w rest.ResponseWriter, r *rest.Request) {
 
     // Reserve the tcp plugin port now
     port := strconv.FormatInt( api.Port(),10 )
-    api.IncrementPort()
     defer api.DecrementPort()
 
     // Check credentials
@@ -341,7 +350,6 @@ func (api *Api) GenericDeleteEndpoint(w rest.ResponseWriter, r *rest.Request) {
 
     // Reserve the tcp plugin port now
     port := strconv.FormatInt( api.Port(),10 )
-    api.IncrementPort()
     defer api.DecrementPort()
 
     // Check credentials
@@ -417,5 +425,80 @@ func (api *Api) GenericDeleteEndpoint(w rest.ResponseWriter, r *rest.Request) {
 }
 
 func (api *Api) GenericPutEndpoint(w rest.ResponseWriter, r *rest.Request) {
+
+    // Reserve the tcp plugin port now
+    port := strconv.FormatInt( api.Port(),10 )
+    defer api.DecrementPort()
+
+    // Check credentials
+
+    login := r.PathParam("login")
+    guid := r.PathParam("GUID")
+
+    // Admin is not allowed
+    if login == "admin" {
+        rest.Error(w, "Not allowed", 400)
+        return
+    }
+
+    var errl error = nil
+    if _, errl = api.CheckLogin(login, guid); errl != nil {
+        logit( errl.Error() )
+        rest.Error(w, errl.Error(), 401)
+        return
+    }
+
+    defer api.TouchSession(guid)
+
+    // If the plugin isn't available try to compile it
+
+    endpoint := r.PathParam("endpoint")
+    subitem := r.PathParam("subitem")
+    pluginFile := path.Join(config.GoPluginDir, endpoint, subitem)
+    if err := api.CompilePlugin(w,pluginFile,endpoint,subitem); err != nil {
+      return
+    }
+
+    // Run the Go plugin
+
+    var reply []byte
+    var err error
+
+    if reply,err = api.RunPluginUsingRPC(w,r,pluginFile,port,"PUT");
+    err != nil {
+      return // Just return full error was written in RunPluginUsingRPC
+    }
+
+    // Decode arbitrary JSON. Pull out the mandatory PluginReturn
+    // and PluginError fields - all plugins send at least these.
+
+    var generic interface{}
+    json.Unmarshal( reply, &generic )
+    genericReply := generic.(map[string]interface{})
+
+    var pluginReturn int64
+    var pluginError string
+    for k, v := range genericReply {
+        if k == "PluginReturn" {
+            pluginReturn = int64(v.(float64))
+        }
+        if k == "PluginError" {
+            pluginError = v.(string)
+        }
+    }
+
+    // Return, 0 - success, 1 - error
+    if( pluginReturn == 1 ) {
+        txt := fmt.Sprintf( "Plugin returned error. %s", pluginError )
+        rest.Error(w, txt, 400)
+        logit( txt )
+        return
+    }
+
+    // Response is already json encoded so send it raw
+    w.(http.ResponseWriter).Write(reply)
+
+    // Too much noise
+    //api.LogActivity( session.Id, "Sent list of users" )
 }
 
