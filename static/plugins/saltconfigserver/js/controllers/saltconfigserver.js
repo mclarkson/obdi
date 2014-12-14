@@ -918,7 +918,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         }).success( function(data, status, headers, config) {
           job = data[0];
           if(job.Status == 0 || job.Status == 1 || job.Status == 4) {
-            if( count > 40 ) {
+            if( count > 60 ) {
               clearMessages();
               $scope.message = "Job took too long. check job ID " +
                                + id + ", then try again.";

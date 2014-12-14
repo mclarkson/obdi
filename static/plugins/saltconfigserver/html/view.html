@@ -89,7 +89,7 @@
       </div>
     </div>
 
-    <div class="row prepend-xs-2 append-xs-1" ng-if="!applypage.complete">
+    <div class="row prepend-xs-1" ng-if="!applypage.complete">
       <div class="col-sm-12" style="margin-left: 10px">
 
         <!-- Single button -->
@@ -411,14 +411,15 @@
         </p>
         <p>If all classes listed below are deleted then new classes will be
         created for this host for any client (such as this one) that issues an
-        ENC query, if relevant entries exist in the classes-to-host map.</p>
+        ENC query, but only if relevant entries exist in the classes-to-host
+        map.</p>
 
       <div class="table-responsive" style="width:100%;overflow:auto">
         <table class="table table-striped table-bordered prepend-sm-1"
-          style="width:100%;overflow:auto">
+          style="width:100%;overflow:auto;margin-bottom:4px;">
           <thead>
           <tr>
-            <th>Classes</th>
+            <th>Class</th>
             <th>Description</th>
             <th>Action</th>
           </tr>
@@ -433,26 +434,23 @@
                   <i class="fa fa-trash-o red" title="Delete"></i></a>
               </td>
             </tr>
-            <!--
           </table>
         </div>
         <table class="table table-bordered" style="width:100%;overflow:auto">
           <tbody>
-            -->
             <tr>
               <!-- <td style="width:200px"> -->
-              <td class="white">
+              <td class="white" style="white-space: nowrap">
                 <select ng-model="configview.newclass" class="selectpicker"
                 ng-options="item for item in statedescs_names"
                 required >
                   <option value="">Choose option</option>
                 </select>
+                <a href="#" ng-click="AddClass(configview.newclass)">
+                    <i class="fa fa-plus-circle green" title="Add Item"></i>
+                </a>
               </td>
-              <td class="white" style="white-space: pre-wrap;">{{GetDescriptionChooser(configview.newclass)}}</td>
-              <!-- <td style="width:20px;"> -->
-              <td class="white">
-                <a href="#" ng-click="AddClass(configview.newclass)"><i class="fa fa-plus-circle green" title="Add Item"></i></a>
-              </td>
+              <td class="white" style="white-space: pre-wrap;width: 100%;">{{GetDescriptionChooser(configview.newclass)}}</td>
             </tr>
           </tbody>
         </table>
