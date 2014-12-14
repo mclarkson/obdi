@@ -47,12 +47,13 @@ BUILD_NUMBER=1 ./dist/jenkins-build.sh
 
 Front-end
 
+* Per-minion configuration - custom pillar for minion classes
 * Versioning plugin
-* ~~Key Management plugin~~
+* ~~Key Management plugin - interface for salt-key~~
 * Salt job viewer plugin
 * Scripting plugin (chainable)
 * System Log plugin
-* Regex manager
+* ~~Regex manager - manage class to host mappings~~
 * Monitoring plugin
 * Plugin loader (from Git)
 * Bulk Tools
