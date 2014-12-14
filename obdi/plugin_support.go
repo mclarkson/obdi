@@ -63,8 +63,8 @@ pluginFile, port, queryType string) ([]byte,error) {
     for {
         if err != nil {
             // Retry every millisecond
-            time.Sleep( 1 * 1e6 )
-            logit( "Retrying connection to port " + port )
+            time.Sleep( 1 * time.Millisecond )
+            //logit( "Retrying connection to port " + port )
             client, err = rpc.Dial("tcp", ":" + port)
             if( numtries > 2000 ) {
                 txt := fmt.Sprintf( "Could not connect to plugin" +
