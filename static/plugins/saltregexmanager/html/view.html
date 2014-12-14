@@ -36,23 +36,35 @@
   <div class="row">
     <div class="col-lg-12">
       <h3 class="page-header">Map Classes to Hosts
+
       <button class="btn btn-sm btn-success pull-right" type="button"
         ng-if="envchosen.shown" ng-click="Restart()" style="margin-top: -5px;">
         <i class="fa fa-refresh"> </i> Restart</button>
+
       <button class="btn btn-sm btn-default pull-right" type="button"
-      ng-if="envsetting.shown || mapconfig.shown" ng-click="GoBack()"
+        ng-if="envsetting.shown || mapconfig.shown || editregex.shown"
+        ng-click="GoBack()"
       style="margin-top: -5px;">
         <i class="fa fa-arrow-left"> </i> Go Back</button>
+
       <button class="btn btn-sm btn-success pull-right" type="button"
       ng-if="mapconfig.shown" ng-disabled="mapconfig.apply_disabled"
       ng-click="ApplyMap()"
       style="margin-top: -5px; margin-right:8px;">
         <i class="fa fa-check"> </i> Apply</button>
+
+      <button class="btn btn-sm btn-success pull-right" type="button"
+      ng-if="editregex.shown"
+      ng-disabled="forminvalid || editregex.apply_disabled"
+      ng-click="ApplyRegex()"
+      style="margin-top: -5px; margin-right:8px;">
+        <i class="fa fa-check"> </i> Apply</button>
+
       </h3>
     </div>
   </div>
 
-  <div class="row" ng-if="!mapconfig.shown">
+  <div class="row" ng-if="!regexlist_ready">
     <div class="col-sm-12">
 
       Use this page to select classes (formulas and state files) that should
@@ -112,7 +124,7 @@
   <div class="row" ng-if="envchosen.shown">
     <div class="col-sm-12">
 
-      <h4 class="page-header">{{env.DcDispName}} - {{env.DispName}}</h4>
+      <h4 class="page-header" style="margin-top:{{spacing}}px">{{env.DcDispName}} - {{env.DispName}}</h4>
 
       <p ng-if="!btnshowkeysdisabled">Press the Show Server Keys button above
       to get the list of keys from Salt.</p>
@@ -129,7 +141,7 @@
         <div ng-if="regexlist_ready && !regexlist_empty">
 
           <button class="btn btn-sm btn-default" type="button"
-            ng-click="AddRegex()">
+            ng-click="NewRegex()">
             <i class="fa fa-plus-circle"> </i> Add Regular Expression</button>
 
           <!-- <p class="big"></p> -->
@@ -147,17 +159,19 @@
                 <tr ng-repeat="item in regexlist | filter:keyfilter">
                 <td>{{item.Name}}</td>
                 <td>
-                  {{item.Desc}}<br />&nbsp;<br />Regex:
-                  <p style="margin-left: 16px; font-family:monospace;
+                  {{item.Desc}}<br />Regex:
+                  <span style="margin-left: 6px; font-family:monospace;
                   color: blue;">
                     {{item.Regex}}
-                  </p>
+                  </span>
                 </td>
                 <td>
-                  <a href="#" ng-click="dialog(item.Name)">
+                  <a href="#" ng-click="DeleteRegex(item.Name,item.Id)">
                     <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
+                  <a href="#" ng-click="EditRegex($index)">
+                    <i class="fa fa-edit" title="Edit Regex"></i></a>
                   <a href="#" ng-click="MapConfig(item.Id,item.Name)">
-                    <i class="fa fa-cog" title="Configure classes"></i></a>
+                    <i class="fa fa-cog" title="Configure Classes"></i></a>
                 </td>
               </tr>
               </tbody>
@@ -170,6 +184,62 @@
         </div> <!-- serverlist_ready -->
 
       </div> <!-- listbtnpressed -->
+    </div> <!-- col-sm-12 -->
+  </div> <!-- row -->
+
+  <!-- EDIT REGEX PAGE -->
+
+  <div class="row" ng-if="editregex.shown">
+    <div class="col-sm-12">
+
+      <p>{{editregex.title}}</p>
+
+      <form name="userForm" novalidate ng-submit="ApplyRegex()">
+
+        <div class="form-horizontal prepend-xs-1" role="form">
+
+          <!-- Name -->
+
+          <div class="form-group">
+            <label for="dc" class="col-sm-offset-1 col-sm-2 control-label">
+              Name</label>
+            <div class="col-sm-7">
+              <input class="form-control" id="name"
+              ng-model="newregex.Name"
+              placeholder="Name" type="text" required>
+            </div>
+          </div>
+
+          <!-- Description -->
+
+          <div class="form-group">
+            <label for="desc" class="col-sm-offset-1 col-sm-2 control-label">
+              Description</label>
+            <div class="col-sm-7">
+              <input class="form-control" id="desc"
+              ng-model="newregex.Desc"
+              placeholder="Description" type="text" required>
+            </div>
+          </div>
+
+          <!-- Regular Expression -->
+
+          <div class="form-group">
+            <label for="regex" class="col-sm-offset-1 col-sm-2 control-label">
+              Regex</label>
+            <div class="col-sm-7">
+              <input class="form-control" id="regex"
+              ng-model="newregex.Regex"
+              placeholder="The regular expression" type="text">
+            </div>
+          </div>
+
+          {{copyToController(userForm.$invalid)}}
+
+        </div> <!-- form-horizontal -->
+
+      </form>
+
     </div> <!-- col-sm-12 -->
   </div> <!-- row -->
 
@@ -196,66 +266,53 @@
         version, on the remote server, {{envsetting.saltid}}.</p>
         -->
 
-        <p ng-if="mapconfig.maplist_empty">
-        There are no classes assigned!<br />
-        </p>
-
-        <div ng-if="!mapconfig.maplist_empty">
-
-          <!-- <p class="big"></p> -->
-
-          <div class="table-responsive" style="margin-top: 8px;">
-            <table class="table table-striped table-bordered"
-              style="margin-bottom:4px">
-              <thead>
-              <tr>
-                <th>Formula</th>
-                <th>State File</th>
-                <th>Action</th>
-              </tr>
-              </thead>
-              <tbody>
-                <tr ng-repeat="item in mapconfig.map | filter:mapfilter">
-                <td>{{item.Formula}}</td>
-                <td>{{item.StateFile}}</td>
-                <td>
-                  <a href="#" ng-click="dialog(item.Name)">
-                    <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
-                  <!--
-                  <a href="#" ng-click="MapConfig(item.Id,item.Name)">
-                    <i class="fa fa-cog" title="Configure classes"></i></a>
-                  -->
-                </td>
-              </tr>
-            </table>
-          </div>
-          <table class="table table-bordered" style="width:100%;overflow:auto">
+        <div class="table-responsive" style="margin-top: 8px;">
+          <table class="table table-striped table-bordered"
+            style="margin-bottom:4px">
+            <thead>
+            <tr>
+              <th>Formula</th>
+              <th>State File</th>
+              <th>Action</th>
+            </tr>
+            </thead>
             <tbody>
-              <tr>
-                <!-- <td style="width:200px"> -->
-                <td class="white">
-                  <select ng-model="mapconfig.newclass" class="selectpicker"
-                  ng-options="item for item in statedescs_names"
-                  required >
-                    <option value="">Choose option</option>
-                  </select>
-                </td>
-                <td class="white"style="white-space: pre-wrap;">{{GetDescriptionChooser(mapconfig.newclass)}}</td>
-                <!-- <td style="width:20px;"> -->
-                <td class="white">
-                  <a href="#" ng-click="AddClass(configview.newclass)">
-                    <i class="fa fa-plus-circle green" title="Add Class"></i>
-                  </a>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div> <!-- table-responsive -->
-          <div ng-if="mapconfig.maplist_empty">
-            <p>There are no classes assigned to this regular expression.</p>
-          </div>
-
-        </div> <!-- serverlist_ready -->
+              <tr ng-repeat="item in mapconfig.map | filter:mapfilter">
+              <td>{{item.Formula}}</td>
+              <td>{{item.StateFile}}</td>
+              <td>
+                <a href="#" ng-click="dialog(item.Name)">
+                  <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
+                <!--
+                <a href="#" ng-click="MapConfig(item.Id,item.Name)">
+                  <i class="fa fa-cog" title="Configure classes"></i></a>
+                -->
+              </td>
+            </tr>
+          </table>
+        </div>
+        <table class="table table-bordered" style="width:100%;overflow:auto">
+          <tbody>
+            <tr>
+              <!-- <td style="width:200px"> -->
+              <td class="white">
+                <select ng-model="mapconfig.newclass" class="selectpicker"
+                ng-options="item for item in statedescs_names"
+                required >
+                  <option value="">Choose option</option>
+                </select>
+              </td>
+              <td class="white"style="white-space: pre-wrap;">{{GetDescriptionChooser(mapconfig.newclass)}}</td>
+              <!-- <td style="width:20px;"> -->
+              <td class="white">
+                <a href="#" ng-click="AddClass(configview.newclass)">
+                  <i class="fa fa-plus-circle green" title="Add Class"></i>
+                </a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div> <!-- table-responsive -->
 
       </div> <!-- mapconfig.maplist_ready -->
 

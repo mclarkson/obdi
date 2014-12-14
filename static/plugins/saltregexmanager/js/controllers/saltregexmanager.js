@@ -46,12 +46,16 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.mapconfig.saltid = "";
   $scope.mapconfig.regx_name = "";
   $scope.mapconfig.apply_disabled = true;
+  $scope.editregex = {};
+  $scope.editregex.shown = false;
+  $scope.editregex.apply_disabled = false;
   $scope.listbtnpressed = false;
   $scope.btnenvlistdisabled = false;
   $scope.showkeybtnblockhidden = false;
   $scope.btnshowkeysdisabled = true;
   $scope.regexlist_ready = false;
   $scope.regexlist_empty = true;
+  $scope.spacing = 20;
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -120,6 +124,102 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
+  $scope.copyToController = function( invalid ) {
+  // ----------------------------------------------------------------------
+
+    $scope.forminvalid = invalid;
+
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.DeleteRegexRest = function( id ) {
+  // ----------------------------------------------------------------------
+
+    clearMessages();
+
+    $http({
+      method: 'DELETE',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/saltregexmanager/regexes/" + id
+           + "?env_id=" + $scope.env.Id,
+    }).success( function(data, status, headers, config) {
+        $scope.FillRegexListTable();
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.ApplyRegex = function() {
+  // ----------------------------------------------------------------------
+
+    clearMessages();
+
+    $scope.editregex.apply_disabled = true;
+
+    if( $scope.editregex.newregex == true ) {
+        method = 'POST';
+    } else {
+        method = 'PUT';
+    }
+
+    $http({
+      method: method,
+      data: $scope.newregex,
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/saltregexmanager/regexes"
+           + "?env_id=" + $scope.env.Id,
+    }).success( function(data, status, headers, config) {
+      $scope.okmessage = "Regex configuration was updated successfully.";
+      $scope.editregex.apply_disabled = false;
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  }
+
+  // ----------------------------------------------------------------------
   $scope.ApplyMap = function() {
   // ----------------------------------------------------------------------
 
@@ -127,6 +227,45 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
 
     $scope.mapconfig.apply_disabled = true;
 
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.EditRegex = function( index ) {
+  // ----------------------------------------------------------------------
+
+    clearMessages();
+
+    $scope.editregex.newregex = false;
+
+    $scope.newregex = $scope.regexlist[index];
+    $scope.editregex.title = "Edit settings for '" + $scope.newregex.Name
+        + "'";
+
+    $scope.editregex.apply_disabled = false;
+    $scope.forminvalid = true;
+    $scope.editregex.index = index;
+
+    $scope.envchosen.shown = false;
+    $scope.editregex.shown = true;
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.NewRegex = function() {
+  // ----------------------------------------------------------------------
+  // Reuse editregex
+
+    clearMessages();
+
+    $scope.editregex.newregex = true;
+
+    $scope.newregex = {};
+    $scope.editregex.title = "Enter details for the new regular expression:"
+
+    $scope.editregex.apply_disabled = false;
+    $scope.forminvalid = true;
+
+    $scope.envchosen.shown = false;
+    $scope.editregex.shown = true;
   }
 
   // ----------------------------------------------------------------------
@@ -212,12 +351,12 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.mapconfig.saltid = "";
     $scope.mapconfig.regx_name = "";
 
-    $rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
-  }
+    $scope.editregex.shown = false;
+    $scope.editregex.index = 0;
+    $scope.newregex = {};
 
-  // ----------------------------------------------------------------------
-  $scope.AddRegex = function( ) {
-  // ----------------------------------------------------------------------
+    $scope.FillRegexListTable();
+    //$rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
   }
 
   // ----------------------------------------------------------------------
@@ -237,6 +376,9 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.btnshowkeysdisabled = true;
     $scope.keylist_ready = false;
     $scope.keylist_empty = true;
+    $scope.regexlist_ready = false;
+    $scope.regexlist_empty = true;
+    $scope.spacing = 20;
   };
 
   // ----------------------------------------------------------------------
@@ -480,6 +622,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
       }
 
       $scope.regexlist_ready = true;
+      $scope.spacing = 0;
 
     }).error( function(data,status) {
       if (status>=500) {
@@ -547,6 +690,33 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   };
 
   $scope.FillEnvironmentsTable();
+
+  // --------------------------------------------------------------------
+  $scope.DeleteRegex = function (servername,id) {
+  // --------------------------------------------------------------------
+
+    $scope.servername = servername;
+    $scope.id = id;
+
+    var modalInstance = $modal.open({
+      templateUrl: 'myModalContent.html',
+      controller: $scope.ModalInstanceCtrl,
+      size: 'sm',
+      resolve: {
+        // the servername variable is passed to the ModalInstanceCtrl
+        servername: function () {
+          return $scope.servername;
+        }
+      }
+    });
+
+    modalInstance.result.then(function (servername) {
+      $log.info('Will delete: ' + $scope.servername + '(' + $scope.servername + ')' );
+      $scope.DeleteRegexRest($scope.id);
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
+  };
 
   // --------------------------------------------------------------------
   $scope.dialog = function (servername) {
