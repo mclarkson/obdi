@@ -18,10 +18,10 @@
 package main
 
 import (
-  //"fmt"
-  "github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
-  "net/http"
-  "sync"
+	//"fmt"
+	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
+	"net/http"
+	"sync"
 )
 
 var mutex = &sync.Mutex{}
@@ -29,222 +29,222 @@ var apimutex = &sync.Mutex{}
 
 func main() {
 
-  db := NewDB()
-  api := NewApi(db)
+	db := NewDB()
+	api := NewApi(db)
 
-  db.CreateAdminAccount()
+	db.CreateAdminAccount()
 
-  // TODO: disable this
-  db.DB().LogMode(false)
+	// TODO: disable this
+	db.DB().LogMode(false)
 
-  handler := rest.ResourceHandler{
-    EnableRelaxedContentType: true,
-    //DisableJsonIndent: true,
-    //EnableGzip:        true,
-  }
-  handler.SetRoutes(
+	handler := rest.ResourceHandler{
+		EnableRelaxedContentType: true,
+		//DisableJsonIndent: true,
+		//EnableGzip:        true,
+	}
+	handler.SetRoutes(
 
-    &rest.Route{"POST", "/login", api.DoLogin},
+		&rest.Route{"POST", "/login", api.DoLogin},
 
-    &rest.Route{"POST", "/#login/:GUID/logout", api.Logout},
+		&rest.Route{"POST", "/#login/:GUID/logout", api.Logout},
 
-    // ADMIN FUNCTIONS
+		// ADMIN FUNCTIONS
 
-    // USERS
+		// USERS
 
-    &rest.Route{"GET", "/:login/:GUID/users", api.GetAllUsers},
+		&rest.Route{"GET", "/:login/:GUID/users", api.GetAllUsers},
 
-    &rest.Route{"POST", "/:login/:GUID/users", api.AddUser},
+		&rest.Route{"POST", "/:login/:GUID/users", api.AddUser},
 
-    &rest.Route{"PUT", "/:login/:GUID/users/:id", api.UpdateUser},
+		&rest.Route{"PUT", "/:login/:GUID/users/:id", api.UpdateUser},
 
-    &rest.Route{"DELETE", "/:login/:GUID/users/:id", api.DeleteUser},
+		&rest.Route{"DELETE", "/:login/:GUID/users/:id", api.DeleteUser},
 
-    // Data Centres
+		// Data Centres
 
-    &rest.Route{"GET", "/:login/:GUID/dcs", api.GetAllDcs},
+		&rest.Route{"GET", "/:login/:GUID/dcs", api.GetAllDcs},
 
-    &rest.Route{"POST", "/:login/:GUID/dcs", api.AddDc},
+		&rest.Route{"POST", "/:login/:GUID/dcs", api.AddDc},
 
-    &rest.Route{"DELETE", "/:login/:GUID/dcs/:id", api.DeleteDc},
+		&rest.Route{"DELETE", "/:login/:GUID/dcs/:id", api.DeleteDc},
 
-    &rest.Route{"PUT", "/:login/:GUID/dcs/:id", api.UpdateDc},
+		&rest.Route{"PUT", "/:login/:GUID/dcs/:id", api.UpdateDc},
 
-    // Environments
+		// Environments
 
-    &rest.Route{"GET", "/#login/:GUID/envs", api.GetAllEnvs},
+		&rest.Route{"GET", "/#login/:GUID/envs", api.GetAllEnvs},
 
-    &rest.Route{"POST", "/:login/:GUID/envs", api.AddEnv},
+		&rest.Route{"POST", "/:login/:GUID/envs", api.AddEnv},
 
-    &rest.Route{"DELETE", "/:login/:GUID/envs/:id", api.DeleteEnv},
+		&rest.Route{"DELETE", "/:login/:GUID/envs/:id", api.DeleteEnv},
 
-    &rest.Route{"PUT", "/:login/:GUID/envs/:id", api.UpdateEnv},
+		&rest.Route{"PUT", "/:login/:GUID/envs/:id", api.UpdateEnv},
 
-    // User Permissions
+		// User Permissions
 
-    &rest.Route{"GET", "/:login/:GUID/perms", api.GetAllPerms},
+		&rest.Route{"GET", "/:login/:GUID/perms", api.GetAllPerms},
 
-    &rest.Route{"POST", "/:login/:GUID/perms", api.AddPerm},
+		&rest.Route{"POST", "/:login/:GUID/perms", api.AddPerm},
 
-    &rest.Route{"DELETE", "/:login/:GUID/perms/:id", api.DeletePerm},
+		&rest.Route{"DELETE", "/:login/:GUID/perms/:id", api.DeletePerm},
 
-    &rest.Route{"PUT", "/:login/:GUID/perms/:id", api.UpdatePerm},
+		&rest.Route{"PUT", "/:login/:GUID/perms/:id", api.UpdatePerm},
 
-    // Data Centre Capabilities
+		// Data Centre Capabilities
 
-    &rest.Route{"GET", "/:login/:GUID/dccaps", api.GetAllDcCaps},
+		&rest.Route{"GET", "/:login/:GUID/dccaps", api.GetAllDcCaps},
 
-    &rest.Route{"POST", "/:login/:GUID/dccaps", api.AddDcCap},
+		&rest.Route{"POST", "/:login/:GUID/dccaps", api.AddDcCap},
 
-    &rest.Route{"DELETE", "/:login/:GUID/dccaps/:id", api.DeleteDcCap},
+		&rest.Route{"DELETE", "/:login/:GUID/dccaps/:id", api.DeleteDcCap},
 
-    &rest.Route{"PUT", "/:login/:GUID/dccaps/:id", api.UpdateDcCap},
+		&rest.Route{"PUT", "/:login/:GUID/dccaps/:id", api.UpdateDcCap},
 
-    // Data Centre Capability Maps
+		// Data Centre Capability Maps
 
-    &rest.Route{"GET", "/:login/:GUID/dccapmaps", api.GetAllDcCapMaps},
+		&rest.Route{"GET", "/:login/:GUID/dccapmaps", api.GetAllDcCapMaps},
 
-    &rest.Route{"POST", "/:login/:GUID/dccapmaps", api.AddDcCapMap},
+		&rest.Route{"POST", "/:login/:GUID/dccapmaps", api.AddDcCapMap},
 
-    &rest.Route{"DELETE", "/:login/:GUID/dccapmaps/:id", api.DeleteDcCapMap},
+		&rest.Route{"DELETE", "/:login/:GUID/dccapmaps/:id", api.DeleteDcCapMap},
 
-    &rest.Route{"PUT", "/:login/:GUID/dccapmaps/:id", api.UpdateDcCapMap},
+		&rest.Route{"PUT", "/:login/:GUID/dccapmaps/:id", api.UpdateDcCapMap},
 
-    // Environment Capabilities
+		// Environment Capabilities
 
-    &rest.Route{"GET", "/:login/:GUID/envcaps", api.GetAllEnvCaps},
+		&rest.Route{"GET", "/:login/:GUID/envcaps", api.GetAllEnvCaps},
 
-    &rest.Route{"POST", "/:login/:GUID/envcaps", api.AddEnvCap},
+		&rest.Route{"POST", "/:login/:GUID/envcaps", api.AddEnvCap},
 
-    &rest.Route{"DELETE", "/:login/:GUID/envcaps/:id", api.DeleteEnvCap},
+		&rest.Route{"DELETE", "/:login/:GUID/envcaps/:id", api.DeleteEnvCap},
 
-    &rest.Route{"PUT", "/:login/:GUID/envcaps/:id", api.UpdateEnvCap},
+		&rest.Route{"PUT", "/:login/:GUID/envcaps/:id", api.UpdateEnvCap},
 
-    // Data Centre Capability Maps
+		// Data Centre Capability Maps
 
-    &rest.Route{"GET", "/:login/:GUID/envcapmaps", api.GetAllEnvCapMaps},
+		&rest.Route{"GET", "/:login/:GUID/envcapmaps", api.GetAllEnvCapMaps},
 
-    &rest.Route{"POST", "/:login/:GUID/envcapmaps", api.AddEnvCapMap},
+		&rest.Route{"POST", "/:login/:GUID/envcapmaps", api.AddEnvCapMap},
 
-    &rest.Route{"DELETE", "/:login/:GUID/envcapmaps/:id", api.DeleteEnvCapMap},
+		&rest.Route{"DELETE", "/:login/:GUID/envcapmaps/:id", api.DeleteEnvCapMap},
 
-    &rest.Route{"PUT", "/:login/:GUID/envcapmaps/:id", api.UpdateEnvCapMap},
+		&rest.Route{"PUT", "/:login/:GUID/envcapmaps/:id", api.UpdateEnvCapMap},
 
-    // Scripts
+		// Scripts
 
-    &rest.Route{"GET", "/#login/:GUID/scripts", api.GetAllScripts},
+		&rest.Route{"GET", "/#login/:GUID/scripts", api.GetAllScripts},
 
-    &rest.Route{"POST", "/:login/:GUID/scripts", api.AddScript},
+		&rest.Route{"POST", "/:login/:GUID/scripts", api.AddScript},
 
-    &rest.Route{"DELETE", "/:login/:GUID/scripts/:id", api.DeleteScript},
+		&rest.Route{"DELETE", "/:login/:GUID/scripts/:id", api.DeleteScript},
 
-    &rest.Route{"PUT", "/:login/:GUID/scripts/:id", api.UpdateScript},
+		&rest.Route{"PUT", "/:login/:GUID/scripts/:id", api.UpdateScript},
 
-    // Jobs
+		// Jobs
 
-    &rest.Route{"GET", "/#login/:GUID/jobs", api.GetAllJobs},
+		&rest.Route{"GET", "/#login/:GUID/jobs", api.GetAllJobs},
 
-    &rest.Route{"POST", "/#login/:GUID/jobs", api.AddJob},
+		&rest.Route{"POST", "/#login/:GUID/jobs", api.AddJob},
 
-    &rest.Route{"DELETE", "/#login/:GUID/jobs/kill/:id", api.KillJob},
+		&rest.Route{"DELETE", "/#login/:GUID/jobs/kill/:id", api.KillJob},
 
-    &rest.Route{"DELETE", "/#login/:GUID/jobs/:id", api.DeleteJob},
+		&rest.Route{"DELETE", "/#login/:GUID/jobs/:id", api.DeleteJob},
 
-    &rest.Route{"PUT", "/#login/:GUID/jobs/:id", api.UpdateJob},
+		&rest.Route{"PUT", "/#login/:GUID/jobs/:id", api.UpdateJob},
 
-    // Plugins
+		// Plugins
 
-    &rest.Route{"GET", "/#login/:GUID/plugins", api.GetAllPlugins},
+		&rest.Route{"GET", "/#login/:GUID/plugins", api.GetAllPlugins},
 
-    &rest.Route{"POST", "/#login/:GUID/plugins", api.AddPlugin},
+		&rest.Route{"POST", "/#login/:GUID/plugins", api.AddPlugin},
 
-    &rest.Route{"DELETE", "/#login/:GUID/plugins/:id", api.DeletePlugin},
+		&rest.Route{"DELETE", "/#login/:GUID/plugins/:id", api.DeletePlugin},
 
-    &rest.Route{"PUT", "/#login/:GUID/plugins/:id", api.UpdatePlugin},
+		&rest.Route{"PUT", "/#login/:GUID/plugins/:id", api.UpdatePlugin},
 
-    // Files
+		// Files
 
-    &rest.Route{"GET", "/#login/:GUID/files", api.GetAllFiles},
+		&rest.Route{"GET", "/#login/:GUID/files", api.GetAllFiles},
 
-    &rest.Route{"POST", "/#login/:GUID/files", api.AddFile},
+		&rest.Route{"POST", "/#login/:GUID/files", api.AddFile},
 
-    &rest.Route{"DELETE", "/#login/:GUID/files/:id", api.DeleteFile},
+		&rest.Route{"DELETE", "/#login/:GUID/files/:id", api.DeleteFile},
 
-    &rest.Route{"PUT", "/#login/:GUID/files/:id", api.UpdateFile},
+		&rest.Route{"PUT", "/#login/:GUID/files/:id", api.UpdateFile},
 
-    // Notifications
+		// Notifications
 
-    &rest.Route{"GET", "/#login/:GUID/outputlines", api.GetAllOutputLines},
+		&rest.Route{"GET", "/#login/:GUID/outputlines", api.GetAllOutputLines},
 
-    &rest.Route{"POST", "/#login/:GUID/outputlines", api.AddOutputLine},
+		&rest.Route{"POST", "/#login/:GUID/outputlines", api.AddOutputLine},
 
-    &rest.Route{"DELETE", "/#login/:GUID/outputlines/:id",
-    api.DeleteOutputLine},
+		&rest.Route{"DELETE", "/#login/:GUID/outputlines/:id",
+			api.DeleteOutputLine},
 
-    /* No changing output logs
-       // //&rest.Route{"PUT", "/#login/:GUID/outputlines/:id", // //
-       // api.UpdateOutputLine},
-    */
+		/* No changing output logs
+		   // //&rest.Route{"PUT", "/#login/:GUID/outputlines/:id", // //
+		   // api.UpdateOutputLine},
+		*/
 
-    // Generic
+		// Generic
 
-    &rest.Route{"GET", "/#login/:GUID/#endpoint",
-                api.GenericGetEndpoint},
+		&rest.Route{"GET", "/#login/:GUID/#endpoint",
+			api.GenericGetEndpoint},
 
-    &rest.Route{"GET", "/#login/:GUID/#endpoint/#subitem",
-                api.GenericGetEndpoint},
+		&rest.Route{"GET", "/#login/:GUID/#endpoint/#subitem",
+			api.GenericGetEndpoint},
 
-    &rest.Route{"POST", "/#login/:GUID/#endpoint",
-                api.GenericPostEndpoint},
+		&rest.Route{"POST", "/#login/:GUID/#endpoint",
+			api.GenericPostEndpoint},
 
-    &rest.Route{"POST", "/#login/:GUID/#endpoint/#subitem",
-                api.GenericPostEndpoint},
+		&rest.Route{"POST", "/#login/:GUID/#endpoint/#subitem",
+			api.GenericPostEndpoint},
 
-    &rest.Route{"DELETE", "/#login/:GUID/#endpoint/:id",
-                api.GenericDeleteEndpoint},
+		&rest.Route{"DELETE", "/#login/:GUID/#endpoint/:id",
+			api.GenericDeleteEndpoint},
 
-    &rest.Route{"DELETE", "/#login/:GUID/#endpoint/#subitem/:id",
-                api.GenericDeleteEndpoint},
+		&rest.Route{"DELETE", "/#login/:GUID/#endpoint/#subitem/:id",
+			api.GenericDeleteEndpoint},
 
-    &rest.Route{"PUT", "/#login/:GUID/#endpoint",api.GenericPutEndpoint},
+		&rest.Route{"PUT", "/#login/:GUID/#endpoint", api.GenericPutEndpoint},
 
-    &rest.Route{"PUT", "/#login/:GUID/#endpoint/#subitem",
-                api.GenericPutEndpoint},
-  )
+		&rest.Route{"PUT", "/#login/:GUID/#endpoint/#subitem",
+			api.GenericPutEndpoint},
+	)
 
-  // Add the REST API handle
-  http.Handle("/api/", http.StripPrefix("/api", &handler))
+	// Add the REST API handle
+	http.Handle("/api/", http.StripPrefix("/api", &handler))
 
-  // Add the Web Server handle
-  changeHeaderThenServe := func(h http.Handler) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-      // HTTP 1.1
-      w.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
-      // HTTP 1.0
-      w.Header().Add("Pragma", "no-cache")
-      // Proxies
-      w.Header().Add("Expires", "0")
-      h.ServeHTTP(w, r)
-    }
-  }
-  fs := http.FileServer(http.Dir(config.StaticContent))
-  fs = changeHeaderThenServe(fs)
-  http.Handle("/manager/", http.StripPrefix("/manager", fs))
+	// Add the Web Server handle
+	changeHeaderThenServe := func(h http.Handler) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			// HTTP 1.1
+			w.Header().Add("Cache-Control", "no-cache, no-store, must-revalidate")
+			// HTTP 1.0
+			w.Header().Add("Pragma", "no-cache")
+			// Proxies
+			w.Header().Add("Expires", "0")
+			h.ServeHTTP(w, r)
+		}
+	}
+	fs := http.FileServer(http.Dir(config.StaticContent))
+	fs = changeHeaderThenServe(fs)
+	http.Handle("/manager/", http.StripPrefix("/manager", fs))
 
-  // Add the Manager template handle
-  http.HandleFunc("/manager/run", api.serveRunTemplate)
+	// Add the Manager template handle
+	http.HandleFunc("/manager/run", api.serveRunTemplate)
 
-  // Add the Admin template handle
-  http.HandleFunc("/manager/admin", api.serveRunTemplate)
+	// Add the Admin template handle
+	http.HandleFunc("/manager/admin", api.serveRunTemplate)
 
-  if config.SSLEnabled {
-    if err := http.ListenAndServeTLS(config.ListenAddr,
-      config.SSLCertFile, config.SSLKeyFile, nil); err != nil {
-      logit(err.Error())
-    }
-  } else {
-    if err := http.ListenAndServe(config.ListenAddr, nil); err != nil {
-      logit(err.Error())
-    }
-  }
+	if config.SSLEnabled {
+		if err := http.ListenAndServeTLS(config.ListenAddr,
+			config.SSLCertFile, config.SSLKeyFile, nil); err != nil {
+			logit(err.Error())
+		}
+	} else {
+		if err := http.ListenAndServe(config.ListenAddr, nil); err != nil {
+			logit(err.Error())
+		}
+	}
 }

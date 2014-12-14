@@ -25,19 +25,19 @@ import (
 var config Config
 
 type Config struct {
-	Dbname              string  `toml:"database_path"`
-	PluginDbPath        string  `toml:"plugin_database_path"`
-	ListenAddr          string  `toml:"listen_address"`
-	SessionTimeout      int     `toml:"session_timeout"`
-	StaticContent       string  `toml:"static_content"`
-	SSLEnabled          bool    `toml:"ssl_enabled"`
-	SSLCertFile         string  `toml:"ssl_cert"`
-	SSLKeyFile          string  `toml:"ssl_key"`
-	GoPluginDir         string  `toml:"go_plugin_dir"`
-	GoPluginSource      string  `toml:"go_plugin_source"`
-	GoPluginPortStart   int64   `toml:"go_plugin_port_start"`
-	GoRoot              string  `toml:"go_root"`
-	TransportTimeout    int64   `toml:"transport_timeout"`
+	Dbname            string `toml:"database_path"`
+	PluginDbPath      string `toml:"plugin_database_path"`
+	ListenAddr        string `toml:"listen_address"`
+	SessionTimeout    int    `toml:"session_timeout"`
+	StaticContent     string `toml:"static_content"`
+	SSLEnabled        bool   `toml:"ssl_enabled"`
+	SSLCertFile       string `toml:"ssl_cert"`
+	SSLKeyFile        string `toml:"ssl_key"`
+	GoPluginDir       string `toml:"go_plugin_dir"`
+	GoPluginSource    string `toml:"go_plugin_source"`
+	GoPluginPortStart int64  `toml:"go_plugin_port_start"`
+	GoRoot            string `toml:"go_root"`
+	TransportTimeout  int64  `toml:"transport_timeout"`
 }
 
 func init() {

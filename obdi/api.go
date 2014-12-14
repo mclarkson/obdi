@@ -23,16 +23,16 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"sync"
 	"time"
-  "sync"
-    //"strconv"
+	//"strconv"
 )
 
 type Api struct {
 	db       *gorm.DB
-  port     int64
-  apimutex *sync.Mutex
-  compile  *sync.Mutex
+	port     int64
+	apimutex *sync.Mutex
+	compile  *sync.Mutex
 }
 
 type ApiError struct {
@@ -47,27 +47,27 @@ func (api *Api) SetDB(db *gorm.DB) {
 
 // Port: Return a port to connect to for RPC and increment it for the
 // next connection
-func (api *Api) Port( ) int64 {
-    apimutex.Lock()
-    portnum := api.port
-    api.port += 1
-    apimutex.Unlock()
-    return portnum
+func (api *Api) Port() int64 {
+	apimutex.Lock()
+	portnum := api.port
+	api.port += 1
+	apimutex.Unlock()
+	return portnum
 }
 
-func (api *Api) SetPort( portnum int64 ) {
-    apimutex.Lock()
-    api.port = portnum
-    apimutex.Unlock()
+func (api *Api) SetPort(portnum int64) {
+	apimutex.Lock()
+	api.port = portnum
+	apimutex.Unlock()
 }
 
-func (api *Api) DecrementPort( ) {
-    apimutex.Lock()
-    //startport,_ := strconv.ParseInt(config.GoPluginPortStart,10,64)
-    if( api.port != config.GoPluginPortStart ) {
-        api.port -= 1
-    }
-    apimutex.Unlock()
+func (api *Api) DecrementPort() {
+	apimutex.Lock()
+	//startport,_ := strconv.ParseInt(config.GoPluginPortStart,10,64)
+	if api.port != config.GoPluginPortStart {
+		api.port -= 1
+	}
+	apimutex.Unlock()
 }
 
 // TouchSession: Updates the UpdatedAt field
@@ -258,16 +258,16 @@ func (api *Api) serveRunTemplate(w http.ResponseWriter, r *http.Request) {
 
 func NewApi(db *Database) Api {
 	api := Api{}
-	api.SetDB( &db.dB )
-  //startport,_ := strconv.ParseInt(config.GoPluginPortStart,10,64)
-  api.SetPort( config.GoPluginPortStart )
-  api.compile = &sync.Mutex{}
+	api.SetDB(&db.dB)
+	//startport,_ := strconv.ParseInt(config.GoPluginPortStart,10,64)
+	api.SetPort(config.GoPluginPortStart)
+	api.compile = &sync.Mutex{}
 
-  // bigger values allow for more concurrency.
-  // increase to avoid 'use of closed network connection' errors
-  if config.TransportTimeout < 2 {
-      config.TransportTimeout = 2
-  }
+	// bigger values allow for more concurrency.
+	// increase to avoid 'use of closed network connection' errors
+	if config.TransportTimeout < 2 {
+		config.TransportTimeout = 2
+	}
 
 	return api
 }

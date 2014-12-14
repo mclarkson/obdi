@@ -28,7 +28,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-    "time"
+	"time"
 )
 
 // Job status
@@ -54,7 +54,7 @@ func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr}
-    client.Timeout = time.Duration(config.TransportTimeout) * 1e9
+	client.Timeout = time.Duration(config.TransportTimeout) * 1e9
 
 	//fmt.Printf("\n%s/api/%s\n",url,endpoint)
 	for strings.HasSuffix(url, "/") {
@@ -106,7 +106,7 @@ func DELETE(jsondata []byte, url, endpoint string) (r *http.Response,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr}
-    client.Timeout = time.Duration(config.TransportTimeout) * 1e9
+	client.Timeout = time.Duration(config.TransportTimeout) * 1e9
 
 	resp := &http.Response{}
 

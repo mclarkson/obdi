@@ -47,14 +47,14 @@ func (api *Api) DoLogin(w rest.ResponseWriter, r *rest.Request) {
 	// Get passhash for login from database
 
 	user := User{}
-    mutex.Lock()
+	mutex.Lock()
 	if api.db.Where(User{Login: userData.Login}).
 		First(&user).RecordNotFound() {
 		rest.Error(w, "User or password error.", 400)
-        mutex.Unlock()
+		mutex.Unlock()
 		return
 	}
-    mutex.Unlock()
+	mutex.Unlock()
 
 	// Check password against hash
 
@@ -74,7 +74,7 @@ func (api *Api) DoLogin(w rest.ResponseWriter, r *rest.Request) {
 
 	for {
 		session = Session{}
-        mutex.Lock()
+		mutex.Lock()
 		if api.db.Where(Session{UserId: user.Id}).
 			First(&session).RecordNotFound() {
 
@@ -84,21 +84,21 @@ func (api *Api) DoLogin(w rest.ResponseWriter, r *rest.Request) {
 			}
 			if err := api.db.Save(&session).Error; err != nil {
 				rest.Error(w, err.Error(), 400)
-                mutex.Unlock()
+				mutex.Unlock()
 				return
 			}
-            mutex.Unlock()
+			mutex.Unlock()
 			break
 
 		} else {
 
 			if err := api.db.Delete(&session).Error; err != nil {
 				rest.Error(w, err.Error(), 400)
-                mutex.Unlock()
+				mutex.Unlock()
 				return
 			}
 		}
-        mutex.Unlock()
+		mutex.Unlock()
 	}
 
 	logit("User '" + user.Login + "' logged in")
@@ -121,13 +121,13 @@ func (api *Api) Logout(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 
-    mutex.Lock()
+	mutex.Lock()
 	if err := api.db.Delete(&session).Error; err != nil {
 		rest.Error(w, err.Error(), 400)
-        mutex.Unlock()
+		mutex.Unlock()
 		return
 	}
-    mutex.Unlock()
+	mutex.Unlock()
 
 	logit("User '" + login + "' logged out")
 	api.LogActivity(session.Id, "User '"+login+"' logged out")
