@@ -17,23 +17,23 @@
 package main
 
 import (
-  "log"
-  "log/syslog"
-  "net"
-  "net/http"
-  "crypto/tls"
-  "net/rpc"
-  "encoding/json"
-  "fmt"
-  "io/ioutil"
-  "bytes"
-  "os"
-  "strings"
-  //"regexp"
-  "github.com/jinzhu/gorm"
-  _ "github.com/mattn/go-sqlite3"
-  "strconv"
-  "time"
+	"bytes"
+	"crypto/tls"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"log/syslog"
+	"net"
+	"net/http"
+	"net/rpc"
+	"os"
+	"strings"
+	//"regexp"
+	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
+	"strconv"
+	"time"
 )
 
 // ***************************************************************************
@@ -41,45 +41,45 @@ import (
 // ***************************************************************************
 
 type Enc struct {
-  Id        int64
-  SaltId    string    // Name of the server
-  Formula   string    // Directory name
-  StateFile string    // Sls file name
-  Dc        string    // Data centre name
-  Env       string    // Environment name
+	Id        int64
+	SaltId    string // Name of the server
+	Formula   string // Directory name
+	StateFile string // Sls file name
+	Dc        string // Data centre name
+	Env       string // Environment name
 }
 
 type Regex struct {
-  Id        int64
-  Regex     string    // The regular expression
-  Dc        string    // Data centre name
-  Env       string    // Environment name
-  Name      string    // Short name for the regex, no spaces
-  Desc      string    // Description of the regex
+	Id    int64
+	Regex string // The regular expression
+	Dc    string // Data centre name
+	Env   string // Environment name
+	Name  string // Short name for the regex, no spaces
+	Desc  string // Description of the regex
 }
 
 type RegexSlsMap struct {
-  Id        int64
-  RegexId   int64     // Not null
-  Formula   string    // Not null
-  StateFile string    // Can be null
+	Id        int64
+	RegexId   int64  // Not null
+	Formula   string // Not null
+	StateFile string // Can be null
 }
 
 // For retrieving details from the Manager
 type Env struct {
-    Id       int64
-    DispName string // Display name
-    SysName  string // System name (Salt name)
-    /*Dc          Dc*/ // only for creating Env and substruct
-    DcId               int64
-    DcSysName     string
-    //WorkerIp    string      // Hostname or IP address of worker
-    //WorkerPort  string      // Port the worker listens on
-    WorkerUrl string // Worker URL Prefix
-    WorkerKey string // Key (password) for worker
-    CreatedAt time.Time
-    UpdatedAt time.Time
-    DeletedAt time.Time
+	Id       int64
+	DispName string // Display name
+	SysName  string // System name (Salt name)
+	/*Dc          Dc*/ // only for creating Env and substruct
+	DcId               int64
+	DcSysName          string
+	//WorkerIp    string      // Hostname or IP address of worker
+	//WorkerPort  string      // Port the worker listens on
+	WorkerUrl string // Worker URL Prefix
+	WorkerKey string // Key (password) for worker
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 // --
@@ -87,79 +87,79 @@ type Env struct {
 var config *Config
 
 type Config struct {
-  Dbname    string
-  Portlock  *PortLock
-  Port      int
+	Dbname   string
+	Portlock *PortLock
+	Port     int
 }
 
 // --------------------------------------------------------------------------
 func (c *Config) DBPath() string {
-// --------------------------------------------------------------------------
-  return c.Dbname
+	// --------------------------------------------------------------------------
+	return c.Dbname
 }
 
 // --------------------------------------------------------------------------
-func (c *Config) SetDBPath( path string ) {
-// --------------------------------------------------------------------------
-  c.Dbname = path
+func (c *Config) SetDBPath(path string) {
+	// --------------------------------------------------------------------------
+	c.Dbname = path
 }
 
 // --------------------------------------------------------------------------
 func NewConfig() {
-// --------------------------------------------------------------------------
-  config = &Config{}
+	// --------------------------------------------------------------------------
+	config = &Config{}
 }
 
 // --
 
 type GormDB struct {
-  db gorm.DB
+	db gorm.DB
 }
 
 // --------------------------------------------------------------------------
 func (gormInst *GormDB) InitDB() error {
-// --------------------------------------------------------------------------
-  var err error
-  dbname := config.DBPath()
+	// --------------------------------------------------------------------------
+	var err error
+	dbname := config.DBPath()
 
-  gormInst.db, err = gorm.Open("sqlite3", dbname + "enc.db")
-  if err != nil {
-    return ApiError{"Open " + dbname + " failed. " + err.Error()}
-  }
+	gormInst.db, err = gorm.Open("sqlite3", dbname+"enc.db")
+	if err != nil {
+		return ApiError{"Open " + dbname + " failed. " + err.Error()}
+	}
 
-  if err := gormInst.db.AutoMigrate(Enc{}).Error; err != nil {
-    txt := fmt.Sprintf("AutoMigrate Enc table failed: %s", err)
-    return ApiError{ txt }
-  }
-  if err := gormInst.db.AutoMigrate(Regex{}).Error; err != nil {
-    txt := fmt.Sprintf("AutoMigrate Regex table failed: %s", err)
-    return ApiError{ txt }
-  }
-  if err := gormInst.db.AutoMigrate(RegexSlsMap{}).Error; err != nil {
-    txt := fmt.Sprintf("AutoMigrate RegexSlsMap table failed: %s", err)
-    return ApiError{ txt }
-  }
+	if err := gormInst.db.AutoMigrate(Enc{}).Error; err != nil {
+		txt := fmt.Sprintf("AutoMigrate Enc table failed: %s", err)
+		return ApiError{txt}
+	}
+	if err := gormInst.db.AutoMigrate(Regex{}).Error; err != nil {
+		txt := fmt.Sprintf("AutoMigrate Regex table failed: %s", err)
+		return ApiError{txt}
+	}
+	if err := gormInst.db.AutoMigrate(RegexSlsMap{}).Error; err != nil {
+		txt := fmt.Sprintf("AutoMigrate RegexSlsMap table failed: %s", err)
+		return ApiError{txt}
+	}
 
-  // Unique index is also a constraint, so are forced to be unique
-  gormInst.db.Model(Enc{}).AddIndex("idx_enc_salt_id", "salt_id")
+	// Unique index is also a constraint, so are forced to be unique
+	gormInst.db.Model(Enc{}).AddIndex("idx_enc_salt_id", "salt_id")
 
-  return nil
+	return nil
 }
 
 // --------------------------------------------------------------------------
 func (gormInst *GormDB) DB() *gorm.DB {
-// --------------------------------------------------------------------------
-  return &gormInst.db
+	// --------------------------------------------------------------------------
+	return &gormInst.db
 }
 
 // --------------------------------------------------------------------------
-func NewDB() (*GormDB,error) {
-// --------------------------------------------------------------------------
-  gormInst := &GormDB{}
-  if err := gormInst.InitDB(); err != nil {
-    return gormInst, err
-  }
-  return gormInst,nil
+func NewDB() (*GormDB, error) {
+	// --------------------------------------------------------------------------
+	gormInst := &GormDB{}
+	if err := gormInst.InitDB(); err != nil {
+		return gormInst, err
+	}
+	return gormInst, nil
 }
 
 // ***************************************************************************
@@ -167,18 +167,18 @@ func NewDB() (*GormDB,error) {
 // ***************************************************************************
 
 const (
-    SUCCESS = 0
-    ERROR = 1
+	SUCCESS = 0
+	ERROR   = 1
 )
 
 type ApiError struct {
-  details string
+	details string
 }
 
 // --------------------------------------------------------------------------
 func (e ApiError) Error() string {
-// --------------------------------------------------------------------------
-  return fmt.Sprintf("%s", e.details)
+	// --------------------------------------------------------------------------
+	return fmt.Sprintf("%s", e.details)
 }
 
 // ***************************************************************************
@@ -187,16 +187,16 @@ func (e ApiError) Error() string {
 
 // --------------------------------------------------------------------------
 func logit(msg string) {
-// --------------------------------------------------------------------------
-// Log to syslog
-    log.Println(msg)
-    l, err := syslog.New(syslog.LOG_ERR, "obdi")
-    defer l.Close()
-    if err != nil {
-        log.Fatal("error writing syslog!")
-    }
+	// --------------------------------------------------------------------------
+	// Log to syslog
+	log.Println(msg)
+	l, err := syslog.New(syslog.LOG_ERR, "obdi")
+	defer l.Close()
+	if err != nil {
+		log.Fatal("error writing syslog!")
+	}
 
-    l.Err(msg)
+	l.Err(msg)
 }
 
 // ***************************************************************************
@@ -206,41 +206,41 @@ func logit(msg string) {
 // PortLock is a locker which locks by binding to a port on the loopback IPv4
 // interface
 type PortLock struct {
-  hostport string
-  ln net.Listener
+	hostport string
+	ln       net.Listener
 }
 
 // --------------------------------------------------------------------------
 func NewPortLock(port int) *PortLock {
-// --------------------------------------------------------------------------
-// NewFLock creates new Flock-based lock (unlocked first)
-  return &PortLock{hostport: net.JoinHostPort("127.0.0.1", strconv.Itoa(port))}
+	// --------------------------------------------------------------------------
+	// NewFLock creates new Flock-based lock (unlocked first)
+	return &PortLock{hostport: net.JoinHostPort("127.0.0.1", strconv.Itoa(port))}
 }
 
 // --------------------------------------------------------------------------
 func (p *PortLock) Lock() {
-// --------------------------------------------------------------------------
-// Lock acquires the lock, blocking
-  t := 50 * time.Millisecond
-  for {
-    if l, err := net.Listen("tcp", p.hostport); err == nil {
-      p.ln = l // thanks to zhangpy
-      return
-    }
-    //log.Printf("spinning lock on %s (%s)", p.hostport, err)
-    time.Sleep(t)
-    //t = time.Duration(
-    //  math.Min( float64(time.Duration(float32(t) * 1.5)), 2000 ))
-  }
+	// --------------------------------------------------------------------------
+	// Lock acquires the lock, blocking
+	t := 50 * time.Millisecond
+	for {
+		if l, err := net.Listen("tcp", p.hostport); err == nil {
+			p.ln = l // thanks to zhangpy
+			return
+		}
+		//log.Printf("spinning lock on %s (%s)", p.hostport, err)
+		time.Sleep(t)
+		//t = time.Duration(
+		//  math.Min( float64(time.Duration(float32(t) * 1.5)), 2000 ))
+	}
 }
 
 // --------------------------------------------------------------------------
 func (p *PortLock) Unlock() {
-// --------------------------------------------------------------------------
-// Unlock releases the lock
-  if p.ln != nil {
-    p.ln.Close()
-  }
+	// --------------------------------------------------------------------------
+	// Unlock releases the lock
+	if p.ln != nil {
+		p.ln.Close()
+	}
 }
 
 // ***************************************************************************
@@ -249,102 +249,102 @@ func (p *PortLock) Unlock() {
 
 // --------------------------------------------------------------------------
 func GET(url, endpoint string) (r *http.Response, e error) {
-// --------------------------------------------------------------------------
-// Send HTTP GET request
+	// --------------------------------------------------------------------------
+	// Send HTTP GET request
 
-  // accept bad certs
-  tr := &http.Transport{
-    TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-  }
-  client := &http.Client{Transport: tr}
-  client.Timeout = 8 * 1e9
+	// accept bad certs
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	client.Timeout = 8 * 1e9
 
-  //fmt.Printf("\n%s/api/%s\n",url,endpoint)
-  for strings.HasSuffix(url, "/") {
-    url = strings.TrimSuffix(url, "/")
-  }
-  //fmt.Printf( "%s\n", url+"/"+endpoint )
-  resp, err := client.Get(url+"/"+endpoint)
-  if err != nil {
-    txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
-    return resp, ApiError{txt}
-  }
+	//fmt.Printf("\n%s/api/%s\n",url,endpoint)
+	for strings.HasSuffix(url, "/") {
+		url = strings.TrimSuffix(url, "/")
+	}
+	//fmt.Printf( "%s\n", url+"/"+endpoint )
+	resp, err := client.Get(url + "/" + endpoint)
+	if err != nil {
+		txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
+		return resp, ApiError{txt}
+	}
 
-  if resp.StatusCode != 200 {
-    var body []byte
-    if b, err := ioutil.ReadAll(resp.Body); err != nil {
-      txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
-      return resp, ApiError{txt}
-    } else {
-      body = b
-    }
-    type myErr struct {
-      Error string
-    }
-    errstr := myErr{}
-    if err := json.Unmarshal(body, &errstr); err != nil {
-      txt := fmt.Sprintf("Error decoding JSON "+
-        "returned from worker - (%s). Check the Worker URL.",
-        err.Error())
-      return resp, ApiError{txt}
-    }
+	if resp.StatusCode != 200 {
+		var body []byte
+		if b, err := ioutil.ReadAll(resp.Body); err != nil {
+			txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+			return resp, ApiError{txt}
+		} else {
+			body = b
+		}
+		type myErr struct {
+			Error string
+		}
+		errstr := myErr{}
+		if err := json.Unmarshal(body, &errstr); err != nil {
+			txt := fmt.Sprintf("Error decoding JSON "+
+				"returned from worker - (%s). Check the Worker URL.",
+				err.Error())
+			return resp, ApiError{txt}
+		}
 
-    //txt := fmt.Sprintf("%s", resp.StatusCode)
-    return resp, ApiError{errstr.Error}
-  }
+		//txt := fmt.Sprintf("%s", resp.StatusCode)
+		return resp, ApiError{errstr.Error}
+	}
 
-  return resp, nil
+	return resp, nil
 }
 
 // --------------------------------------------------------------------------
 func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
-// --------------------------------------------------------------------------
-// Send HTTP POST request
+	// --------------------------------------------------------------------------
+	// Send HTTP POST request
 
-  buf := bytes.NewBuffer(jsondata)
+	buf := bytes.NewBuffer(jsondata)
 
-  // accept bad certs
-  tr := &http.Transport{
-    TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-  }
-  client := &http.Client{Transport: tr}
-  client.Timeout = 8 * 1e9
+	// accept bad certs
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	client.Timeout = 8 * 1e9
 
-  //fmt.Printf("\n%s/api/%s\n",url,endpoint)
-  for strings.HasSuffix(url, "/") {
-    url = strings.TrimSuffix(url, "/")
-  }
-  //fmt.Printf( "%s\n", url+"/"+endpoint )
-  resp, err := client.Post(url+"/"+endpoint, "application/json", buf)
-  if err != nil {
-    txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
-    return resp, ApiError{txt}
-  }
+	//fmt.Printf("\n%s/api/%s\n",url,endpoint)
+	for strings.HasSuffix(url, "/") {
+		url = strings.TrimSuffix(url, "/")
+	}
+	//fmt.Printf( "%s\n", url+"/"+endpoint )
+	resp, err := client.Post(url+"/"+endpoint, "application/json", buf)
+	if err != nil {
+		txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
+		return resp, ApiError{txt}
+	}
 
-  if resp.StatusCode != 200 {
-    var body []byte
-    if b, err := ioutil.ReadAll(resp.Body); err != nil {
-      txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
-      return resp, ApiError{txt}
-    } else {
-      body = b
-    }
-    type myErr struct {
-      Error string
-    }
-    errstr := myErr{}
-    if err := json.Unmarshal(body, &errstr); err != nil {
-      txt := fmt.Sprintf("Error decoding JSON "+
-        "returned from worker - (%s). Check the Worker URL.",
-        err.Error())
-      return resp, ApiError{txt}
-    }
+	if resp.StatusCode != 200 {
+		var body []byte
+		if b, err := ioutil.ReadAll(resp.Body); err != nil {
+			txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+			return resp, ApiError{txt}
+		} else {
+			body = b
+		}
+		type myErr struct {
+			Error string
+		}
+		errstr := myErr{}
+		if err := json.Unmarshal(body, &errstr); err != nil {
+			txt := fmt.Sprintf("Error decoding JSON "+
+				"returned from worker - (%s). Check the Worker URL.",
+				err.Error())
+			return resp, ApiError{txt}
+		}
 
-    //txt := fmt.Sprintf("%s", resp.StatusCode)
-    return resp, ApiError{errstr.Error}
-  }
+		//txt := fmt.Sprintf("%s", resp.StatusCode)
+		return resp, ApiError{errstr.Error}
+	}
 
-  return resp, nil
+	return resp, nil
 }
 
 // ***************************************************************************
@@ -353,153 +353,150 @@ func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
 
 // Args are send over RPC from the Manager
 type Args struct {
-  PathParams    map[string]string
-  QueryString   map[string][]string
-  PostData      []byte
-  QueryType     string
+	PathParams  map[string]string
+	QueryString map[string][]string
+	PostData    []byte
+	QueryType   string
 }
 
 type PostedData struct {
-  Classes         []string
-  Dc              string
-  Environment     string
+	Classes []string
+	RegexId int64
 }
 
 type Plugin struct{}
 
 // The reply will be sent and output by the master
 type Reply struct {
-  // Add more if required
-  JsonData        string
-  // Must have the following
-  PluginReturn    int64        // 0 - success, 1 - error
-  PluginError     string
+	// Add more if required
+	JsonData string
+	// Must have the following
+	PluginReturn int64 // 0 - success, 1 - error
+	PluginError  string
 }
 
 // --------------------------------------------------------------------------
 func Unlock() {
-// --------------------------------------------------------------------------
-  config.Portlock.Unlock()
+	// --------------------------------------------------------------------------
+	config.Portlock.Unlock()
 }
 
 // --------------------------------------------------------------------------
 func Lock() {
-// --------------------------------------------------------------------------
-  config.Portlock.Lock()
+	// --------------------------------------------------------------------------
+	config.Portlock.Lock()
 }
 
 // --------------------------------------------------------------------------
 func ReturnError(text string, response *[]byte) {
-// --------------------------------------------------------------------------
-    errtext := Reply{ "", ERROR, text }
-    logit( text )
-    jsondata, _ := json.Marshal( errtext )
-    *response = jsondata
+	// --------------------------------------------------------------------------
+	errtext := Reply{"", ERROR, text}
+	logit(text)
+	jsondata, _ := json.Marshal(errtext)
+	*response = jsondata
 }
 
 // --------------------------------------------------------------------------
 func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
-// --------------------------------------------------------------------------
-// Return list of all regex_sls_maps for an environment
+	// --------------------------------------------------------------------------
+	// Return list of all regex_sls_maps for an environment
 
-  // Check for required query string entries
+	// Check for required query string entries
 
-  var err error
+	var err error
 
-  if len(args.QueryString["env_id"]) == 0 {
-    ReturnError( "'env_id' must be set", response )
-    return nil
-  }
+	if len(args.QueryString["env_id"]) == 0 {
+		ReturnError("'env_id' must be set", response)
+		return nil
+	}
 
-  env_id := args.QueryString["env_id"][0]
+	env_id := args.QueryString["env_id"][0]
 
-  // env_id is not needed. The following is done just to check that
-  // the user is allowed to access the dc/env.
+	// env_id is not needed. The following is done just to check that
+	// the user is allowed to access the dc/env.
 
-  // Get the Dc (DcSysName) and Env (SysName) for this env_id using REST.
-  // The Data Centre name and Environment name are stored in:
-  //   envs[0].DcSysName and envs[0].SysName
-  // GET queries always return an array of items, even for 1 item.
-  envs := []Env{}
-  resp, err := GET("https://127.0.0.1/api/" +
-    args.PathParams["login"] + "/" + args.PathParams["GUID"], "envs" +
-    "?env_id=" + env_id )
-  if b, err := ioutil.ReadAll(resp.Body); err != nil {
-    txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
-    errtext := Reply{ "",ERROR,txt }
-    jsondata, _ := json.Marshal( errtext )
-    *response = jsondata
-    return nil
-  } else {
-    json.Unmarshal(b,&envs)
-  }
-  // If envs is empty then we don't have permission to see it
-  // or the env does not exist so bug out.
-  if len(envs) == 0 {
-    txt := "The requested environment id does not exist" +
-      " or the permissions to access it are insufficient."
-    errtext := Reply{ "",ERROR,txt }
-    jsondata, _ := json.Marshal( errtext )
-    *response = jsondata
-    return nil
-  }
+	// Get the Dc (DcSysName) and Env (SysName) for this env_id using REST.
+	// The Data Centre name and Environment name are stored in:
+	//   envs[0].DcSysName and envs[0].SysName
+	// GET queries always return an array of items, even for 1 item.
+	envs := []Env{}
+	resp, err := GET("https://127.0.0.1/api/"+
+		args.PathParams["login"]+"/"+args.PathParams["GUID"], "envs"+
+		"?env_id="+env_id)
+	if b, err := ioutil.ReadAll(resp.Body); err != nil {
+		txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+		errtext := Reply{"", ERROR, txt}
+		jsondata, _ := json.Marshal(errtext)
+		*response = jsondata
+		return nil
+	} else {
+		json.Unmarshal(b, &envs)
+	}
+	// If envs is empty then we don't have permission to see it
+	// or the env does not exist so bug out.
+	if len(envs) == 0 {
+		txt := "The requested environment id does not exist" +
+			" or the permissions to access it are insufficient."
+		errtext := Reply{"", ERROR, txt}
+		jsondata, _ := json.Marshal(errtext)
+		*response = jsondata
+		return nil
+	}
 
-  // If we get this far then the user is allowed access to this env.
+	// If we get this far then the user is allowed access to this env.
 
-  // PluginDatabasePath is required to open our private db
-  if len(args.PathParams["PluginDatabasePath"]) == 0 {
-    ReturnError( "Internal Error: 'PluginDatabasePath' must be set",response )
-    return nil
-  }
+	// PluginDatabasePath is required to open our private db
+	if len(args.PathParams["PluginDatabasePath"]) == 0 {
+		ReturnError("Internal Error: 'PluginDatabasePath' must be set", response)
+		return nil
+	}
 
-  config.SetDBPath( args.PathParams["PluginDatabasePath"] )
+	config.SetDBPath(args.PathParams["PluginDatabasePath"])
 
-  // Open/Create database
-  var gormInst *GormDB
-  if gormInst,err = NewDB(); err!=nil {
-    txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
-           err.Error()
-    ReturnError( txt, response )
-    return nil
-  }
+	// Open/Create database
+	var gormInst *GormDB
+	if gormInst, err = NewDB(); err != nil {
+		txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
+			err.Error()
+		ReturnError(txt, response)
+		return nil
+	}
 
-  // Get Regex formula's and state files from enc tables
-  // Do we care who can get this information? I'm guessing 'no'.
+	// Get Regex formula's and state files from enc tables
+	// Do we care who can get this information? I'm guessing 'no'.
 
-  db := gormInst.DB() // shortcut
+	db := gormInst.DB() // shortcut
 
-  // Search the regex_sls_maps table
+	// Search the regex_sls_maps table
 
-  maps := []RegexSlsMap{}
+	maps := []RegexSlsMap{}
 
-  if len(args.QueryString["regex_id"]) == 0 {
-    // No regex_id was sent. Show all maps
-    Lock()
-    if err := db.Find(&maps);
-    err.Error != nil {
-        if !err.RecordNotFound() {
-          Unlock()
-          ReturnError( err.Error.Error(), response )
-          return nil
-        }
-    }
-    Unlock()
-  } else {
-    // Search for a specific regex_id mapping
-    regex_id := args.QueryString["regex_id"][0]
-    Lock()
-    if err := db.Find(&maps, "regex_id = ?", regex_id);
-    err.Error != nil {
-        if !err.RecordNotFound() {
-          Unlock()
-          ReturnError( err.Error.Error(), response )
-          return nil
-        }
-    }
-    Unlock()
-  }
+	if len(args.QueryString["regex_id"]) == 0 {
+		// No regex_id was sent. Show all maps
+		Lock()
+		if err := db.Find(&maps); err.Error != nil {
+			if !err.RecordNotFound() {
+				Unlock()
+				ReturnError(err.Error.Error(), response)
+				return nil
+			}
+		}
+		Unlock()
+	} else {
+		// Search for a specific regex_id mapping
+		regex_id := args.QueryString["regex_id"][0]
+		Lock()
+		if err := db.Find(&maps, "regex_id = ?", regex_id); err.Error != nil {
+			if !err.RecordNotFound() {
+				Unlock()
+				ReturnError(err.Error.Error(), response)
+				return nil
+			}
+		}
+		Unlock()
+	}
 
-  // Output as JSON
+	// Output as JSON
 
 	u := make([]map[string]interface{}, len(maps))
 	for i := range maps {
@@ -510,198 +507,242 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 		u[i]["StateFile"] = maps[i].StateFile
 	}
 
-  type JsonOut struct {
-    Text     string
-  }
+	type JsonOut struct {
+		Text string
+	}
 
-  TempJsonData, err := json.Marshal(u)
-  if err != nil {
-    ReturnError( "Marshal error: "+err.Error(), response )
-    return nil
-  }
-  reply := Reply{ string(TempJsonData), SUCCESS,"" }
-  jsondata, err := json.Marshal(reply)
+	TempJsonData, err := json.Marshal(u)
+	if err != nil {
+		ReturnError("Marshal error: "+err.Error(), response)
+		return nil
+	}
+	reply := Reply{string(TempJsonData), SUCCESS, ""}
+	jsondata, err := json.Marshal(reply)
 
-  if err != nil {
-    ReturnError( "Marshal error: "+err.Error(), response )
-    return nil
-  }
+	if err != nil {
+		ReturnError("Marshal error: "+err.Error(), response)
+		return nil
+	}
 
-  *response = jsondata
+	*response = jsondata
 
-  return nil
+	return nil
 }
 
 // --------------------------------------------------------------------------
 func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
-// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
 
-  //ReturnError( "Internal error: Unimplemented HTTP POST with data " +
-  //  fmt.Sprintf(": %s",args.PostData), response )
-  //return nil
+	var err error
 
-  var err error
+	// Needed if the salt version has been changed
+	if len(args.QueryString["env_id"]) == 0 {
+		ReturnError("'env_id' must be set", response)
+		return nil
+	}
 
-  // Needed if the salt version has been changed
-  if len(args.QueryString["env_id"]) == 0 {
-    ReturnError( "'env_id' must be set", response )
-    return nil
-  }
+	env_id := args.QueryString["env_id"][0]
+	//env_id_str, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
-  //env_id := args.QueryString["env_id"][0]
+	// Get the Dc (DcSysName) and Env (SysName) for this env_id using REST.
+	// The Data Centre name and Environment name are stored in:
+	//   envs[0].DcSysName and envs[0].SysName
+	// GET queries always return an array of items, even for 1 item.
+	envs := []Env{}
+	resp, err := GET("https://127.0.0.1/api/"+
+		args.PathParams["login"]+"/"+args.PathParams["GUID"], "envs"+
+		"?env_id="+env_id)
+	if b, err := ioutil.ReadAll(resp.Body); err != nil {
+		txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+		errtext := Reply{"", ERROR, txt}
+		jsondata, _ := json.Marshal(errtext)
+		*response = jsondata
+		return nil
+	} else {
+		json.Unmarshal(b, &envs)
+	}
+	// If envs is empty then we don't have permission to see it
+	// or the env does not exist so bug out.
+	if len(envs) == 0 {
+		txt := "The requested environment id does not exist" +
+			" or the permissions to access it are insufficient."
+		errtext := Reply{"", ERROR, txt}
+		jsondata, _ := json.Marshal(errtext)
+		*response = jsondata
+		return nil
+	}
 
-  // PluginDatabasePath is required to open our private db
-  if len(args.PathParams["PluginDatabasePath"]) == 0 {
-    ReturnError( "Internal Error: 'PluginDatabasePath' must be set",response )
-    return nil
-  }
+	//dc := envs[0].DcSysName
+	//env := envs[0].SysName
 
-  config.SetDBPath( args.PathParams["PluginDatabasePath"] )
+	// PluginDatabasePath is required to open our private db
+	if len(args.PathParams["PluginDatabasePath"]) == 0 {
+		ReturnError("Internal Error: 'PluginDatabasePath' must be set", response)
+		return nil
+	}
 
-  // Open/Create database
-  /*
-  var gormInst *GormDB
-  if gormInst,err = NewDB(); err!=nil {
-    txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
-           err.Error()
-    ReturnError( txt, response )
-    return nil
-  }
-  */
+	config.SetDBPath(args.PathParams["PluginDatabasePath"])
 
-  // Decode the post data into struct
+	// Open/Create database
+	var gormInst *GormDB
+	if gormInst, err = NewDB(); err != nil {
+		txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
+			err.Error()
+		ReturnError(txt, response)
+		return nil
+	}
 
-  var postedData PostedData
+	// Decode the post data into struct
 
-  if err := json.Unmarshal(args.PostData,&postedData); err != nil {
-    txt := fmt.Sprintf("Error decoding JSON ('%s')"+ ".", err.Error())
-    ReturnError( "Error decoding the POST data (" +
-      fmt.Sprintf("%s",args.PostData) + "). " + txt, response )
-    return nil
-  }
+	var postdata PostedData
 
-  // Remove all ENC Classes (before adding)
+	if err := json.Unmarshal(args.PostData, &postdata); err != nil {
+		txt := fmt.Sprintf("Error decoding JSON ('%s')"+".", err.Error())
+		ReturnError("Error decoding the POST data ("+
+			fmt.Sprintf("%s", args.PostData)+"). "+txt, response)
+		return nil
+	}
 
-  //db := gormInst.DB() // shortcut
+	db := gormInst.DB() // shortcut
 
-  // Lock()
-  // if err := db.Where("salt_id = ? and dc = ? and env = ?",
-  // salt_id,postedData.Dc,postedData.Environment).Delete(Enc{});
-  // err.Error != nil {
-  //     if !err.RecordNotFound() {
-  //       Unlock()
-  //       ReturnError( err.Error.Error(), response )
-  //       return nil
-  //     }
-  // }
-  // Unlock()
+	// Remove all RegexSLSMap Classes (before adding)
 
-  // Output as JSON
+	Lock()
+	if err := db.Where("regex_id = ?", postdata.RegexId).Delete(RegexSlsMap{}); err.Error != nil {
+		if !err.RecordNotFound() {
+			Unlock()
+			ReturnError(err.Error.Error(), response)
+			return nil
+		}
+	}
+	Unlock()
 
-  type JsonOut struct {
-    Text     string
-  }
+	// Add the ENC classes
 
-  jsonout := JsonOut { "PostRequest" }
-  TempJsonData, err := json.Marshal(jsonout)
-  if err != nil {
-    ReturnError( "Marshal error: "+err.Error(), response )
-    return nil
-  }
-  reply := Reply{ string(TempJsonData), SUCCESS,"" }
-  jsondata, err := json.Marshal(reply)
+	for i := range postdata.Classes {
+		classes := strings.Split(postdata.Classes[i], ".")
+		formula := ""
+		statefile := ""
+		switch len(classes) {
+		case 0:
+			continue
+		case 1:
+			formula = classes[0]
+		case 2:
+			formula = classes[0]
+			statefile = classes[1]
+		}
+		regexmap := RegexSlsMap{
+			Id:        0,
+			Formula:   formula,
+			StateFile: statefile,
+			RegexId:   postdata.RegexId,
+		}
+		Lock()
+		if err := db.Create(&regexmap); err.Error != nil {
+			Unlock()
+			ReturnError(err.Error.Error(), response)
+			return nil
+		}
+		Unlock()
+	}
 
-  if err != nil {
-    ReturnError( "Marshal error: "+err.Error(), response )
-    return nil
-  }
+	reply := Reply{"", SUCCESS, ""}
+	jsondata, err := json.Marshal(reply)
 
-  *response = jsondata
+	if err != nil {
+		ReturnError("Marshal error: "+err.Error(), response)
+		return nil
+	}
 
-  return nil
+	*response = jsondata
 
+	return nil
 }
 
 // --------------------------------------------------------------------------
 func (t *Plugin) DeleteRequest(args *Args, response *[]byte) error {
-// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
 
-  // Check for required query string entries
+	// Check for required query string entries
 
-  if len(args.QueryString["env_id"]) == 0 {
-    ReturnError( "'env_id' must be set", response )
-    return nil
-  }
+	if len(args.QueryString["env_id"]) == 0 {
+		ReturnError("'env_id' must be set", response)
+		return nil
+	}
 
-  //env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+	//env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
-  // PluginDatabasePath is required to open our private db
-  if len(args.PathParams["PluginDatabasePath"]) == 0 {
-    ReturnError( "Internal Error: 'PluginDatabasePath' must be set",response )
-    return nil
-  }
+	// PluginDatabasePath is required to open our private db
+	if len(args.PathParams["PluginDatabasePath"]) == 0 {
+		ReturnError("Internal Error: 'PluginDatabasePath' must be set", response)
+		return nil
+	}
 
-  config.SetDBPath( args.PathParams["PluginDatabasePath"] )
+	config.SetDBPath(args.PathParams["PluginDatabasePath"])
 
-  var err error
+	var err error
 
-  // Open/Create database
-  /*
-  var gormInst *GormDB
-  if gormInst,err = NewDB(); err!=nil {
-    txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
-           err.Error()
-    ReturnError( txt, response )
-    return nil
-  }
-  */
+	// Open/Create database
+	/*
+	  var gormInst *GormDB
+	  if gormInst,err = NewDB(); err!=nil {
+	    txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
+	           err.Error()
+	    ReturnError( txt, response )
+	    return nil
+	  }
+	*/
 
-  // Send the Job ID as the RPC reply (back to the master)
+	// Send the Job ID as the RPC reply (back to the master)
 
-  type JsonOut struct {
-    Text     string
-  }
+	type JsonOut struct {
+		Text string
+	}
 
-  jsonout := JsonOut { "DeleteRequest" }
-  TempJsonData, err := json.Marshal(jsonout)
-  if err != nil {
-    ReturnError( "Marshal error: "+err.Error(), response )
-    return nil
-  }
-  reply := Reply{ string(TempJsonData), SUCCESS,"" }
-  jsondata, err := json.Marshal(reply)
+	jsonout := JsonOut{"DeleteRequest"}
+	TempJsonData, err := json.Marshal(jsonout)
+	if err != nil {
+		ReturnError("Marshal error: "+err.Error(), response)
+		return nil
+	}
+	reply := Reply{string(TempJsonData), SUCCESS, ""}
+	jsondata, err := json.Marshal(reply)
 
-  if err != nil {
-    ReturnError( "Marshal error: "+err.Error(), response )
-    return nil
-  }
+	if err != nil {
+		ReturnError("Marshal error: "+err.Error(), response)
+		return nil
+	}
 
-  *response = jsondata
+	*response = jsondata
 
-  return nil
+	return nil
 }
 
 // --------------------------------------------------------------------------
 func (t *Plugin) HandleRequest(args *Args, response *[]byte) error {
-// --------------------------------------------------------------------------
-// All plugins must have this.
+	// --------------------------------------------------------------------------
+	// All plugins must have this.
 
-  if len(args.QueryType) > 0 {
-    switch args.QueryType {
-      case "GET": t.GetRequest(args, response)
-                  return nil
-      case "POST": t.PostRequest(args, response)
-                   return nil
-      case "DELETE": t.DeleteRequest(args, response)
-                   return nil
-    }
-    ReturnError( "Internal error: Invalid HTTP request type for this plugin " +
-      args.QueryType, response )
-    return nil
-  } else {
-    ReturnError( "Internal error: HTTP request type was not set", response )
-    return nil
-  }
+	if len(args.QueryType) > 0 {
+		switch args.QueryType {
+		case "GET":
+			t.GetRequest(args, response)
+			return nil
+		case "POST":
+			t.PostRequest(args, response)
+			return nil
+		case "DELETE":
+			t.DeleteRequest(args, response)
+			return nil
+		}
+		ReturnError("Internal error: Invalid HTTP request type for this plugin "+
+			args.QueryType, response)
+		return nil
+	} else {
+		ReturnError("Internal error: HTTP request type was not set", response)
+		return nil
+	}
 }
 
 // ***************************************************************************
@@ -710,32 +751,32 @@ func (t *Plugin) HandleRequest(args *Args, response *[]byte) error {
 
 // --------------------------------------------------------------------------
 func main() {
-// --------------------------------------------------------------------------
+	// --------------------------------------------------------------------------
 
-  // Sets the global config var
-  NewConfig()
+	// Sets the global config var
+	NewConfig()
 
-  // Create a lock file to use for synchronisation
-  config.Port = 49993
-  config.Portlock = NewPortLock( config.Port )
+	// Create a lock file to use for synchronisation
+	config.Port = 49993
+	config.Portlock = NewPortLock(config.Port)
 
-  plugin := new(Plugin)
-  rpc.Register(plugin)
+	plugin := new(Plugin)
+	rpc.Register(plugin)
 
-  listener, err := net.Listen("tcp", ":" + os.Args[1])
-  if err != nil {
-      txt := fmt.Sprintf( "Listen error. ", err )
-      logit( txt )
-  }
+	listener, err := net.Listen("tcp", ":"+os.Args[1])
+	if err != nil {
+		txt := fmt.Sprintf("Listen error. ", err)
+		logit(txt)
+	}
 
-  //for {
-    if conn, err := listener.Accept(); err != nil {
-      txt := fmt.Sprintf( "Accept error. ", err )
-      logit( txt )
-    } else {
-      rpc.ServeConn(conn)
-    }
-  //}
+	//for {
+	if conn, err := listener.Accept(); err != nil {
+		txt := fmt.Sprintf("Accept error. ", err)
+		logit(txt)
+	} else {
+		rpc.ServeConn(conn)
+	}
+	//}
 }
 
-// vim:ts=2:sw=2:et
+// vim:ts=2:sw=2

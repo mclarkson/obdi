@@ -43,7 +43,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.mapconfig.newclass = "";
   $scope.mapconfig.maplist_empty = true;
   $scope.mapconfig.maplist_ready = false;
-  $scope.mapconfig.saltid = "";
+  $scope.mapconfig.regex_id = 0;
   $scope.mapconfig.regx_name = "";
   $scope.mapconfig.apply_disabled = true;
   $scope.editregex = {};
@@ -220,14 +220,90 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
+  $scope.AddClass = function( classname ) {
+  // ----------------------------------------------------------------------
+    clearMessages();
+
+    if( !$scope.mapconfig.map ) {
+        $scope.mapconfig = {};
+        $scope.mapconfig.map = [];
+    }
+
+    // Don't allow duplicates
+    for( var i=0; i < $scope.mapconfig.map.length; ++i ) {
+      if(  $scope.mapconfig.map[i].Class == classname ) {
+        // It's in the list so leave
+        $scope.message = "Cannot add duplicate class.";
+        return;
+      }
+    }
+
+    // Add it
+    //$scope.mapconfig.changed = true;
+    //$scope.mapconfig.classeschanged = true;
+    $scope.mapconfig.newclass = ""; // reset select box
+    $scope.mapconfig.map.push( {"Class":classname} );
+    $scope.mapconfig.apply_disabled = false;
+  };
+
+  // ----------------------------------------------------------------------
   $scope.ApplyMap = function() {
   // ----------------------------------------------------------------------
 
     clearMessages();
 
+    // Disable the Apply button
     $scope.mapconfig.apply_disabled = true;
 
-  }
+    // Load 'config' with:
+    //    Classes     []string
+    //    RegexId     int64
+
+    var config = {};
+    config.Classes = [];
+
+    // Classes
+    map = $scope.mapconfig.map;
+    for( var i=0; i < map.length; ++i ) {
+      config.Classes.push( map[i].Class);
+    }
+
+    // RegexId
+    config.RegexId = $scope.mapconfig.regex_id;
+
+    $http({
+      method: 'POST',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/saltregexmanager/regex_sls_maps"
+           + "?env_id=" + $scope.env.Id,
+      data: config
+    }).success( function(data, status, headers, config) {
+      $scope.okmessage = "Server configuration was updated successfully.";
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
 
   // ----------------------------------------------------------------------
   $scope.EditRegex = function( index ) {
@@ -275,11 +351,51 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     clearMessages();
     $scope.envchosen.shown = false;
     $scope.mapconfig.shown = true;
-    $scope.mapconfig.saltid = regex_id;
+    $scope.mapconfig.regex_id = regex_id;
     $scope.mapconfig.regx_name = name;
 
     $scope.FillMapsTable( regex_id );
     $scope.FillDescriptionTable();
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.GetDescription = function( name ) {
+  // ----------------------------------------------------------------------
+
+    if( typeof(name) == 'undefined' ) return "";
+
+    // Search in formula's
+    if( ! name.split(".")[1] ) {
+      var desc = $.grep($scope.statedescs,
+        function(e){ return (e.FormulaName==name && !e.StateFileName); });
+
+      if( desc.length > 0 ) {
+        if( desc[0].Desc.length > 0 ) {
+            return desc[0].Desc;
+        } else {
+          return "No description available.";
+        }
+      }
+    }
+
+    // Search in state files
+    desc = $.grep($scope.statedescs,
+      function(e){ return e.StateFileName == name.split(".")[1]; });
+
+    if( desc.length > 0 ) {
+      if( desc[0].Desc.length > 0 ) {
+          return desc[0].Desc;
+      } else {
+        return "No description available.";
+      }
+    }
+
+    if( $scope.get_desc_in_progress ) {
+        return "Getting description...";
+    } else {
+        return "No description available.";
+    }
+
   }
 
   // ----------------------------------------------------------------------
@@ -306,6 +422,15 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
         $scope.mapconfig.maplist_empty = true;
       } else {
         $scope.mapconfig.maplist_empty = false;
+      }
+
+      for( var i=0; i<$scope.mapconfig.map.length; ++i ) {
+          if( $scope.mapconfig.map[i].StateFile == "" ) {
+              $scope.mapconfig.map[i].Class = $scope.mapconfig.map[i].Formula;
+          } else {
+              $scope.mapconfig.map[i].Class = $scope.mapconfig.map[i].Formula +
+                  "." + $scope.mapconfig.map[i].StateFile;
+          }
       }
 
       // Let the view know
@@ -348,7 +473,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.mapconfig.shown = false;
     $scope.mapconfig.maplist_empty = true;
     $scope.mapconfig.maplist_ready = false;
-    $scope.mapconfig.saltid = "";
+    $scope.mapconfig.regex_id = 0;
     $scope.mapconfig.regx_name = "";
 
     $scope.editregex.shown = false;
@@ -357,12 +482,6 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
 
     $scope.FillRegexListTable();
     //$rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
-  }
-
-  // ----------------------------------------------------------------------
-  $scope.AddClass = function( ) {
-  // ----------------------------------------------------------------------
-    $scope.mapconfig.apply_disabled = false;
   }
 
   // ----------------------------------------------------------------------
@@ -413,7 +532,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
         }).success( function(data, status, headers, config) {
           job = data[0];
           if(job.Status == 0 || job.Status == 1 || job.Status == 4) {
-            if( count > 40 ) {
+            if( count > 60 ) {
               clearMessages();
               $scope.message = "Job took too long. check job ID " +
                                + id + ", then try again.";
@@ -719,7 +838,18 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   };
 
   // --------------------------------------------------------------------
-  $scope.dialog = function (servername) {
+  $scope.DeleteClassHelper = function (servername) {
+  // --------------------------------------------------------------------
+
+     $scope.mapconfig.map = $.grep( $scope.mapconfig.map,
+         function( n ) {
+           return( n.Class != servername )
+         });
+      $scope.mapconfig.apply_disabled = false;
+  }
+
+  // --------------------------------------------------------------------
+  $scope.DeleteClass = function (servername) {
   // --------------------------------------------------------------------
 
     $scope.servername = servername;
@@ -738,7 +868,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
 
     modalInstance.result.then(function (servername) {
       $log.info('Will delete: ' + $scope.servername + '(' + $scope.servername + ')' );
-      $scope.Delete($scope.servername);
+      $scope.DeleteClassHelper($scope.servername);
     }, function () {
       $log.info('Modal dismissed at: ' + new Date());
     });
