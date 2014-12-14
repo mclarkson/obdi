@@ -661,65 +661,6 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 }
 
 // --------------------------------------------------------------------------
-func (t *Plugin) DeleteRequest(args *Args, response *[]byte) error {
-	// --------------------------------------------------------------------------
-
-	// Check for required query string entries
-
-	if len(args.QueryString["env_id"]) == 0 {
-		ReturnError("'env_id' must be set", response)
-		return nil
-	}
-
-	//env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
-
-	// PluginDatabasePath is required to open our private db
-	if len(args.PathParams["PluginDatabasePath"]) == 0 {
-		ReturnError("Internal Error: 'PluginDatabasePath' must be set", response)
-		return nil
-	}
-
-	config.SetDBPath(args.PathParams["PluginDatabasePath"])
-
-	var err error
-
-	// Open/Create database
-	/*
-	  var gormInst *GormDB
-	  if gormInst,err = NewDB(); err!=nil {
-	    txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
-	           err.Error()
-	    ReturnError( txt, response )
-	    return nil
-	  }
-	*/
-
-	// Send the Job ID as the RPC reply (back to the master)
-
-	type JsonOut struct {
-		Text string
-	}
-
-	jsonout := JsonOut{"DeleteRequest"}
-	TempJsonData, err := json.Marshal(jsonout)
-	if err != nil {
-		ReturnError("Marshal error: "+err.Error(), response)
-		return nil
-	}
-	reply := Reply{string(TempJsonData), SUCCESS, ""}
-	jsondata, err := json.Marshal(reply)
-
-	if err != nil {
-		ReturnError("Marshal error: "+err.Error(), response)
-		return nil
-	}
-
-	*response = jsondata
-
-	return nil
-}
-
-// --------------------------------------------------------------------------
 func (t *Plugin) HandleRequest(args *Args, response *[]byte) error {
 	// --------------------------------------------------------------------------
 	// All plugins must have this.
@@ -731,9 +672,6 @@ func (t *Plugin) HandleRequest(args *Args, response *[]byte) error {
 			return nil
 		case "POST":
 			t.PostRequest(args, response)
-			return nil
-		case "DELETE":
-			t.DeleteRequest(args, response)
 			return nil
 		}
 		ReturnError("Internal error: Invalid HTTP request type for this plugin "+
