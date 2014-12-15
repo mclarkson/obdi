@@ -24,6 +24,7 @@ mgrApp.controller("userCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.user = {};
   $scope.envs = {};
 
+  $scope.user.Login = "";
   $scope.user.Passhash = "";
   $scope.user.passwordv = "";
 
@@ -34,6 +35,12 @@ mgrApp.controller("userCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.editusertabs = [
     { title:'User Details', content:'frag/edituser-detailstab.html'},
     { title:'Permissions', content:'frag/edituser-permstab.html'}];
+
+  // ----------------------------------------------------------------------
+  $scope.$watch('user.Login', function() {
+  // ----------------------------------------------------------------------
+    $scope.user.Login = $scope.user.Login.toLowerCase().replace(/\s+/g,'');
+  });
 
   // ----------------------------------------------------------------------
   $scope.FillEnvTable = function( callback ) {

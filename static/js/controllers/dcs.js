@@ -51,6 +51,7 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.newcap.newcapmaps = [];
   $scope.newcap.selected = {};
   $scope.dc = {};
+  $scope.dc.SysName = "";
   $scope.delcaps = {};
   $scope.delcaps.ids = [];
 
@@ -63,6 +64,12 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     { title:'Data Centre Details', content:'frag/editdc-detailstab.html'},
     { title:'Capabilities', content:'frag/editdc-capstab.html'}
     ];
+
+  // ----------------------------------------------------------------------
+  $scope.$watch('dc.SysName', function() {
+  // ----------------------------------------------------------------------
+    $scope.dc.SysName = $scope.dc.SysName.replace(/\s+/g,'');
+  });
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -83,6 +90,7 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     $scope.newcap.newcapmaps = [];
     $scope.newcap.selected = {};
     $scope.dc = {};
+    $scope.dc.SysName = "";
     $scope.FillDcCapsTable();
     clearMessages();
   }

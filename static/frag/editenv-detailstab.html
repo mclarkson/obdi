@@ -44,7 +44,7 @@
     <label for="envcode" class="col-sm-3 control-label">Environment</label>
     <div class="col-sm-7">
       <input class="form-control" id="envcode" ng-model="env.SysName"
-      placeholder="Salt environment" type="text" required>
+      placeholder="Salt environment" type="text" ng-trim='false' required>
     </div>
   </div>
 
@@ -68,7 +68,8 @@
     </label>
     <div class="col-sm-7">
       <input class="form-control" id="workerip" ng-model="env.WorkerUrl"
-      placeholder="Worker URL prefix, E.g. https://127.0.0.1:4443" type="text">
+      placeholder="Worker URL prefix, E.g. https://127.0.0.1:4443"
+      ng-trim='false' type="text">
     </div>
   </div>
 

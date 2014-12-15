@@ -153,21 +153,21 @@
               <thead>
               <tr>
                 <th>Name</th>
-                <th>Description</th>
+                <th style="width: 100%">Description</th>
                 <th>Action</th>
               </tr>
               </thead>
               <tbody>
                 <tr ng-repeat="item in regexlist | filter:keyfilter">
                 <td>{{item.Name}}</td>
-                <td>
+                <td style="width: 100%">
                   {{item.Desc}}<br />Regex:
                   <span style="margin-left: 6px; font-family:monospace;
                   color: blue;font-size: small;">
                     {{item.Regex}}
                   </span>
                 </td>
-                <td>
+                <td style="white-space: nowrap">
                   <a href="#" ng-click="DeleteRegex(item.Name,item.Id)">
                     <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
                   <a href="#" ng-click="EditRegex($index)">
@@ -274,7 +274,7 @@
             <thead>
             <tr>
               <th>Class</th>
-              <th>Description</th>
+              <th style="width: 100%">Description</th>
               <th>Action</th>
             </tr>
             </thead>
@@ -282,7 +282,7 @@
               <tr ng-repeat="item in mapconfig.map | filter:mapfilter">
               <td>{{item.Class}}</td>
               <td style="white-space: pre-wrap;">{{GetDescription(item.Class)}}</td>
-              <td>
+              <td style="white-space: nowrap">
                 <a href="#" ng-click="DeleteClass(item.Class)">
                   <i class="fa fa-trash-o red" title="Delete Regex"></i></a>
                 <!--

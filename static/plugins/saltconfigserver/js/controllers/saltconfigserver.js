@@ -1003,7 +1003,6 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     $scope.configview.saltid = saltid;
     $scope.configview.show = true;
 
-    $scope.FillDescriptionTable();
     $scope.FillConfigTable( saltid );
   }
 
@@ -1111,6 +1110,10 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
               {"classname":$scope.config.Classes[i], "style":""} );
       }
       $scope.configview.gotconfig = true;
+
+      // Now load the Class descriptions
+      $scope.FillDescriptionTable();
+
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -1340,7 +1343,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         $scope.login.pageurl = "login.html";
       } else if (status>=400) {
         clearMessages();
-        $scope.message = "Could not load class list for environment version."
+        $scope.message = "Could not load class descriptions."
                          + " Server said: " + data['Error'];
       } else if (status==0) {
         // This is a guess really

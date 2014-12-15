@@ -355,7 +355,6 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.mapconfig.regx_name = name;
 
     $scope.FillMapsTable( regex_id );
-    $scope.FillDescriptionTable();
   }
 
   // ----------------------------------------------------------------------
@@ -436,6 +435,9 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
       // Let the view know
 
       $scope.mapconfig.maplist_ready = true;
+
+      // Now load the Class descriptions
+      $scope.FillDescriptionTable();
 
     }).error( function(data,status) {
       if (status>=500) {

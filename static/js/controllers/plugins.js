@@ -54,10 +54,10 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   $scope.delcaps = {};
   $scope.delcaps.ids = [];
 
-  $scope.addplugintabs = [
-    { title:'Plugin Details', content:'frag/addplugin-detailstab.html'},
-    { title:'Files', content:'frag/addplugin-files.html'}
-    ];
+  //$scope.addplugintabs = [];
+    //{ title:'Plugin Details', content:'frag/addplugin-detailstab.html'},
+    //{ title:'Files', content:'frag/addplugin-files.html'}
+    //];
 
   $scope.editplugintabs = [
     { title:'Plugin Details', content:'frag/editplugin-detailstab.html'},
@@ -78,65 +78,12 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   // ----------------------------------------------------------------------
   $scope.AddPlugin = function(tf) {
   // ----------------------------------------------------------------------
-    $scope.addplugin = tf;
+    $scope.addplugins = tf;
     $scope.newcap = {};
     $scope.newcap.newcapmaps = [];
     $scope.newcap.selected = {};
     $scope.plugin = {};
-    $scope.FillPluginCapsTable();
     clearMessages();
-  }
-
-  // ----------------------------------------------------------------------
-  $scope.EditAddCapMap = function() {
-  // ----------------------------------------------------------------------
-    $scope.delcaps = {};
-    $scope.delcaps.ids = [];
-
-    if( typeof $scope.newcap.selected !== 'undefined' &&
-        $scope.newcap.selected ) {
-
-      // Search for the item being added
-
-      var found = $.grep( $scope.plugincapmaps,
-        function(e){ return e.PluginCapId == $scope.newcap.selected.Id; });
-
-      // Don't add it if it's there
-      if( found.length == 0 ) {
-        $scope.newcap.newcapmaps.push($scope.newcap.selected);
-        table_item = {
-                      "PluginCapCode":$scope.newcap.selected.Code,
-                      "PluginCapDesc":$scope.newcap.selected.Desc,
-                      "PluginCapId":$scope.newcap.selected.Id,
-                      "PluginId":$scope.editplugins
-        };
-
-        $scope.plugincapmaps.push( table_item );
-        clearMessages();
-      }
-
-      $scope.newcap.selected = {};
-    }
-  }
-
-  // ----------------------------------------------------------------------
-  $scope.AddCapMap = function() {
-  // ----------------------------------------------------------------------
-    if( typeof $scope.newcap.selected !== 'undefined' &&
-        $scope.newcap.selected ) {
-
-      // Search for the item being added
-      var found = $.grep( $scope.newcap.newcapmaps,
-        function(e){ return e.Id == $scope.newcap.selected.Id; });
-
-      // Don't add it if was added already. (and don't report anything!)
-      if( found.length == 0 ) {
-        $scope.newcap.newcapmaps.push($scope.newcap.selected);
-        clearMessages();
-      }
-
-      $scope.newcap.selected = {};
-    }
   }
 
   // ----------------------------------------------------------------------
@@ -148,9 +95,6 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
 
     if (id) {
       $scope.plugin = $.grep($scope.plugins, function(e){ return e.Id == id; })[0];
-      //$log.info('$scope.plugin.Login: ' + $scope.plugin.Login);
-      //$scope.FillPluginCapsTable(); // For Capabilities
-      //$scope.FillPluginCapsMapsTable( id ); // For capability maps
       $scope.newcap.newcapmaps = [];
       $scope.newcap.selected = {};
     }
@@ -237,32 +181,6 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/plugins/" + $scope.plugin.Id
     }).success( function(data, status, headers, config) {
-
-      // Cycle through each entry in $scope.newcap.newcapmap array
-      // and REST ADD to /envcapmaps
-
-        /*
-      for( var i = 0; i < $scope.newcap.newcapmaps.length; i++ ) {
-        json = {
-                "PluginId":$scope.editplugins,
-                "PluginCapId":$scope.newcap.newcapmaps[i].Id
-        };
-        AddCapMap_noasync( json, 'POST', '' );
-      }
-      */
-
-      // Cycle through each entry in $scope.delcap.ids array
-      // and REST DELETE to /envcapmaps
-
-        /*
-      for( var i = 0; i < $scope.delcaps.ids.length; i++ ) {
-        json= {};
-        AddCapMap_noasync( json, 'DELETE', '/'+$scope.delcaps.ids[i] );
-      }
-
-      $scope.delcaps = {};
-      $scope.delcaps.ids = [];
-      */
 
       $scope.okmessage = "Changes were applied."
       $scope.FillPluginTable();
@@ -374,70 +292,6 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   }
 
   // ----------------------------------------------------------------------
-  $scope.FillPluginCapsTable = function() {
-  // ----------------------------------------------------------------------
-
-    $http({
-      method: 'GET',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/plugincaps"
-    }).success( function(data, status, headers, config) {
-      $scope.plugincaps = data;
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  };
-
-  // ----------------------------------------------------------------------
-  $scope.FillPluginCapsMapsTable = function( id ) {
-  // ----------------------------------------------------------------------
-
-    $http({
-      method: 'GET',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/plugincapmaps?plugin_id=" + id
-    }).success( function(data, status, headers, config) {
-      $scope.plugincapmaps = data;
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  };
-
-  // ----------------------------------------------------------------------
   $scope.FillPluginTable = function() {
   // ----------------------------------------------------------------------
 
@@ -470,7 +324,6 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   };
 
   $scope.FillPluginTable();
-  //$scope.FillPluginCapsTable(); // For Capabilities dropdown
 
   // Modal dialog
 

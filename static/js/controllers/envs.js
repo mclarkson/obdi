@@ -62,6 +62,8 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.addenv = false;
   $scope.editenv = false;
   $scope.env = {};
+  $scope.env.SysName = "";
+  $scope.env.WorkerUrl = "";
   $scope.envs = {};
   $scope.envcapmaps = [];
   $scope.newcap = {};
@@ -83,6 +85,18 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     ];
 
   // ----------------------------------------------------------------------
+  $scope.$watch('env.SysName', function() {
+  // ----------------------------------------------------------------------
+    $scope.env.SysName = $scope.env.SysName.replace(/\s+/g,'');
+  });
+
+  // ----------------------------------------------------------------------
+  $scope.$watch('env.WorkerUrl', function() {
+  // ----------------------------------------------------------------------
+    $scope.env.WorkerUrl = $scope.env.WorkerUrl.replace(/\s+/g,'');
+  });
+
+  // ----------------------------------------------------------------------
   var clearMessages = function() {
   // ----------------------------------------------------------------------
     $scope.message = "";
@@ -96,6 +110,8 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   // ----------------------------------------------------------------------
     $scope.addenv = tf;
     $scope.env = {};
+    $scope.env.SysName = "";
+    $scope.env.WorkerUrl = "";
     $scope.newcap = {};
     $scope.newcap.newcapmaps = [];
     $scope.newcap.selected = {};
