@@ -30,16 +30,17 @@ import (
 // Inbound
 type JobIn struct {
 	ScriptSource []byte // From manager
+    ScriptName   string // From manager
 	Args         string // From manager
 	EnvVars      string // From manager
-	//NotifURL        string      // From manager
-	JobID      int64  // From manager
-	Key        string // From manager
-	Type       int64  // From manager: 1 - user job, 2 - system job
-	Guid       string // Locally created
-	Pid        int64  // Locally created
-	Errors     int64  // Locally created
-	UserCancel bool   // Used locally only
+	//NotifURL   string // From manager
+	JobID        int64  // From manager
+	Key          string // From manager
+	Type         int64  // From manager: 1 - user job, 2 - system job
+	Guid         string // Locally created
+	Pid          int64  // Locally created
+	Errors       int64  // Locally created
+	UserCancel   bool   // Used locally only
 }
 
 // Outbound: All created locally

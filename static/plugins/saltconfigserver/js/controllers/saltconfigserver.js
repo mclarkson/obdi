@@ -1103,6 +1103,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
           if(a > b) return 1;
           return 0;
         });
+      } else {
+          $scope.config.Classes = [];
       }
       $scope.config.Styles = [];
       for( var i=0; i<$scope.config.Classes.length; i++ ) {

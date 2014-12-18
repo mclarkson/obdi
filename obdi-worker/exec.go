@@ -184,11 +184,13 @@ func (api *Api) execCmd(job JobIn) {
 		}
 		if err := api.sendStatus(job, JobOut{
 			Status:        status,
-			StatusReason:  fmt.Sprintf("Script exited with error status ('%s')", err.Error()),
+			StatusReason:  fmt.Sprintf("Script, '%s', exited with error status ('%s')",
+                           job.ScriptName, err.Error()),
 			StatusPercent: 0,
 			Errors:        0,
 		}); err != nil {
-			logit(fmt.Sprintf("Error: %s", err.Error()))
+			logit(fmt.Sprintf("Error: (Script: '%s') %s", job.ScriptName,
+            err.Error()))
 		}
 		api.RemoveJob(job.JobID)
 		return

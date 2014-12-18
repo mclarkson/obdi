@@ -456,41 +456,41 @@
         </table>
       </div> <!-- /table-responsive -->
     </div>
-  </div>
 
-  <!-- CHANGE VERSION VIEW -->
+    <!-- CHANGE VERSION VIEW -->
 
-  <div ng-if="changeversionview.show">
+    <div ng-if="changeversionview.show">
 
-    <div class="alert alert-danger" ng-show="message">
-      {{message}}
-      <span ng-if="message_jobid">
-      See: <a href="#" ng-click="showOutputlines(message_jobid)">
-      jobid:{{message_jobid}}</a> 
-      </span>
-    </div>
-    <div class="alert alert-success" ng-show="okmessage">
-      {{okmessage}}
-    </div>
+      <div class="alert alert-danger" ng-show="message">
+        {{message}}
+        <span ng-if="message_jobid">
+        See: <a href="#" ng-click="showOutputlines(message_jobid)">
+        jobid:{{message_jobid}}</a> 
+        </span>
+      </div>
+      <div class="alert alert-success" ng-show="okmessage">
+        {{okmessage}}
+      </div>
 
-    <p>Changing Salt version for {{changeversionview.saltid}}.</p>
+      <p>Changing Salt version for {{changeversionview.saltid}}.</p>
 
-    <p>Current version
-      <span ng-if="!changeversionview.versionchanged">is</span>
-      <span ng-if="changeversionview.versionchanged">will be changed to</span>
-      <span ng-if="!changeversion">{{changeversionview.grain.Version}}</span>
-      <span ng-if="changeversion">
-        <input type="text" ng-model="changeversionview.grain.Version"
-        placeholder="grain.Version" ng-enter="$parent.changeversion=false;
-        $parent.changeversionview.changed=true;
-        $parent.changeversionview.versionchanged=true" />
-      <a href="#" ng-click="$parent.changeversion=false;
-        $parent.changeversionview.changed=true;
-        $parent.changeversionview.versionchanged=true">apply</a> | 
-      </span>
-      <a href="#" ng-click="changeversion=true">change</a>
+      <p>Current version
+        <span ng-if="!changeversionview.versionchanged">is</span>
+        <span ng-if="changeversionview.versionchanged">will be changed to</span>
+        <span ng-if="!changeversion">{{changeversionview.grain.Version}}</span>
+        <span ng-if="changeversion">
+          <input type="text" ng-model="changeversionview.grain.Version"
+          placeholder="grain.Version" ng-enter="$parent.changeversion=false;
+          $parent.changeversionview.changed=true;
+          $parent.changeversionview.versionchanged=true" />
+        <a href="#" ng-click="$parent.changeversion=false;
+          $parent.changeversionview.changed=true;
+          $parent.changeversionview.versionchanged=true">apply</a> | 
+        </span>
+        <a href="#" ng-click="changeversion=true">change</a>
       </p>
-    </p>
+    </div>
+
   </div>
 
 </div>

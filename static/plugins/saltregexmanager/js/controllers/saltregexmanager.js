@@ -56,6 +56,14 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.regexlist_ready = false;
   $scope.regexlist_empty = true;
   $scope.spacing = 20;
+  $scope.newregex = {};
+  $scope.newregex.Name = ""; // so watch works without error
+
+  // ----------------------------------------------------------------------
+  $scope.$watch('newregex.Name', function() {
+  // ----------------------------------------------------------------------
+    $scope.newregex.Name = $scope.newregex.Name.replace(/\s+/g,'');
+  });
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -335,6 +343,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.editregex.newregex = true;
 
     $scope.newregex = {};
+    $scope.newregex.Name = ""; // so watch works without error
     $scope.editregex.title = "Enter details for the new regular expression:"
 
     $scope.editregex.apply_disabled = false;
@@ -481,6 +490,7 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.editregex.shown = false;
     $scope.editregex.index = 0;
     $scope.newregex = {};
+    $scope.newregex.Name = ""; // so watch works without error
 
     $scope.FillRegexListTable();
     //$rootScope.$broadcast( "setsearchtext", $scope.hostfilter );

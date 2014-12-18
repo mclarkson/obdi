@@ -103,7 +103,8 @@ find . -type f -name "*.sls" | \
             class=`echo $line | sed 's#^./\(.*\)/\(.*\)\.sls#\1.\2#'`;
                    formula=${class%.*};statefile=${class#*.};
         };
-        desc=`head "$line" | sed -n 's/^# INFO: *\(.*\)/\1/p'`;
+        desc=`head "$line" | sed -n 's/^# INFO: *\(.*\)/\1/p' | \
+              tr -d '\0-\37'`;
         echo -n '{"Desc":"'"$desc"'","FormulaName":"'"${formula}";
         echo -n '","StateFileName":"'"${statefile}"'"}';
         i+=1;

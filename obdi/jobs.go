@@ -348,6 +348,7 @@ func (api *Api) AddJob(w rest.ResponseWriter, r *rest.Request) {
 	// Jobsend definition
 	type Jobsend struct {
 		ScriptSource []byte
+		ScriptName   string
 		Args         string
 		EnvVars      string
 		//NotifURL        string
@@ -359,6 +360,7 @@ func (api *Api) AddJob(w rest.ResponseWriter, r *rest.Request) {
 	// Jobsend data
 	data := Jobsend{
 		ScriptSource: script.Source,
+		ScriptName:   script.Name,
 		JobID:        jobData.Id,
 		Key:          env.WorkerKey,
 		Args:         jobData.Args,

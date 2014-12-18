@@ -203,7 +203,7 @@ func main() {
 		&rest.Route{"DELETE", "/#login/:GUID/#endpoint/:id",
 			api.GenericDeleteEndpoint},
 
-		&rest.Route{"DELETE", "/#login/:GUID/#endpoint/#subitem/:id",
+		&rest.Route{"DELETE", "/#login/:GUID/#endpoint/#subitem/#id",
 			api.GenericDeleteEndpoint},
 
 		&rest.Route{"PUT", "/#login/:GUID/#endpoint", api.GenericPutEndpoint},
