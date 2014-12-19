@@ -1,11 +1,7 @@
 #!/bin/bash
 
-[[ -z $1 ]] && {
-	echo '{"Error":"Argument missing. Expected a branch name"}'
-	exit 1
-}
-
 BRANCH="$1"
+POS="$2"
 
 REPOHOME="/srv/freesat/git-repo"
 REPONAME="fdp-mgmt-salt"
@@ -52,6 +48,24 @@ get_latest_version_string() {
 		tail -n 1
 }
 
+increment_version_string() {
+	# Arg1 version, e.g.      0.1.10
+
+	local version="$1"
+	local -i pos=$POS
+	local a
+	
+	IFS="." read -a a < <( echo "$version" )
+	for i in 1 2 3; do
+		if [[ $i == $pos ]]; then
+			echo "$version" | awk -F. '{ printf( "%s", $'"$pos"'+1 ); }'
+		else
+			echo -n "${a[$i-1]}"
+		fi
+		[[ $i -lt 3 ]] && echo -n "."
+	done
+}
+
 tmp() {
 	git checkout $BRANCH
 	git branch test_0.1.10
@@ -62,9 +76,24 @@ tmp() {
 }
 
 main() {
+	local version
+
+	[[ -z $BRANCH ]] && {
+		echo '{"Error":"Argument 1 missing. Expected a branch name."}'
+		exit 1
+	}
+
+	[[ -z $POS ]] && {
+		echo '{"Error":"Argument 2 missing. Expected a position to increment."}'
+		exit 1
+	}
+
 	delete_repo_cache
 	clone_repo_cache
-	get_latest_version_string
+	version=`get_latest_version_string`
+	increment_version_string "$version"
 }
 
 main
+
+# vim:ts=4:sw=8:noet
