@@ -3,9 +3,11 @@
 BRANCH="$1"
 POS="$2"
 
-REPOHOME="/srv/freesat/git-repo"
-REPONAME="fdp-mgmt-salt"
+# Where the cloned repo is temporarily stored
 REPOTMP="/var/cache/obdi/gitrepo"
+
+# Where the salt master config file is
+SALT_MASTER_FILE="/etc/salt/master"
 
 delete_repo_cache() {
 
@@ -85,6 +87,38 @@ main() {
 
 	[[ -z $POS ]] && {
 		echo '{"Error":"Argument 2 missing. Expected a position to increment."}'
+		exit 1
+	}
+
+	# This script expects the lines to be in the following format
+	# in the SALT_MASTER_FILE
+	#
+	#   ...
+	#   gitfs_remotes:
+	#     - file:///srv/fdp-mgmt-salt.git
+	#   ...
+	#
+	# So in this case, 't', below, is loaded with: '/srv/fdp-mgmt-salt.git'
+
+	t=`sed -n '/gitfs_remotes:/,/^[^ ]/ {/^ \+/{s#^.*://\(.*\)#\1#p}}' $SALT_MASTER_FILE`
+
+	[[ -z $t ]] && {
+		echo -n '{"Error":"Getting the gitfs_remotes setting from'
+		echo ', $SALT_MASTER_FILE, failed (Code 1). Aborting."}'
+		exit 1
+	}
+	REPOHOME="`dirname $t`"
+	[[ -z $REPOHOME ]] && {
+		echo -n '{"Error":"Getting the gitfs_remotes setting from'
+		echo ', $SALT_MASTER_FILE, failed (Code 2). Aborting."}'
+		exit 1
+	}
+
+	b=`basename $t`
+	REPONAME="${b%%.git}"
+	[[ -z $REPONAME ]] && {
+		echo -n '{"Error":"Getting the gitfs_remotes setting from'
+		echo ', $SALT_MASTER_FILE, failed (Code 3). Aborting."}'
 		exit 1
 	}
 
