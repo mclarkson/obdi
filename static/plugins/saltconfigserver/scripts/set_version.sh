@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BRANCH="$1"
-POS="$2"
+NEW_VERSION="$2"
 
 # Where the cloned repo is temporarily stored
 REPOTMP="/var/cache/obdi/gitrepo"
@@ -45,35 +45,6 @@ clone_repo_cache() {
 	git clone "$REPOHOME/$REPONAME.git" >/dev/null
 }
 
-get_latest_version_string() {
-	cd $REPOTMP/$REPONAME
-
-	git branch -a | \
-		sed -n 's#^\s*remotes/origin/'"$BRANCH"'_\(\)#\1#p' | \
-		sort -nt . -k1,1 -k2,2 -k3,3 -k4,4 | \
-		tail -n 1
-}
-
-increment_version_string() {
-	# Arg1 - version, e.g.      0.1.10
-
-	local version="$1"
-	local -i pos=$POS
-	local a
-	
-	IFS="." read -a a < <( echo "$version" )
-	for i in 1 2 3; do
-		if [[ $i == $pos ]]; then
-			echo "$version" | awk -F. '{ printf( "%s", $'"$pos"'+1 ); }'
-			a[$i]=0
-			a[$i+1]=0
-		else
-			echo -n "${a[$i-1]}"
-		fi
-		[[ $i -lt 3 ]] && echo -n "."
-	done
-}
-
 create_branch() {
 	# Arg1 - version
 
@@ -94,7 +65,7 @@ main() {
 		exit 1
 	}
 
-	[[ -z $POS ]] && {
+	[[ -z $NEW_VERSION ]] && {
 		echo -n '{"Error":"Argument 2 missing. Expected a position in the'
         echo ' version string to increment."}'
 		exit 1
@@ -136,17 +107,7 @@ main() {
 
 	clone_repo_cache
 
-	version=`get_latest_version_string`
-
-    [[ -z $version ]] && {
-        echo -n '{"Error":"Version is empty. Could not find any versions'
-        echo ' (branches) for '"$BRANCH"'"}'
-		exit 1
-	}
-
-	new_version=`increment_version_string "$version"`
-
-	create_branch "$new_version"
+	create_branch "$NEW_VERSION"
 }
 
 main
