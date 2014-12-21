@@ -34,22 +34,26 @@ clone_repo_cache() {
 	# Create the repo cache directory
 	mkdir -p "$REPOTMP"
 
-    # Clone the repo
+	# Update the repo
+	cd "$REPOHOME/$REPONAME.git"
+	git fetch
+
+	# Clone the repo
 	cd "$REPOTMP"
-	git clone "$REPOHOME/$REPONAME.git"
+	git clone "$REPOHOME/$REPONAME.git" >/dev/null
 }
 
 get_latest_version_string() {
 	cd $REPOTMP/$REPONAME
 
 	git branch -a | \
-		sed -n 's#^\s*remotes/origin/test_\(\)#\1#p' | \
+		sed -n 's#^\s*remotes/origin/'"$BRANCH"'_\(\)#\1#p' | \
 		sort -nt . -k1,1 -k2,2 -k3,3 -k4,4 | \
 		tail -n 1
 }
 
 increment_version_string() {
-	# Arg1 version, e.g.      0.1.10
+	# Arg1 - version, e.g.      0.1.10
 
 	local version="$1"
 	local -i pos=$POS
@@ -59,6 +63,8 @@ increment_version_string() {
 	for i in 1 2 3; do
 		if [[ $i == $pos ]]; then
 			echo "$version" | awk -F. '{ printf( "%s", $'"$pos"'+1 ); }'
+			a[$i]=0
+			a[$i+1]=0
 		else
 			echo -n "${a[$i-1]}"
 		fi
@@ -66,17 +72,20 @@ increment_version_string() {
 	done
 }
 
-tmp() {
+create_branch() {
+	# Arg1 - version
+
+	cd $REPOTMP/$REPONAME
+
 	git checkout $BRANCH
-	git branch test_0.1.10
-	git push origin test_0.1.10
-	cd ../fdp-mgmt-salt.git/
-	git branch -a
+	git branch ${BRANCH}_$1
+	git push origin ${BRANCH}_$1
+
 	/etc/init.d/salt-master restart
 }
 
 main() {
-	local version
+	local version new_version
 
 	[[ -z $BRANCH ]] && {
 		echo '{"Error":"Argument 1 missing. Expected a branch name."}'
@@ -89,11 +98,16 @@ main() {
 	}
 
 	delete_repo_cache
+
 	clone_repo_cache
+
 	version=`get_latest_version_string`
-	increment_version_string "$version"
+
+	new_version=`increment_version_string "$version"`
+
+	create_branch "$new_version"
 }
 
 main
 
-# vim:ts=4:sw=8:noet
+# vim:ts=4:sw=4:noet
