@@ -8,9 +8,9 @@ SALT_MASTER_FILE="/etc/salt/master"
 get_all_version_strings() {
 	cd $REPOHOME/$REPONAME.git
 
-	git branch -a | \
+	git branch -av | \
 		sed -n 's#^\s*'"$BRANCH"'_\(\)#\1#p' | \
-		sort -nt . -k1,1 -k2,2 -k3,3 -k4,4
+		sort -rnt . -k1,1 -k2,2 -k3,3 -k4,4
 }
 
 main() {
@@ -56,12 +56,15 @@ main() {
 	versions=`get_all_version_strings`
 
     comma=""
-    echo -n '{"versions": ['
-    for i in $versions; do
-        echo -n "$comma\"$i\""
-        comma=", "
-    done
-    echo -n '] }'
+    echo -n '{"versions":['
+    while read a b c; do
+        echo -n "$comma{\"version\":\"$a\","
+        echo -n "\"commit\":\"$b\","
+        desc=`echo $c | sed 's/"/\\\"/g'` # Escape double quotes
+        echo -n "\"desc\":\"$desc\"}"
+        comma=","
+    done < <( echo "$versions" )
+    echo -n ']}'
 }
 
 main

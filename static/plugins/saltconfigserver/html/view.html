@@ -472,8 +472,7 @@
         {{okmessage}}
       </div>
 
-      <p>Changing Salt version for {{changeversionview.saltid}}.</p>
-
+			<!--
       <p>Current version
         <span ng-if="!changeversionview.versionchanged">is</span>
         <span ng-if="changeversionview.versionchanged">will be changed to</span>
@@ -489,6 +488,44 @@
         </span>
         <a href="#" ng-click="changeversion=true">change</a>
       </p>
+			-->
+
+			<p ng-if="!versionlist_ready && !message">Getting the list of
+			versions. This might take a while
+			<i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+
+			<div ng-if="versionlist_ready">
+				<p>Changing Salt version for {{changeversionview.saltid}}.</p>
+
+				<div class="table-responsive" style="margin-top: 8px;">
+					<table class="table table-striped table-bordered">
+						<thead>
+						<tr>
+							<th></th>
+							<th>Version</th>
+							<th>Commit</th>
+							<th>HEAD Commit Message</th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="version in filteredItems =
+								(changeversionview.versions | filter:versionfilter)"
+								class="{{versionstyle(version.Selected)}}">
+							<td style="text-align: center;">
+								<input type="checkbox"
+								ng-selected="version.Selected"
+								ng-model="version.Selected"
+								ng-click="VersionSelected(version)">
+							</td>
+							<td>{{version.version}}</td>
+							<td>{{version.commit}}</td>
+							<td>{{version.desc}}</td>
+						</tr>
+						</tbody>
+					</table>
+				</div> <!-- /table-responsive -->
+			</div>
+
     </div>
 
   </div>

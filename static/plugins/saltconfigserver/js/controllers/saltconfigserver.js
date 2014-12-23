@@ -79,6 +79,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   $scope.applypage.complete = false;
   $scope.changeversionview = {};
   $scope.changeversionview.show = false;
+  $scope.changeversionview.versions = [];
+  $scope.versionlist_ready = false;
 
   // Alerting
   $scope.message = "";
@@ -290,6 +292,47 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
+  $scope.VersionSelected = function( item ) {
+  // ----------------------------------------------------------------------
+
+    /*
+    var v = $.grep($scope.changeversionview.versions,
+      function(e){ return e.version == item.version; })[0];
+
+    if( v.length == 0 ) {
+      alert("(ERROR 1013) Not found in list: " + v);
+    }
+    */
+
+    // Reset all checkboxes to unset
+    for( var i=0; i<$scope.changeversionview.versions.length; i++ ) {
+        $scope.changeversionview.versions[i].Selected = false;
+    }
+
+    // Checkboxes as radio buttons. Must use a timeout and a closure since
+    // a checkbox is pretty much un-overrideable and this is one way
+    // to stop the user from unselecting an item (thereby leaving nothing
+    // selected).
+
+    function selectAfter( index ) {
+      return function(){
+        $scope.changeversionview.versions[index].Selected = true;
+        if( $scope.changeversionview.grain.Version == item.version ) {
+          $scope.changeversionview.changed = false;
+        } else {
+          $scope.changeversionview.changed = true;
+        }
+      };
+    }
+
+    for( var i=0; i<$scope.changeversionview.versions.length; i++ ) {
+      if( $scope.changeversionview.versions[i].version == item.version ) {
+        $timeout( selectAfter(i) );
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------------
   $scope.Selected = function( servername ) {
   // ----------------------------------------------------------------------
 
@@ -425,8 +468,31 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
     $scope.changeversionview.versionchanged = false;
     $scope.changeversionview.changed = false;
     $scope.changeversionview.saltid = saltid;
-    $scope.changeversionview.show = true;
 
+    if( $scope.versionlist_ready == true ) {
+      list = $scope.changeversionview.versions;
+      for( var i=0; i < list.length; ++i ) {
+        if( list[i].version == $scope.changeversionview.grain.Version ) {
+          $scope.changeversionview.versions[i].Selected = true;
+        } else {
+          $scope.changeversionview.versions[i].Selected = false;
+        }
+      }
+    } else {
+      $scope.$watch("changeversionview.versions", function () {
+        list = $scope.changeversionview.versions;
+        for( var i=0; i < list.length; ++i ) {
+          if( list[i].version == $scope.changeversionview.grain.Version ) {
+            $scope.changeversionview.versions[i].Selected = true;
+          } else {
+            $scope.changeversionview.versions[i].Selected = false;
+          }
+        }
+      });
+    }
+
+
+    $scope.changeversionview.show = true;
   };
 
   // ----------------------------------------------------------------------
@@ -488,7 +554,14 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
 
     config = {};
     config.Grain = "version";
-    config.Text = $scope.changeversionview.grain.Version;
+
+    var t = $.grep($scope.changeversionview.versions,
+      function(e){ return e.Selected == true; })[0];
+
+    config.Text = t.version;
+
+    // Update the main view
+    $scope.changeversionview.grain.Version = t.version;
 
     // Disable the Apply button
     $scope.changeversionview.changed = false;
@@ -700,6 +773,20 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
+  $scope.versionstyle = function( p ) {
+  // ----------------------------------------------------------------------
+    ret = "";
+
+    switch( p ) {
+      case true:
+        ret = "success";
+        break;
+    }
+
+    return ret;
+  }
+
+  // ----------------------------------------------------------------------
   $scope.Stringify = function( item ) {
   // ----------------------------------------------------------------------
     var str;
@@ -844,6 +931,58 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
+  $scope.GetVersionListOutputLine = function( id ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/outputlines?job_id=" + id
+    }).success( function(data, status, headers, config) {
+
+      try {
+        $scope.changeversionview.versions = $.parseJSON(data[0].Text).versions;
+      } catch (e) {
+        clearMessages();
+        $scope.message = "Error: " + e;
+        $scope.message_jobid = id;
+      }
+
+      if( $scope.changeversionview.versions.length == 0 ) {
+
+        $scope.versionlist_empty = true;
+        $scope.versionlist_ready = true;
+
+      } else {
+
+        $scope.versionlist_ready = true;
+        $scope.versionlist_empty = false;
+
+      }
+
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
   $scope.GetServerListOutputLine = function( id ) {
   // ----------------------------------------------------------------------
 
@@ -884,6 +1023,9 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         }
         */
       }
+
+      // Also get the list of versions for changeversionview
+      $scope.FillAvailableVersionList();
 
     }).error( function(data,status) {
       if (status>=500) {
@@ -1217,6 +1359,42 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
+  $scope.FillAvailableVersionList = function() {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/saltconfigserver/versions?env_id=" + $scope.env.Id
+    }).success( function(data, status, headers, config) {
+      $scope.PollForJobFinish(data.JobId,50,0,$scope.GetVersionListOutputLine);
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
   $scope.FillServerListTable = function() {
   // ----------------------------------------------------------------------
 
@@ -1369,11 +1547,13 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/envs?writeable=1"
     }).success( function(data, status, headers, config) {
+
       $scope.environments = data;
       if( data.length == 0 ) {
         $scope.serverlist_empty = true;
         $scope.btnenvlistdisabled = true;
       }
+
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";

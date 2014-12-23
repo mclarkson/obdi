@@ -782,8 +782,8 @@ func (t *Plugin) DeleteRequest(args *Args, response *[]byte) error {
 		return nil
 	}
 
-	env_id := args.QueryString["env_id"][0]
-	//env_id_str, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
+	env_id := args.QueryString["env_id"][0] //string
+	//env_id, _ := strconv.ParseInt( args.QueryString["env_id"][0],10,64 )
 
 	// Get the Dc (DcSysName) and Env (SysName) for this env_id using REST.
 	// The Data Centre name and Environment name are stored in:
