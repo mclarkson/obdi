@@ -264,7 +264,7 @@ func (t *Plugin) RunScript(args *Args, response *[]byte) (int64, error) {
 	}
 
 	// Get the ScriptId from the scripts table for:
-	scriptName := "get_version.sh"
+	scriptName := "saltconfigserver_get_version.sh"
 	scripts := []Script{}
 	resp, err := GET("https://127.0.0.1/api/"+
 		args.PathParams["login"]+"/"+args.PathParams["GUID"], "scripts"+
@@ -381,7 +381,7 @@ func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 	env := envs[0].SysName
 
 	// Get the ScriptId from the scripts table for:
-	scriptName := "get_version.sh"
+	scriptName := "saltconfigserver_get_version.sh"
 	scripts := []Script{}
 	resp, err = GET("https://127.0.0.1/api/"+
 		args.PathParams["login"]+"/"+args.PathParams["GUID"], "scripts"+
