@@ -495,7 +495,13 @@
 			<i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
 			<div ng-if="versionlist_ready">
-				<p>Changing Salt version for {{changeversionview.saltid}}.</p>
+				<p>The current version for {{changeversionview.saltid}}
+				is highlighted below for the environment,
+				'{{changeversionview.grain.Env}}'. The version relates
+				to a Git branch, so, for example, the current Git branch being
+				used is,
+				'{{changeversionview.grain.Env}}_{{changeversionview.grain.Version}}'.
+				</p>
 
 				<div class="table-responsive" style="margin-top: 8px;">
 					<table class="table table-striped table-bordered">
