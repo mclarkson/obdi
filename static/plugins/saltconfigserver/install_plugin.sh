@@ -164,11 +164,11 @@ curl -k -d '{
 
 # --
 
-source=`sed '1n;/^\s*#/d;/^$/d;' scripts/get_version.sh | base64 -w 0`
+source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltconfigserver_get_version.sh | base64 -w 0`
 
 curl -k -d '{
 		"Desc": "Returns a list of versions (branches). Arg1 - The branch to search on.",
-    "Name": "get_version.sh",
+    "Name": "saltconfigserver_get_version.sh",
     "Source": "'"$source"'"
 }' $proto://$ipport/api/admin/$guid/scripts
 
