@@ -5,6 +5,15 @@ BRANCH="$1"
 # Where the salt master config file is
 SALT_MASTER_FILE="/etc/salt/master"
 
+get_main_version() {
+    cd $REPOHOME/$REPONAME.git
+
+    git branch -av | \
+        sed -n 's#^\s*'"$BRANCH"'\>\(\)#\1#p' | \
+        sort -rnt . -k1,1 -k2,2 -k3,3 -k4,4
+}
+
+
 get_all_version_strings() {
 	cd $REPOHOME/$REPONAME.git
 
@@ -54,6 +63,18 @@ main() {
 	}
 
 	versions=`get_all_version_strings`
+
+    [[ -z $versions ]] && {
+        main_version=`get_main_version`
+        [[ -z $main_version ]] && {
+            echo -n '{"Error":"Branch, '"$BRANCH"', does not exist.'
+            echo ' Aborting."}'
+            exit 1
+        }
+        echo -n '{"Error":"There are no versions for the branch, '"$BRANCH"'.'
+        echo ' Aborting."}'
+        exit 1
+    }
 
     comma=""
     echo -n '{"versions":['
