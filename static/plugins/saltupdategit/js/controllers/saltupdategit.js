@@ -47,12 +47,14 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   $scope.listbtnpressed = false;
   $scope.btnenvlistdisabled = false;
   $scope.showkeybtnblockhidden = false;
-  $scope.btnshowkeysdisabled = true;
-  $scope.keylist_ready = false;
-  $scope.keylist_empty = true;
-  $scope.keylist_accept_empty = true;
-  $scope.keylist_reject_empty = true;
-  $scope.keylist_unaccepted_empty = true;
+  $scope.btnshowversionsdisabled = true;
+  $scope.versionlist_ready = false;
+  $scope.versionlist_empty = true;
+  $scope.versionlist_accept_empty = true;
+  $scope.versionlist_reject_empty = true;
+  $scope.versionlist_unaccepted_empty = true;
+  $scope.versions = {};
+  $scope.spacing = 20;
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -78,7 +80,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
     $event.stopPropagation();
     $scope.status.isopen = !$scope.status.isopen;
     $scope.envchosen.shown = true;
-    $scope.btnshowkeysdisabled = false;
+    $scope.btnshowversionsdisabled = false;
     $scope.btnenvlistdisabled = true;
     $scope.env = envobj;
   };
@@ -95,7 +97,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
            + "&type=accept"
            + "&env_id=" + $scope.env.Id,
     }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
+      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetVersionsOutputLine);
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -132,7 +134,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
            + "&type=reject"
            + "&env_id=" + $scope.env.Id,
     }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
+      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetVersionsOutputLine);
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -169,7 +171,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
            + "/saltkeymanager/saltkeys/" + name
            + "?env_id=" + $scope.env.Id,
     }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
+      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetVersionsOutputLine);
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -197,16 +199,16 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
-  $scope.GetKeyOutputLine = function( id ) {
+  $scope.GetVersionsOutputLine = function( id ) {
   // ----------------------------------------------------------------------
   // Actually don't bother with the result, just refresh the list
   // since we know Salt has finished now.
 
-    $scope.FillKeyListTable();
+    $scope.FillVersionListTable();
   }
 
   // ----------------------------------------------------------------------
-  $scope.GetKeyListOutputLine = function( id ) {
+  $scope.GetVersionListOutputLine = function( id ) {
   // ----------------------------------------------------------------------
 
     $http({
@@ -215,44 +217,39 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
            + "/outputlines?job_id=" + id
     }).success( function(data, status, headers, config) {
 
-      $scope.showkeybtnblockhidden = true;
-
-      var keylist = $.parseJSON(data[0].Text);
-
-      $scope.keylist = keylist;
-
-      if( $scope.keylist.minions.length == 0 ) {
-        $scope.keylist_accept_empty = true;
-      } else {
-        $scope.keylist_accept_empty = false;
-      }
-      if( $scope.keylist.minions_pre.length == 0 ) {
-        $scope.keylist_unaccepted_empty = true;
-      } else {
-        $scope.keylist_unaccepted_empty = false;
-      }
-      if( $scope.keylist.minions_rejected.length == 0 ) {
-        $scope.keylist_reject_empty = true;
-      } else {
-        $scope.keylist_reject_empty = false;
+      try {
+        $scope.versions = $.parseJSON(data[0].Text).versions;
+      } catch (e) {
+        clearMessages();
+        $scope.message = "Error: " + e;
+        $scope.message_jobid = id;
       }
 
-      $scope.keylist_ready = true;
-      $scope.keylist_empty = false;
+      if( $scope.versions.length == 0 ) {
+
+        $scope.versionlist_empty = true;
+        $scope.versionlist_ready = true;
+
+      } else {
+
+        $scope.versionlist_ready = true;
+        $scope.versionlist_empty = false;
+
+      }
+
+			// Hide the buttons
+			$scope.showkeybtnblockhidden = true;
+      $scope.spacing = 0;
 
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
-      } else if (status==401) {
+      } else if (status>=400) {
         $scope.login.errtext = "Session expired.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        clearMessages();
-        $scope.message = "Server said: " + data['Error'];
-        $scope.error = true;
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";
@@ -568,20 +565,21 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
     $scope.listbtnpressed = false;
     $scope.btnenvlistdisabled = false;
     $scope.showkeybtnblockhidden = false;
-    $scope.btnshowkeysdisabled = true;
-    $scope.keylist_ready = false;
-    $scope.keylist_empty = true;
+    $scope.btnshowversionsdisabled = true;
+    $scope.versionlist_ready = false;
+    $scope.versionlist_empty = true;
+    $scope.spacing = 20;
   };
 
   // ----------------------------------------------------------------------
-  $scope.KeyList = function() {
+  $scope.VersionList = function() {
   // ----------------------------------------------------------------------
-    $scope.btnshowkeysdisabled = true;
+    $scope.btnshowversionsdisabled = true;
     $scope.listbtnpressed = true;
-    $scope.keylist_ready = false;
-    $scope.keylist_empty = false;
+    $scope.versionlist_ready = false;
+    $scope.versionlist_empty = false;
 
-    $scope.FillKeyListTable();
+    $scope.FillVersionListTable();
   };
 
   // ----------------------------------------------------------------------
@@ -651,16 +649,15 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
-  $scope.FillKeyListTable = function() {
+  $scope.FillVersionListTable = function() {
   // ----------------------------------------------------------------------
 
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltkeymanager/saltkeys"
-           + "?env_id=" + $scope.env.Id
+           + "/saltupdategit/versions?env_id=" + $scope.env.Id
     }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyListOutputLine);
+      $scope.PollForJobFinish(data.JobId,50,0,$scope.GetVersionListOutputLine);
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
