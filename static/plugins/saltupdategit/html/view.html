@@ -41,13 +41,8 @@
         ng-if="envchosen.shown" ng-click="Restart()" style="margin-top: -5px;">
         <i class="fa fa-refresh"> </i> Restart</button>
 
-      <button class="btn btn-sm btn-default pull-right" type="button"
-      ng-if="envsetting.shown" ng-click="GoBack()"
-      style="margin-top: -5px;">
-        <i class="fa fa-arrow-left"> </i> Go Back</button>
-
       <button class="btn btn-sm btn-success pull-right" type="button"
-      ng-if="envsetting.shown" ng-disabled="forminvalid"
+      ng-if="versionlist_ready" ng-disabled="!versionchanged"
       ng-click="ApplyNewVersion()"
       style="margin-top: -5px; margin-right:8px;">
         <i class="fa fa-check"> </i> Apply</button>
@@ -122,11 +117,90 @@
         <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
         <p ng-if="versionlist_ready && versionlist_empty">Salt reports that
-        this environment contains no versions keys!<br />
+        this environment contains no branch versions.<br />
         </p>
 
         <div ng-if="versionlist_ready && !versionlist_empty">
 
+          <p>Use the arrows below to choose a new version. Any changes from
+          the upstream Git repository will be pulled into the new version
+          when the Apply button is pressed.</p>
+          
+          <style>
+            table.ver { margin-bottom: 16px;
+              width: auto;
+              margin-left:auto;
+              margin-right:auto; }
+            table.ver div p { font-family: monospace; font-size: 22px }
+            table.ver div div:last-child { margin-top: -13px; }
+            .white { color: white; }
+            .lg    { color: lightgray; }
+          </style>
+          
+          <table class="ver">
+            <tr>
+              <td>
+                <div style="inline">
+                  <div>
+                    <a href="#" ng-if="ver1up" ng-click="VerChange(1,'up')">
+                      <i class="fa fa-chevron-up"></i></a>
+                    <i ng-if="!ver1up" class="fa fa-chevron-up lg"></i>
+                  </div>
+                  <div><p>{{ver1}}</p></div>
+                  <div>
+                    <a href="#" ng-if="ver1down" ng-click="VerChange(1,'down')">
+                      <i class="fa fa-chevron-down"></i></a>
+                    <i ng-if="!ver1down" class="fa fa-chevron-down lg"></i>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div style="inline">
+                  <div><i class="fa fa-chevron-up white"></i></div>
+                  <div><p>.</p></div>
+                  <div><i class="fa fa-chevron-down white"></i></div>
+                </div>
+              </td>
+              <td>
+                <div style="inline">
+                  <div>
+                    <a href="#" ng-if="ver2up" ng-click="VerChange(2,'up')">
+                      <i class="fa fa-chevron-up"></i></a>
+                    <i ng-if="!ver2up" class="fa fa-chevron-up lg"></i>
+                  </div>
+                  <div><p>{{ver2}}</p></div>
+                  <div>
+                    <a href="#" ng-if="ver2down" ng-click="VerChange(2,'down')">
+                      <i class="fa fa-chevron-down"></i></a>
+                    <i ng-if="!ver2down" class="fa fa-chevron-down lg"></i>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div style="inline">
+                  <div><i class="fa fa-chevron-up white"></i></a></div>
+                  <div><p>.</p></div>
+                  <div><i class="fa fa-chevron-down white"></i></a></div>
+                </div>
+              </td>
+              <td>
+                <div style="inline-block">
+                  <div>
+                    <a href="#" ng-if="ver3up" ng-click="VerChange(3,'up')">
+                      <i class="fa fa-chevron-up"></i></a>
+                    <i ng-if="!ver3up" class="fa fa-chevron-up lg"></i>
+                  </div>
+                  <div><p>{{ver3}}</p></div>
+                  <div>
+                    <a href="#" ng-if="ver3down" ng-click="VerChange(3,'down')">
+                      <i class="fa fa-chevron-down"></i></a>
+                    <i ng-if="!ver3down" class="fa fa-chevron-down lg"></i>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+ 
           <div ng-if="!versionlist_empty">
             <p>The available versions for this environment, '{{env.SysName}}',
             are shown below.

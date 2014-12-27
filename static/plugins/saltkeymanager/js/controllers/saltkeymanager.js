@@ -93,7 +93,8 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltkeymanager/saltkeys?hostname=" + name
            + "&type=accept"
-           + "&env_id=" + $scope.env.Id,
+           + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
     }).error( function(data,status) {
@@ -130,7 +131,8 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltkeymanager/saltkeys?hostname=" + name
            + "&type=reject"
-           + "&env_id=" + $scope.env.Id,
+           + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
     }).error( function(data,status) {
@@ -167,7 +169,8 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       method: 'DELETE',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltkeymanager/saltkeys/" + name
-           + "?env_id=" + $scope.env.Id,
+           + "?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyOutputLine);
     }).error( function(data,status) {
@@ -213,6 +216,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       $scope.showkeybtnblockhidden = true;
@@ -277,6 +281,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       try {
@@ -333,7 +338,8 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltkeymanager/grains?salt_id=" + saltid
-           + "&env_id=" + $scope.env.Id,
+           + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString(),
       data: config
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish( data.JobId, 50, 0,
@@ -417,6 +423,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       var grains = [];
@@ -520,6 +527,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltkeymanager/grains?salt_id=" + saltid
            + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetGrainsListOutputLine);
     }).error( function(data,status) {
@@ -602,6 +610,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
           method: 'GET',
           url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
                + "/jobs?job_id=" + id
+							 + '&time='+new Date().getTime().toString()
         }).success( function(data, status, headers, config) {
           job = data[0];
           if(job.Status == 0 || job.Status == 1 || job.Status == 4) {
@@ -659,6 +668,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltkeymanager/saltkeys"
            + "?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,100,0,$scope.GetKeyListOutputLine);
     }).error( function(data,status) {
@@ -695,6 +705,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/envs?writeable=1"
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.environments = data;
       if( data.length == 0 ) {

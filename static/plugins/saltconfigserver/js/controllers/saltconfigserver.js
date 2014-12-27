@@ -408,7 +408,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/salthighstate"
-           + "?env_id=" + $scope.env.Id,
+           + "?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString(),
       data: saltids
     }).success( function(data, status, headers, config) {
       // salthighstate returns a list of salt jobs
@@ -503,6 +504,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       try {
@@ -572,7 +574,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/grains?salt_id=" + saltid
-           + "&env_id=" + $scope.env.Id,
+           + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString(),
       data: config
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetVersionOutputLine);
@@ -654,7 +657,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/enc?salt_id=" + saltid
-           + "&env_id=" + $scope.env.Id,
+           + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString(),
       data: config
     }).success( function(data, status, headers, config) {
       $scope.okmessage = "Server configuration was updated successfully.";
@@ -810,6 +814,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       var grains = [];
@@ -885,6 +890,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       try {
@@ -938,6 +944,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       try {
@@ -990,6 +997,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       try {
@@ -1057,6 +1065,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
           method: 'GET',
           url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
                + "/jobs?job_id=" + id
+							 + '&time='+new Date().getTime().toString()
         }).success( function(data, status, headers, config) {
           job = data[0];
           if(job.Status == 0 || job.Status == 1 || job.Status == 4) {
@@ -1190,6 +1199,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
            + "&env=" + $scope.env.SysName
            + "&version=" + grain.Version
            + "&dc=" + $scope.env.DcSysName
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.configs[saltid] = $.parseJSON(data['EncData']);
     }).error( function(data,status) {
@@ -1237,6 +1247,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
            + "&version=" + grain.Version
            + "&env=" + $scope.env.SysName
            + "&dc=" + $scope.env.DcSysName
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.config = $.parseJSON(data['EncData']);
       if( $scope.config.Classes != null ) {
@@ -1293,6 +1304,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/grains?salt_id=" + saltid
            + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetGrainsListOutputLine);
     }).error( function(data,status) {
@@ -1330,6 +1342,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/grainscache?salt_id=" + saltid
            + "&env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetGrainsListOutputLine);
     }).error( function(data,status) {
@@ -1366,6 +1379,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/versions?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetVersionListOutputLine);
     }).error( function(data,status) {
@@ -1402,6 +1416,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/servers?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetServerListOutputLine);
     }).error( function(data,status) {
@@ -1438,6 +1453,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       try {
@@ -1509,7 +1525,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltconfigserver/statedescs"
            + "?env_id=" + $scope.env.Id
-           + "&version=" + grain.Version,
+           + "&version=" + grain.Version
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetStatedescOutputLine);
     }).error( function(data,status) {
@@ -1546,6 +1563,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/envs?writeable=1"
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       $scope.environments = data;

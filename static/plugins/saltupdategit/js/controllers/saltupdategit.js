@@ -47,7 +47,18 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   $scope.versionlist_reject_empty = true;
   $scope.versionlist_unaccepted_empty = true;
   $scope.versions = {};
+  $scope.versionchanged = false;
+  $scope.ver1 = 0;
+  $scope.ver1up = true;
+  $scope.ver1down = false;
+  $scope.ver2 = 0;
+  $scope.ver2up = true;
+  $scope.ver2down = false;
+  $scope.ver3 = 0;
+  $scope.ver3up = true;
+  $scope.ver3down = false;
   $scope.spacing = 20;
+  $scope.position = 0;
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -72,6 +83,87 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
     $scope.env = envobj;
   };
 
+
+  // ----------------------------------------------------------------------
+  $scope.VerChange = function( pos, direction ) {
+  // ----------------------------------------------------------------------
+
+    $scope.position = pos;
+
+    if( pos == 1 ) {
+      if( direction == "up" ) {
+        $scope.ver1++;
+        $scope.oldver2 = $scope.ver2;
+        $scope.ver2 = 0;
+        $scope.oldver3 = $scope.ver3;
+        $scope.ver3 = 0;
+        $scope.ver1up = false;
+        $scope.ver2up = false;
+        $scope.ver3up = false;
+        $scope.ver1down = true;
+        $scope.ver2down = false;
+        $scope.ver3down = false;
+        $scope.versionchanged = true;
+      } else {
+        $scope.ver1--;
+        $scope.ver2 = $scope.oldver2;
+        $scope.ver3 = $scope.oldver3;
+        $scope.ver1up = true;
+        $scope.ver2up = true;
+        $scope.ver3up = true;
+        $scope.ver1down = false;
+        $scope.ver2down = false;
+        $scope.ver3down = false;
+        $scope.versionchanged = false;
+      }
+    }
+    if( pos == 2 ) {
+      if( direction == "up" ) {
+        $scope.ver2++;
+        $scope.oldver3 = $scope.ver3;
+        $scope.ver3 = 0;
+        $scope.ver1up = false;
+        $scope.ver2up = false;
+        $scope.ver3up = false;
+        $scope.ver1down = false;
+        $scope.ver2down = true;
+        $scope.ver3down = false;
+        $scope.versionchanged = true;
+      } else {
+        $scope.ver2--;
+        $scope.ver3 = $scope.oldver3;
+        $scope.ver1up = true;
+        $scope.ver2up = true;
+        $scope.ver3up = true;
+        $scope.ver1down = false;
+        $scope.ver2down = false;
+        $scope.ver3down = false;
+        $scope.versionchanged = false;
+      }
+    }
+    if( pos == 3 ) {
+      if( direction == "up" ) {
+        $scope.ver3++;
+        $scope.ver1up = false;
+        $scope.ver2up = false;
+        $scope.ver3up = false;
+        $scope.ver1down = false;
+        $scope.ver2down = false;
+        $scope.ver3down = true;
+        $scope.versionchanged = true;
+      } else {
+        $scope.ver3--;
+        $scope.ver1up = true;
+        $scope.ver2up = true;
+        $scope.ver3up = true;
+        $scope.ver1down = false;
+        $scope.ver2down = false;
+        $scope.ver3down = false;
+        $scope.versionchanged = false;
+      }
+    }
+  }
+
   // ----------------------------------------------------------------------
   $scope.GetVersionsOutputLine = function( id ) {
   // ----------------------------------------------------------------------
@@ -89,6 +181,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/outputlines?job_id=" + id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
 
       try {
@@ -111,63 +204,13 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
 
       }
 
+      $scope.ver1 = $scope.versions[0].version.split(".")[0];
+      $scope.ver2 = $scope.versions[0].version.split(".")[1];
+      $scope.ver3 = $scope.versions[0].version.split(".")[2];
+
       // Hide the buttons
       $scope.showkeybtnblockhidden = true;
       $scope.spacing = 0;
-
-    }).error( function(data,status) {
-      if (status>=500) {
-        $scope.login.errtext = "Server error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
-        $scope.login.errtext = "Session expired.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else if (status==0) {
-        // This is a guess really
-        $scope.login.errtext = "Could not connect to server.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      } else {
-        $scope.login.errtext = "Logged out due to an unknown error.";
-        $scope.login.error = true;
-        $scope.login.pageurl = "login.html";
-      }
-    });
-  };
-
-  // DC, ENV & VERSION
-
-  // ----------------------------------------------------------------------
-  $scope.GetServerSettingOutputLine = function( id ) {
-  // ----------------------------------------------------------------------
-
-    //$scope.okmessage = "Server configuration was updated successfully.";
-    $http({
-      method: 'GET',
-      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/outputlines?job_id=" + id
-    }).success( function(data, status, headers, config) {
-
-      try {
-        var result = $.parseJSON(data[0].Text);
-      } catch (e) {
-        clearMessages();
-        $scope.message = "Error: " + e;
-        $scope.message_jobid = id;
-      }
-
-      if( result.length == 0  ||
-          typeof( result[$scope.envsetting.saltid] ) == undefined ) {
-        $scope.message = "The configuration did not complete.";
-        $scope.message_jobid = id;
-      }
-
-      $scope.envsetting.numupdated += 1;
-      if( $scope.envsetting.numupdated == 3 ) {
-        $scope.okmessage = "Server configuration was updated successfully.";
-      }
 
     }).error( function(data,status) {
       if (status>=500) {
@@ -197,14 +240,15 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   // Send { Grain:"version",Text:"0.1.2" }
 
     var config = {};
-    config.Grain = grain;
-    config.Text = data;
+    config.Branch = $scope.env.SysName;
+    config.Position = $scope.position;
 
     $http({
       method: 'POST',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
-           + "/saltkeymanager/grains?salt_id=" + saltid
-           + "&env_id=" + $scope.env.Id,
+           + "/saltupdategit/versions"
+           + "?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString(),
       data: config
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish( data.JobId, 50, 0,
@@ -240,8 +284,6 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   // ----------------------------------------------------------------------
 
     clearMessages();
-
-    $scope.envsetting.numupdated = 0;
 
     if( $scope.envsetting ) {
       $scope.ApplyVersion( $scope.envsetting.saltid );
@@ -302,6 +344,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
           method: 'GET',
           url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
                + "/jobs?job_id=" + id
+               + '&time='+new Date().getTime().toString()
         }).success( function(data, status, headers, config) {
           job = data[0];
           if(job.Status == 0 || job.Status == 1 || job.Status == 4) {
@@ -358,6 +401,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltupdategit/versions?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,50,0,$scope.GetVersionListOutputLine);
     }).error( function(data,status) {
@@ -394,6 +438,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/envs?writeable=1"
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.environments = data;
       if( data.length == 0 ) {
@@ -435,7 +480,8 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
       method: 'DELETE',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/saltkeymanager/saltkeys/" + name
-           + "?env_id=" + $scope.env.Id,
+           + "?env_id=" + $scope.env.Id
+           + '&time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.PollForJobFinish(data.JobId,100,0,$scope.GetVersionsOutputLine);
     }).error( function(data,status) {

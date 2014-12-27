@@ -149,6 +149,7 @@ mgrApp.controller("sidebarCtrl", function ($scope,$http,baseUrl,$timeout,
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/plugins"
+			     + '?time='+new Date().getTime().toString()
     }).success( function(data, status, headers, config) {
       $scope.plugins = data;
       $scope.CreateSidebarArray();
