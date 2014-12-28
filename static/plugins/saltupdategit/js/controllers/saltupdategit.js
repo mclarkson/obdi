@@ -57,8 +57,8 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   $scope.ver3 = 0;
   $scope.ver3up = true;
   $scope.ver3down = false;
-  $scope.spacing = 20;
   $scope.position = 0;
+  $scope.spacing = 20;
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -235,13 +235,21 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   };
 
   // ----------------------------------------------------------------------
+  $scope.VersionSuccess = function() {
+  // ----------------------------------------------------------------------
+
+    // Don't care what was in the output line, it's a success.
+    $scope.okmessage = "Server configuration was updated successfully.";
+  }
+
+  // ----------------------------------------------------------------------
   $scope.ApplyVersion = function( saltid, grain, data ) {
   // ----------------------------------------------------------------------
   // Send { Grain:"version",Text:"0.1.2" }
 
     var config = {};
     config.Branch = $scope.env.SysName;
-    config.Position = $scope.position;
+    config.Position = "" + $scope.position;
 
     $http({
       method: 'POST',
@@ -251,8 +259,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
            + '&time='+new Date().getTime().toString(),
       data: config
     }).success( function(data, status, headers, config) {
-      $scope.PollForJobFinish( data.JobId, 50, 0,
-        $scope.GetServerSettingOutputLine );
+      $scope.PollForJobFinish( data.JobId, 50, 0, $scope.VersionSuccess );
     }).error( function(data,status) {
       if (status>=500) {
         $scope.login.errtext = "Server error.";
@@ -312,6 +319,17 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
     $scope.btnshowversionsdisabled = true;
     $scope.versionlist_ready = false;
     $scope.versionlist_empty = true;
+    $scope.versionchanged = false;
+    $scope.ver1 = 0;
+    $scope.ver1up = true;
+    $scope.ver1down = false;
+    $scope.ver2 = 0;
+    $scope.ver2up = true;
+    $scope.ver2down = false;
+    $scope.ver3 = 0;
+    $scope.ver3up = true;
+    $scope.ver3down = false;
+    $scope.position = 0;
     $scope.spacing = 20;
   };
 
