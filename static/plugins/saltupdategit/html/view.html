@@ -116,11 +116,7 @@
         versions. This might take a while
         <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
-        <p ng-if="versionlist_ready && versionlist_empty">Salt reports that
-        this environment contains no branch versions.<br />
-        </p>
-
-        <div ng-if="versionlist_ready && !versionlist_empty">
+        <div ng-if="versionlist_ready">
 
           <p>Use the arrows below to choose a new version. Any changes from
           the upstream Git repository will be pulled into the new version
@@ -201,6 +197,10 @@
             </tr>
           </table>
  
+          <p ng-if="versionlist_empty">
+          This environment contains no versioned branches.<br />
+          </p>
+
           <div ng-if="!versionlist_empty">
             <p>The available versions for this environment, '{{env.SysName}}',
             are shown below.

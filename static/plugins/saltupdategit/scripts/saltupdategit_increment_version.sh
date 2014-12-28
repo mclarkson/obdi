@@ -138,10 +138,15 @@ main() {
 
 	version=`get_latest_version_string`
 
+	# New behaviour. Start from version 0.0.0 if there are no versions.
+    #[[ -z $version ]] && {
+    #    echo -n '{"Error":"Version is empty. Could not find any versions'
+    #    echo ' (branches) for '"$BRANCH"'"}'
+	#	exit 1
+	#}
+
     [[ -z $version ]] && {
-        echo -n '{"Error":"Version is empty. Could not find any versions'
-        echo ' (branches) for '"$BRANCH"'"}'
-		exit 1
+		version="0.0.0"
 	}
 
 	new_version=`increment_version_string "$version"`

@@ -197,16 +197,20 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
         $scope.versionlist_empty = true;
         $scope.versionlist_ready = true;
 
+        $scope.ver1 = 0;
+        $scope.ver2 = 0;
+        $scope.ver3 = 0;
+
       } else {
 
         $scope.versionlist_ready = true;
         $scope.versionlist_empty = false;
 
-      }
+        $scope.ver1 = $scope.versions[0].version.split(".")[0];
+        $scope.ver2 = $scope.versions[0].version.split(".")[1];
+        $scope.ver3 = $scope.versions[0].version.split(".")[2];
 
-      $scope.ver1 = $scope.versions[0].version.split(".")[0];
-      $scope.ver2 = $scope.versions[0].version.split(".")[1];
-      $scope.ver3 = $scope.versions[0].version.split(".")[2];
+      }
 
       // Hide the buttons
       $scope.showkeybtnblockhidden = true;
