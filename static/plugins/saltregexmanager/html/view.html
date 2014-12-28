@@ -96,25 +96,29 @@
 
   <div class="row" ng-if="!showkeybtnblockhidden">
     <div class="col-sm-12" style="margin-top: 20px">
-      <div style="margin-left: 14px" class="btn-group"
-      dropdown is-open="status.isopen">
-        <button type="button" class="btn btn-primary dropdown-toggle"
-        ng-disabled="btnenvlistdisabled">
-          Choose Environment <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu">
-          <li ng-repeat="choice in environments">
-          <a href ng-click="envChoice(choice, $event)">
-            {{choice.DcSysName}} {{choice.SysName}}</a>
-          </li>
-        </ul>
+      <div class="vbtn" style="margin-bottom: 8px;">
+        <div style="margin-left: 8px" class="btn-group"
+        dropdown is-open="status.isopen">
+          <button type="button" class="btn btn-primary dropdown-toggle"
+          ng-disabled="btnenvlistdisabled">
+            Choose Environment <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="choice in environments">
+            <a href ng-click="envChoice(choice, $event)">
+              {{choice.DcSysName}} {{choice.SysName}}</a>
+            </li>
+          </ul>
+        </div>
       </div>
-      <div class="btn-group">
-        <button type="button" class="btn btn-primary dropdown-toggle"
-        style="margin-left: 8px;" 
-        ng-click="RegexList()" ng-disabled="btnshowkeysdisabled">
-          Show Host Mappings
-        </button>
+      <div class="vbtn">
+        <div class="btn-group">
+          <button type="button" class="btn btn-primary dropdown-toggle"
+          style="margin-left: 8px;" 
+          ng-click="RegexList()" ng-disabled="btnshowkeysdisabled">
+            Show Host Mappings
+          </button>
+        </div>
       </div>
     </div>
   </div>

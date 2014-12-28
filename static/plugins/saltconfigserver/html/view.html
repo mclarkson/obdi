@@ -94,21 +94,21 @@
 
         <!-- Single button -->
         <div class="vbtn">
-        <p class="big"
-        style="display: inline-block; vertical-align: sub;
-        margin-left: 8px; margin-right: 4px;">1.</p>
-        <div class="btn-group" dropdown is-open="status.isopen">
-          <button type="button" class="btn btn-primary dropdown-toggle"
-          ng-disabled="btnenvlistdisabled">
-            Choose Environment <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li ng-repeat="choice in environments">
-            <a href ng-click="envChoice(choice, $event)">
-              {{choice.DcSysName}} {{choice.SysName}}</a>
-            </li>
-          </ul>
-        </div>
+          <p class="big"
+          style="display: inline-block; vertical-align: sub;
+          margin-left: 8px; margin-right: 4px;">1.</p>
+          <div class="btn-group" dropdown is-open="status.isopen">
+            <button type="button" class="btn btn-primary dropdown-toggle"
+            ng-disabled="btnenvlistdisabled">
+              Choose Environment <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+              <li ng-repeat="choice in environments">
+              <a href ng-click="envChoice(choice, $event)">
+                {{choice.DcSysName}} {{choice.SysName}}</a>
+              </li>
+            </ul>
+          </div>
         </div>
         <div class="vbtn">
         <p class="big"
@@ -472,7 +472,7 @@
         {{okmessage}}
       </div>
 
-			<!--
+      <!--
       <p>Current version
         <span ng-if="!changeversionview.versionchanged">is</span>
         <span ng-if="changeversionview.versionchanged">will be changed to</span>
@@ -488,51 +488,51 @@
         </span>
         <a href="#" ng-click="changeversion=true">change</a>
       </p>
-			-->
+      -->
 
-			<p ng-if="!versionlist_ready && !message">Getting the list of
-			versions. This might take a while
-			<i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+      <p ng-if="!versionlist_ready && !message">Getting the list of
+      versions. This might take a while
+      <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
-			<div ng-if="versionlist_ready">
-				<p>The current version for {{changeversionview.saltid}}
-				is highlighted below for the environment,
-				'{{changeversionview.grain.Env}}'. The version relates
-				to a Git branch, so, for example, the current Git branch being
-				used is,
-				'{{changeversionview.grain.Env}}_{{changeversionview.grain.Version}}'.
-				</p>
+      <div ng-if="versionlist_ready">
+        <p>The current version for {{changeversionview.saltid}}
+        is highlighted below for the environment,
+        '{{changeversionview.grain.Env}}'. The version relates
+        to a Git branch, so, for example, the current Git branch being
+        used is,
+        '{{changeversionview.grain.Env}}_{{changeversionview.grain.Version}}'.
+        </p>
 
-				<p>Choose a version then click Apply:</p>
+        <p>Choose a version then click Apply:</p>
 
-				<div class="table-responsive" style="margin-top: 8px;">
-					<table class="table table-striped table-bordered">
-						<thead>
-						<tr>
-							<th></th>
-							<th>Version</th>
-							<th>Commit</th>
-							<th>HEAD Commit Message</th>
-						</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="version in filteredItems =
-								(changeversionview.versions | filter:versionfilter)"
-								class="{{versionstyle(version.Selected)}}">
-							<td style="text-align: center;">
-								<input type="checkbox"
-								ng-selected="version.Selected"
-								ng-model="version.Selected"
-								ng-click="VersionSelected(version)">
-							</td>
-							<td>{{version.version}}</td>
-							<td>{{version.commit}}</td>
-							<td>{{version.desc}}</td>
-						</tr>
-						</tbody>
-					</table>
-				</div> <!-- /table-responsive -->
-			</div>
+        <div class="table-responsive" style="margin-top: 8px;">
+          <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+              <th></th>
+              <th>Version</th>
+              <th>Commit</th>
+              <th>HEAD Commit Message</th>
+            </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="version in filteredItems =
+                (changeversionview.versions | filter:versionfilter)"
+                class="{{versionstyle(version.Selected)}}">
+              <td style="text-align: center;">
+                <input type="checkbox"
+                ng-selected="version.Selected"
+                ng-model="version.Selected"
+                ng-click="VersionSelected(version)">
+              </td>
+              <td>{{version.version}}</td>
+              <td>{{version.commit}}</td>
+              <td>{{version.desc}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div> <!-- /table-responsive -->
+      </div>
 
     </div>
 

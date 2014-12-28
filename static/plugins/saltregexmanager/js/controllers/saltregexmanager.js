@@ -487,9 +487,11 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
     $scope.mapconfig.maplist_ready = false;
     $scope.mapconfig.regex_id = 0;
     $scope.mapconfig.regx_name = "";
+    $scope.mapconfig.apply_disabled = true;
 
     $scope.editregex.shown = false;
     $scope.editregex.index = 0;
+    $scope.editregex.apply_disabled = false;
     $scope.newregex = {};
     $scope.newregex.Name = ""; // so watch works without error
 
