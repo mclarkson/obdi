@@ -1087,6 +1087,9 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
             clearMessages();
             $scope.message = "Server said: " + job['StatusReason'];
             $scope.message_jobid = job['Id'];
+            if( func == $scope.GetVersionListOutputLine ) {
+              $scope.versionlist_error = true;
+            }
           }
         }).error( function(data,status) {
           if (status>=500) {
