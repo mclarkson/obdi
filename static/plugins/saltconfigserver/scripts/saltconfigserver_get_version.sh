@@ -9,8 +9,7 @@ get_main_version() {
     cd $REPOHOME/$REPONAME.git
 
     git branch -av | \
-        sed -n 's#^\s*'"$BRANCH"'\>\(\)#\1#p' | \
-        sort -rnt . -k1,1 -k2,2 -k3,3 -k4,4
+        grep -E '^[\*]*[ \t]*'"$BRANCH"'\>'
 }
 
 
@@ -64,28 +63,28 @@ main() {
 
 	versions=`get_all_version_strings`
 
-    [[ -z $versions ]] && {
-        main_version=`get_main_version`
-        [[ -z $main_version ]] && {
-            echo -n '{"Error":"Branch, '"$BRANCH"', does not exist.'
-            echo ' Aborting."}'
-            exit 1
-        }
-        echo -n '{"Error":"There are no versions for the branch, '"$BRANCH"'.'
-        echo ' Aborting."}'
-        exit 1
-    }
+	[[ -z $versions ]] && {
+		main_version=`get_main_version`
+		[[ -z $main_version ]] && {
+			echo -n '{"Error":"Branch, '"$BRANCH"', does not exist.'
+			echo ' Aborting."}'
+			exit 1
+		}
+		# There are no versioned branches so return an empty version list
+		echo '{"versions":[]}'
+		exit 0
+	}
 
-    comma=""
-    echo -n '{"versions":['
-    while read a b c; do
-        echo -n "$comma{\"version\":\"$a\","
-        echo -n "\"commit\":\"$b\","
-        desc=`echo $c | sed 's/"/\\\"/g'` # Escape double quotes
-        echo -n "\"desc\":\"$desc\"}"
-        comma=","
-    done < <( echo "$versions" )
-    echo -n ']}'
+	comma=""
+	echo -n '{"versions":['
+	while read a b c; do
+		echo -n "$comma{\"version\":\"$a\","
+		echo -n "\"commit\":\"$b\","
+		desc=`echo $c | sed 's/"/\\\"/g'` # Escape double quotes
+		echo -n "\"desc\":\"$desc\"}"
+		comma=","
+	done < <( echo "$versions" )
+	echo ']}'
 }
 
 main
