@@ -44,7 +44,7 @@ mgrApp.controller("runCtrl", function ($scope) {
   height = height - topOffset;
   if (height < 1) height = 1;
   if (height > topOffset) {
-    $("#page-wrapper").css("min-height", (height-30) + "px");
+    $("#page-wrapper").css("min-height", (height) + "px");
   }
 
   // Loads the correct sidebar on window load,
@@ -57,7 +57,7 @@ mgrApp.controller("runCtrl", function ($scope) {
         this.window.innerWidth : this.screen.width;
       if (width < 768) {
         $('div.navbar-collapse').addClass('collapse')
-        topOffset = 100; // 2-row-menu
+        topOffset = 71; // 2-row-menu
       } else {
         $('div.navbar-collapse').removeClass('collapse')
       }
@@ -67,7 +67,7 @@ mgrApp.controller("runCtrl", function ($scope) {
       height = height - topOffset;
       if (height < 1) height = 1;
       if (height > topOffset) {
-        $("#page-wrapper").css("min-height", (height-30) + "px");
+        $("#page-wrapper").css("min-height", (height) + "px");
       }
     })
   })

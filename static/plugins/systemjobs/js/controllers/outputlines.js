@@ -27,7 +27,7 @@ mgrApp.controller("outputlinesCtrl", function ($scope,$http,$modal,$log,
   $scope.goBack = function( id ) {
   // ----------------------------------------------------------------------
 
-    $scope.setView( "plugins/jobs/html/view.html" );
+    $scope.setView( "plugins/systemjobs/html/view.html" );
   }
 
   // ----------------------------------------------------------------------

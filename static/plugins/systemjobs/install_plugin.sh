@@ -69,7 +69,7 @@ trap "rm -f -- '$t'" EXIT
 #
 
 curl -k -d '{
-    "Name":"jobs",
+    "Name":"systemjobs",
     "Desc":"Job management",
     "HasView":1,
     "Parent":""
@@ -89,17 +89,17 @@ trap - EXIT
 #
 
 curl -k -d '{
-    "Name":"jobs.js",
+    "Name":"systemjobs.js",
     "Desc":"Manages the job queue",
     "Type":1,
     "PluginId":'"$id"',
-    "Url":"jobs/js/controllers/jobs.js"
+    "Url":"systemjobs/js/controllers/systemjobs.js"
 }' $proto://$ipport/api/admin/$guid/files
 curl -k -d '{
     "Name":"outputlines.js",
     "Desc":"Shows job log",
     "Type":1,
     "PluginId":'"$id"',
-    "Url":"jobs/js/controllers/outputlines.js"
+    "Url":"systemjobs/js/controllers/outputlines.js"
 }' $proto://$ipport/api/admin/$guid/files
 

@@ -18,7 +18,7 @@
 // AngularJS Controller
 // ------------------------------------------------------------------------
 
-mgrApp.controller("jobsCtrl", function ($scope,$http,$modal,$log,
+mgrApp.controller("systemjobsCtrl", function ($scope,$http,$modal,$log,
       $timeout,baseUrl,$rootScope) {
 
   $scope.jobs = [];
@@ -42,7 +42,7 @@ mgrApp.controller("jobsCtrl", function ($scope,$http,$modal,$log,
 
     $rootScope.outputlines_plugin = {};
     $rootScope.outputlines_plugin.id = id;
-    $scope.setView( "plugins/jobs/html/outputlines.html" );
+    $scope.setView( "plugins/systemjobs/html/outputlines.html" );
   }
 
   // ----------------------------------------------------------------------

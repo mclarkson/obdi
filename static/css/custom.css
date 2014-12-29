@@ -157,8 +157,8 @@ div.panel-body {
 }
 @media(max-width:767px) {
   .navbar-brand {
-    font-size: 14px;
-    padding-left: 0;
+    font-size: 16px;
+    padding-left: 8px;
   }
 }
 @media(min-width:768px) {
@@ -170,15 +170,35 @@ div.panel-body {
   .vbtn {
     display: block;
   }
-	h3 { font-size: 18px; }
+	h3 { font-size: 16px; }
 }
+
 .adminnav {
   margin-top: 14px;
 }
 .runnav {
-  margin-top: 14px;
+  margin-top: 0px;
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
+}
+.container-fluid {
+	padding: 0 0 0 0;
+}
+@media(min-width:768px) {
+	.col-sm-12,
+	.container-fluid {
+		padding-left: 15px;
+		padding-right: 15px;
+	}
+	.container-fluid > .row {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.runnav {
+		margin-top: 14px;
+		border-bottom-right-radius: 0;
+		border-bottom-left-radius: 0;
+	}
 }
 .mypopover {
   border-bottom: 1px dotted #999;

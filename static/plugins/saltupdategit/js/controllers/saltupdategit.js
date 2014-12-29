@@ -355,7 +355,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
 
     $rootScope.outputlines_plugin = {};
     $rootScope.outputlines_plugin.id = id;
-    $scope.setView( "plugins/jobs/html/outputlines.html" );
+    $scope.setView( "plugins/systemjobs/html/outputlines.html" );
   }
 
   // ----------------------------------------------------------------------
