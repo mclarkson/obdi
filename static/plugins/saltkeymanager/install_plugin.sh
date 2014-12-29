@@ -82,10 +82,6 @@ curl -k -d '{
 # Grab the id of the last insert
 id=`grep Id $t | grep -Eo "[0-9]+"`
 
-# Delete the temporary file and delete the trap
-rm -f -- "$t"
-trap - EXIT
-
 #
 # Add the AJS controller files
 #
@@ -106,59 +102,123 @@ curl -k -d '{
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-grains.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Return the grains for a server. Arg1 - Salt ID",
-    "Name": "saltkey-grains.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltkey-grains.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Return the grains for a server. Arg1 - Salt ID",
+		"Name": "saltkey-grains.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-set-grains.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Set grains. Arg1 - salt_id, Arg2 - grain,value .. ArgN - grain,value",
-    "Name": "saltkey-set-grains.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltkey-set-grains.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Set grains. Arg1 - salt_id, Arg2 - grain,value .. ArgN - grain,value",
+		"Name": "saltkey-set-grains.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-showkeys.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Return the list of keys. No Args.",
-    "Name": "saltkey-showkeys.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltkey-showkeys.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Return the list of keys. No Args.",
+		"Name": "saltkey-showkeys.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-deletekeys.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Delete a server key. Arg1 - Name of the server.",
-    "Name": "saltkey-deletekeys.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltkey-deletekeys.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Delete a server key. Arg1 - Name of the server.",
+		"Name": "saltkey-deletekeys.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-acceptkeys.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Accept a server key. Arg1 - Name of the server.",
-    "Name": "saltkey-acceptkeys.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltkey-acceptkeys.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Accept a server key. Arg1 - Name of the server.",
+		"Name": "saltkey-acceptkeys.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltkey-rejectkeys.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Reject a server key. Arg1 - Name of the server.",
-    "Name": "saltkey-rejectkeys.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltkey-rejectkeys.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Reject a server key. Arg1 - Name of the server.",
+		"Name": "saltkey-rejectkeys.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
+
+# Delete the temporary file and delete the trap
+rm -f -- "$t"
+trap - EXIT
 

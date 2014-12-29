@@ -82,10 +82,6 @@ curl -k -d '{
 # Grab the id of the last insert
 id=`grep Id $t | grep -Eo "[0-9]+"`
 
-# Delete the temporary file and delete the trap
-rm -f -- "$t"
-trap - EXIT
-
 #
 # Add the AJS controller files
 #
@@ -106,29 +102,63 @@ curl -k -d '{
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltupdategit_set_version.sh | base64 -w 0`
 
-curl -k -d '{
-		"Desc": "Returns a list of versions (branches). Arg1 - The branch to search on.",
-    "Name": "saltupdategit_set_version.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltupdategit_set_version.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+			"Desc": "Returns a list of versions (branches). Arg1 - The branch to search on.",
+		"Name": "saltupdategit_set_version.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltupdategit_get_version.sh | base64 -w 0`
 
-curl -k -d '{
-		"Desc": "Returns a list of versions (branches). Arg1 - The branch to search on.",
-    "Name": "saltupdategit_get_version.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltupdategit_get_version.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+			"Desc": "Returns a list of versions (branches). Arg1 - The branch to search on.",
+		"Name": "saltupdategit_get_version.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltupdategit_increment_version.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Increment the Salt Git version creating a new branch from HEAD. Arg1 - The branch name, Arg2 - The position to increment, 1, 2 or 3.",
-    "Name": "saltupdategit_increment_version.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltupdategit_increment_version.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Increment the Salt Git version creating a new branch from HEAD. Arg1 - The branch name, Arg2 - The position to increment, 1, 2 or 3.",
+		"Name": "saltupdategit_increment_version.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
+
+# Delete the temporary file and delete the trap
+rm -f -- "$t"
+trap - EXIT
 
