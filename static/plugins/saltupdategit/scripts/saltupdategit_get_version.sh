@@ -9,8 +9,7 @@ get_main_version() {
     cd $REPOHOME/$REPONAME.git
 
     git branch -av | \
-        sed -n 's#^\s*'"$BRANCH"'\>\(\)#\1#p' | \
-        sort -rnt . -k1,1 -k2,2 -k3,3 -k4,4
+        grep -E '^[\*]*[ \t]*'"$BRANCH"'\>'
 }
 
 

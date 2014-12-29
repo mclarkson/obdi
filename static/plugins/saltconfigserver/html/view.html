@@ -490,9 +490,12 @@
       </p>
       -->
 
-      <p ng-if="!versionlist_ready && !message">Getting the list of
+      <p ng-if="!versionlist_ready && !message && !versionlist_error">Getting the list of
       versions. This might take a while
       <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
+
+      <p ng-if="versionlist_error">The list of versions could not be retrieved. Investigate
+      the error shown on the previous page.</p>
 
       <div ng-if="versionlist_ready">
         <p>The current version for {{changeversionview.saltid}}

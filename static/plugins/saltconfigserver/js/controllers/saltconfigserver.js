@@ -81,6 +81,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   $scope.changeversionview.show = false;
   $scope.changeversionview.versions = [];
   $scope.versionlist_ready = false;
+  $scope.versionlist_error = false;
 
   // Alerting
   $scope.message = "";
@@ -1086,6 +1087,9 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
             clearMessages();
             $scope.message = "Server said: " + job['StatusReason'];
             $scope.message_jobid = job['Id'];
+            if( func == $scope.GetVersionListOutputLine ) {
+              $scope.versionlist_error = true;
+            }
           }
         }).error( function(data,status) {
           if (status>=500) {
@@ -1395,6 +1399,7 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
         clearMessages();
         $scope.message = "Server said: " + data['Error'];
         $scope.error = true;
+        $scope.versionlist_error = true;
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";

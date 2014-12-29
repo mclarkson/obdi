@@ -82,10 +82,6 @@ curl -k -d '{
 # Grab the id of the last insert
 id=`grep Id $t | grep -Eo "[0-9]+"`
 
-# Delete the temporary file and delete the trap
-rm -f -- "$t"
-trap - EXIT
-
 #
 # Add the AJS controller files
 #
@@ -106,69 +102,143 @@ curl -k -d '{
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/salt-grains-cache.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Return the grains for a server from the Salt Cache. Arg1 - Salt ID",
-    "Name": "salt-grains-cache.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=salt-grains-cache.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Return the grains for a server from the Salt Cache. Arg1 - Salt ID",
+		"Name": "salt-grains-cache.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/salt-grains.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Return the grains for a server. Arg1 - Salt ID",
-    "Name": "salt-grains.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=salt-grains.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Return the grains for a server. Arg1 - Salt ID",
+		"Name": "salt-grains.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/serverlist.py | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Returns a list of servers, dead or alive. Arg 1 - dc, Arg 2 - env",
-    "Name": "serverlist.py",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=serverlist.py | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Returns a list of servers, dead or alive. Arg 1 - dc, Arg 2 - env",
+		"Name": "serverlist.py",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/salt-set-grains.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Set grains. Arg1 - salt_id, Arg2 - grain,value .. ArgN - grain,value",
-    "Name": "salt-set-grains.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=salt-set-grains.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Set grains. Arg1 - salt_id, Arg2 - grain,value .. ArgN - grain,value",
+		"Name": "salt-set-grains.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/salt-highstate.py | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Runs a state.highstate on server(s). Arg1 .. ArgN - salt IDs.",
-    "Name": "salt-highstate.py",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=salt-highstate.py | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Runs a state.highstate on server(s). Arg1 .. ArgN - salt IDs.",
+		"Name": "salt-highstate.py",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/statelist.sh | base64 -w 0`
 
-curl -k -d '{
-    "Desc": "Returns a list of states and formulas. Arg1 - The branch/tag.",
-    "Name": "statelist.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=statelist.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+		"Desc": "Returns a list of states and formulas. Arg1 - The branch/tag.",
+		"Name": "statelist.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
 
 # --
 
 source=`sed '1n;/^\s*#/d;/^$/d;' scripts/saltconfigserver_get_version.sh | base64 -w 0`
 
-curl -k -d '{
-		"Desc": "Returns a list of versions (branches). Arg1 - The branch to search on.",
-    "Name": "saltconfigserver_get_version.sh",
-    "Source": "'"$source"'"
-}' $proto://$ipport/api/admin/$guid/scripts
+curl -k $proto://$ipport/api/admin/$guid/scripts?name=saltconfigserver_get_version.sh | tee $t
+
+# Grab the id of the last insert
+id=`grep Id $t | grep -Eo "[0-9]+"`
+
+if [[ -z $id ]]; then
+	curl -k -d '{
+			"Desc": "Returns a list of versions (branches). Arg1 - The branch to search on.",
+		"Name": "saltconfigserver_get_version.sh",
+		"Source": "'"$source"'"
+	}' $proto://$ipport/api/admin/$guid/scripts
+else
+	curl -k -X PUT -d '{ "Source": "'"$source"'" }' \
+	$proto://$ipport/api/admin/$guid/scripts/$id
+fi
+
+# Delete the temporary file and delete the trap
+rm -f -- "$t"
+trap - EXIT
 

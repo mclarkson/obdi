@@ -82,10 +82,6 @@ curl -k -d '{
 # Grab the id of the last insert
 id=`grep Id $t | grep -Eo "[0-9]+"`
 
-# Delete the temporary file and delete the trap
-rm -f -- "$t"
-trap - EXIT
-
 #
 # Add the AJS controller files
 #
@@ -113,4 +109,8 @@ curl -k -d '{
 # }' $proto://$ipport/api/admin/$guid/scripts
 
 # --
+
+# Delete the temporary file and delete the trap
+rm -f -- "$t"
+trap - EXIT
 
