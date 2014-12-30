@@ -61,7 +61,7 @@ q="'"
 
 [[ -z $output ]] && {
     echo '{"Error":"No output from '${q}'salt --output=json "'"$salt_id"'" grains.items'${q}
-    echo ' Check that the server is up and the salt-minion is running.'
+    echo '. Check that the server is up and the salt-minion is running.'
     exit 1
 }
 
