@@ -60,8 +60,8 @@ output=`salt --output=json "$salt_id" grains.items`
 q="'"
 
 [[ -z $output ]] && {
-    echo '{"Error":"No output from '${q}'salt --output=json "'"$salt_id"'" grains.items'${q}
-    echo '. Check that the server is up and the salt-minion is running.'
+    echo -n '{"Error":"No output from '${q}'salt --output=json "'"$salt_id"'" grains.items'${q}
+    echo '. The server must be up, and the salt-minion running, to get the grains."}'
     exit 1
 }
 
