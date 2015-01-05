@@ -28,6 +28,8 @@ import (
 	//"strconv"
 )
 
+var VERSION string
+
 type Api struct {
 	db       *gorm.DB
 	port     int64
@@ -199,7 +201,8 @@ func (api *Api) serveRunTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type IndexPageVars struct {
-		Items []string
+		Items   []string
+		Version string
 	}
 
 	fp := path.Join(config.StaticContent + "/templates/main-index.html")
@@ -249,7 +252,7 @@ func (api *Api) serveRunTemplate(w http.ResponseWriter, r *http.Request) {
 	}
 	defaultScripts = append(defaultScripts, scripts...)
 
-	data := &IndexPageVars{defaultScripts}
+	data := &IndexPageVars{defaultScripts, VERSION}
 	if err := tmpl.ExecuteTemplate(w, path.Base(fp), data); err != nil {
 		logit(err.Error())
 		http.Error(w, http.StatusText(500), 500)
