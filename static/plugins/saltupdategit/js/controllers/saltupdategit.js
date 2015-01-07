@@ -36,7 +36,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   $scope.envchosen.shown = false;
   $scope.envsetting = {};
   $scope.envsetting.shown = false;
-  $scope.envsetting.numupdated = 0;
+  //$scope.envsetting.numupdated = 0;
   $scope.listbtnpressed = false;
   $scope.btnenvlistdisabled = false;
   $scope.showkeybtnblockhidden = false;
@@ -244,12 +244,16 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
 
     // Don't care what was in the output line, it's a success.
     $scope.okmessage = "Server configuration was updated successfully.";
+    $scope.versions = [{"commit":"","desc":"","version":"Refreshing..."}];
+    $scope.FillVersionListTable();
   }
 
   // ----------------------------------------------------------------------
   $scope.ApplyVersion = function( saltid, grain, data ) {
   // ----------------------------------------------------------------------
   // Send { Grain:"version",Text:"0.1.2" }
+
+    $scope.versionchanged = false;
 
     var config = {};
     config.Branch = $scope.env.SysName;
@@ -299,7 +303,7 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
     if( $scope.envsetting ) {
       $scope.ApplyVersion( $scope.envsetting.saltid );
     } else {
-      $scope.envsetting.numupdated += 1;
+      //$scope.envsetting.numupdated += 1;
     }
   }
 
