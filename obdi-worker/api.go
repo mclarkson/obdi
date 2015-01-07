@@ -30,17 +30,17 @@ import (
 // Inbound
 type JobIn struct {
 	ScriptSource []byte // From manager
-    ScriptName   string // From manager
+	ScriptName   string // From manager
 	Args         string // From manager
 	EnvVars      string // From manager
 	//NotifURL   string // From manager
-	JobID        int64  // From manager
-	Key          string // From manager
-	Type         int64  // From manager: 1 - user job, 2 - system job
-	Guid         string // Locally created
-	Pid          int64  // Locally created
-	Errors       int64  // Locally created
-	UserCancel   bool   // Used locally only
+	JobID      int64  // From manager
+	Key        string // From manager
+	Type       int64  // From manager: 1 - user job, 2 - system job
+	Guid       string // Locally created
+	Pid        int64  // Locally created
+	Errors     int64  // Locally created
+	UserCancel bool   // Used locally only
 }
 
 // Outbound: All created locally
@@ -182,14 +182,19 @@ func POST(jsondata []byte, endpoint string) (r *http.Response,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr}
-	client.Timeout = time.Duration(config.TransportTimeout) * 1e9
 
-	resp, err := client.Post(config.ManUrlPrefix+"/api/"+endpoint,
-		"application/json", buf)
+	//resp, err := client.Post(config.ManUrlPrefix+"/api/"+endpoint,
+	//	"application/json", buf)
+	resp := &http.Response{}
+	req, err := http.NewRequest("POST",
+		config.ManUrlPrefix+"/api/"+endpoint, buf)
 	if err != nil {
 		txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
 		return resp, ApiError{txt}
 	}
+
+	req.Close = true
+	resp, err = client.Do(req)
 
 	return resp, nil
 }
@@ -204,7 +209,6 @@ func PUT(jsondata []byte, endpoint string) (r *http.Response,
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	client := &http.Client{Transport: tr}
-	client.Timeout = time.Duration(config.TransportTimeout) * 1e9
 
 	resp := &http.Response{}
 
@@ -217,6 +221,7 @@ func PUT(jsondata []byte, endpoint string) (r *http.Response,
 
 	req.Header.Add("Content-Type", `application/json`)
 
+	req.Close = true
 	resp, err = client.Do(req)
 
 	return resp, nil
@@ -403,12 +408,6 @@ func NewApi() Api {
 	api.jobs = make([]JobIn, 0)
 	api.mutex = &sync.Mutex{}
 	api.loginmutex = &sync.Mutex{}
-
-	// bigger values allow for more concurrency.
-	// increase to avoid 'use of closed network connection' errors
-	if config.TransportTimeout < 2 {
-		config.TransportTimeout = 2
-	}
 
 	return api
 }

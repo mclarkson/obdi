@@ -37,7 +37,7 @@ type Config struct {
 	GoPluginSource    string `toml:"go_plugin_source"`
 	GoPluginPortStart int64  `toml:"go_plugin_port_start"`
 	GoRoot            string `toml:"go_root"`
-	TransportTimeout  int64  `toml:"transport_timeout"`
+	TransportTimeout  int64  `toml:"transport_timeout"` // Not used
 }
 
 func init() {

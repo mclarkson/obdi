@@ -266,11 +266,5 @@ func NewApi(db *Database) Api {
 	api.SetPort(config.GoPluginPortStart)
 	api.compile = &sync.Mutex{}
 
-	// bigger values allow for more concurrency.
-	// increase to avoid 'use of closed network connection' errors
-	if config.TransportTimeout < 2 {
-		config.TransportTimeout = 2
-	}
-
 	return api
 }

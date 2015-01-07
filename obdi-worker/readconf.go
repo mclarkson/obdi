@@ -39,7 +39,7 @@ type Config struct {
 	Password         string `toml:"man_password"`
 	ManUrlPrefix     string `toml:"man_urlprefix"`
 	SysScriptDir     string `toml:"system_scripts"`
-	TransportTimeout int64  `toml:"transport_timeout"`
+	TransportTimeout int64  `toml:"transport_timeout"` // Not used
 }
 
 func init() {
