@@ -211,8 +211,8 @@ EnD
 
 # Get minion name (only one is expected and checked for)
 
-eval minion=$(salt_run_json jobs.list_job $JOBID | \
-    decode_json | sed -n "s/\[\"Minions\",0\]\s*//p")
+result=$(salt_run_json jobs.list_job $JOBID)
+minion=$( echo "$result" | decode_json | sed -n "s/\[\"Minions\",0\]\s*//p")
 
 [[ -z $minion ]] && {
     echo -n '{"Error":"Could not find the job. Maybe it is has been deleted.'
@@ -225,14 +225,14 @@ eval minion=$(salt_run_json jobs.list_job $JOBID | \
 while true; do
     # Try to get a result 10 times (probably around 60 seconds)
     for i in 1 2 3 4 5 6 7 8 9 0; do
-        gotresult=$(salt_run_json jobs.list_job $JOBID | \
-            decode_json | grep -m1 "^\[\"Result\",")
+        gotresult=$(echo "$result" | decode_json | grep -m1 "^\[\"Result\",")
         [[ ! -z $gotresult ]] && break
         sleep 5
+        result=$(salt_run_json jobs.list_job $JOBID)
     done
 
     [[ ! -z $gotresult ]] && {
-        salt_run_json jobs.list_job $JOBID
+        echo "$result"
         exit 0
     }
 
@@ -246,11 +246,11 @@ while true; do
         # It isn't running on the minion. Do a single check to see
         # if there has been a result since checking the minion
 
-        gotresult=$(salt_run_json jobs.list_job $JOBID | \
-            decode_json | grep -m1 "^\[\"Result\",")
+        result=$(salt_run_json jobs.list_job $JOBID)
+        gotresult=$(echo "$result" | decode_json | grep -m1 "^\[\"Result\",")
 
         [[ ! -z $gotresult ]] && {
-            salt_run_json jobs.list_job $JOBID
+            echo "$result"
             exit 0
         }
 
