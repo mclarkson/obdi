@@ -377,6 +377,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     clearMessages();
 
     $scope.envsetting.numupdated = 0;
+    $scope.envsetting.shown = true;
 
     if( $scope.envsetting.dc ) {
       $scope.ApplyGrain( $scope.envsetting.saltid, "dc",
