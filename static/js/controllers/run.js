@@ -40,7 +40,12 @@ mgrApp.controller("runCtrl", function ($scope) {
   // Resizing of display
   // ------------------------------------------------------------------------
 
-  topOffset = 50;
+  topOffset = 66;
+	width = (window.innerWidth > 0) ?
+		window.innerWidth : screen.width;
+	if (width < 768) {
+		topOffset = 69;
+	}
   height = (window.innerHeight > 0) ?
     window.innerHeight : screen.height;
   height = height - topOffset;
@@ -54,14 +59,14 @@ mgrApp.controller("runCtrl", function ($scope) {
   // Sets the min-height of #page-wrapper to window size
   $(function() {
     $(window).bind("load resize", function() {
-      topOffset = 50;
+      topOffset = 66;
       width = (this.window.innerWidth > 0) ?
         this.window.innerWidth : this.screen.width;
       if (width < 768) {
-        $('div.navbar-collapse').addClass('collapse')
-        topOffset = 71; // 2-row-menu
+        //$('div.navbar-collapse').addClass('collapse')
+        topOffset = 69; // 2-row-menu
       } else {
-        $('div.navbar-collapse').removeClass('collapse')
+        //$('div.navbar-collapse').removeClass('collapse')
       }
 
       height = (this.window.innerHeight > 0) ?
