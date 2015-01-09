@@ -24,8 +24,6 @@ import (
 	"os"
 	"path"
 	"sync"
-	"time"
-	//"strconv"
 )
 
 var VERSION string
