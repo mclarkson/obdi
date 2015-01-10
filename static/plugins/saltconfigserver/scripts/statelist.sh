@@ -43,6 +43,13 @@ if ! echo "$branchtags" | grep -qs "^$ENV\$" 2>/dev/null; then
     exit 1
 fi
 
+# Clear the cache first in case sls files were deleted at source. The
+# deleted files will hang around forever otherwise.
+
+[[ -d /var/cache/salt/master/gitfs/refs/$ENV ]] && {
+    rm -rf /var/cache/salt/master/gitfs/refs/$ENV
+}
+
 # Fill the salt git cache
 
 output=`python < <(cat <<EnD

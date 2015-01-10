@@ -44,7 +44,7 @@
       style="margin-top: -5px;">
         <i class="fa fa-arrow-left"> </i> Go Back</button>
       <button class="btn btn-sm btn-success pull-right" type="button"
-      ng-if="envsetting.shown" ng-disabled="forminvalid"
+      ng-if="envsetting.shown" ng-disabled="forminvalid || applydisabled"
       ng-click="ApplySettings()"
       style="margin-top: -5px; margin-right:8px;">
         <i class="fa fa-check"> </i> Apply</button>

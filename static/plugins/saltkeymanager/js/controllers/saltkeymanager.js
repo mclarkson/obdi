@@ -28,6 +28,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   $scope.status = {};  // For env chooser button
   $scope.grains = [];
   $scope.forminvalid = true; // For grains setting (dc,env,ver)
+  $scope.applydisabled = false;
 
   // Alerting
   $scope.message = "";
@@ -377,7 +378,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     clearMessages();
 
     $scope.envsetting.numupdated = 0;
-    $scope.envsetting.shown = false;
+    $scope.applydisabled = true;
 
     if( $scope.envsetting.dc ) {
       $scope.ApplyGrain( $scope.envsetting.saltid, "dc",
@@ -566,6 +567,7 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
     $scope.envsetting.dc = "";
     $scope.envsetting.env = "";
     $scope.envsetting.version = "";
+    $scope.applydisabled = false;
     $rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
   }
 
