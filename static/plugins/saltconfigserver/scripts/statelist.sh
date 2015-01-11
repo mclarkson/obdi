@@ -56,6 +56,7 @@ output=`python < <(cat <<EnD
 # Import python libs
 import os
 import sys
+import fnmatch
 
 # Import salt libs
 import salt
@@ -75,7 +76,8 @@ def salt_update():
         load = {'saltenv':'$ENV'}
         file = salt.fileserver.gitfs.file_list(load)
         for i in file:
-            result.append( salt.fileserver.gitfs.find_file(i,'$ENV') )
+            if fnmatch.fnmatch(i, "*.sls"):
+                result.append( salt.fileserver.gitfs.find_file(i,'$ENV') )
     except KeyboardInterrupt:
         os.kill(pid, 15)
 
