@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=/bin:/usr/bin
+
 [[ -z "$1" ]] && {
     echo '{"Error":"Argument missing. Expected Arg1 - JobID."}'
     exit 1
