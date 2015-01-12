@@ -55,6 +55,13 @@ mgrApp.controller("systemjobsCtrl", function ($scope,$http,$modal,$log,
   }
 
   // ----------------------------------------------------------------------
+  $scope.prettyDate = function( d ) {
+  // ----------------------------------------------------------------------
+    var date = new Date(d);
+    return date.toLocaleString();
+  }
+
+  // ----------------------------------------------------------------------
   $scope.duration = function( start,end,status ) {
   // ----------------------------------------------------------------------
     var unit = "seconds";
