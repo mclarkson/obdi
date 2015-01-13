@@ -171,7 +171,7 @@
               </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="name in keylist.minions_pre | filter:keyfilter">
+                <tr ng-repeat="name in keylist.minions_pre">
                 <td>{{name}}</td>
                 <td>
                   <a href="#" ng-click="Accept(name)">
@@ -200,7 +200,7 @@
               </tr>
               </thead>
               <tbody>
-                <tr ng-repeat="name in keylist.minions_rejected | filter:keyfilter">
+                <tr ng-repeat="name in keylist.minions_rejected">
                 <td>{{name}}</td>
                 <td>
                   <a href="#" ng-click="dialog(name)">
