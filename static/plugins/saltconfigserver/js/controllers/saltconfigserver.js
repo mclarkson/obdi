@@ -100,6 +100,8 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   $scope.serverlist_empty = true;
   $scope.status = {};
 
+  $rootScope.$broadcast( "searchdisabled", false );
+
   // ----------------------------------------------------------------------
   $scope.$on( "search", function( event, args ) {
   // ----------------------------------------------------------------------

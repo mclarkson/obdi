@@ -60,6 +60,8 @@ mgrApp.controller("saltupdategitCtrl", function ($scope,$http,$modal,$log,
   $scope.position = 0;
   $scope.spacing = 20;
 
+  $rootScope.$broadcast( "searchdisabled", true );
+
   // ----------------------------------------------------------------------
   var clearMessages = function() {
   // ----------------------------------------------------------------------

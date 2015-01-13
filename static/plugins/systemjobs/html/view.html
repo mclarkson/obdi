@@ -142,8 +142,8 @@
         <table class="table table-striped" style="margin-top: 4px">
           <thead>
           <tr>
-            <th>ID</th>
             <th>Date</th>
+            <th>ID</th>
             <th>Script</th>
             <th>Status</th>
             <th>Duration</th>
@@ -153,8 +153,8 @@
           <tbody>
           <tr ng-repeat="job in jobs | filter:jobfilter"
           class="{{style(job.Status)}}">
-            <td>{{job.Id}}</td>
             <td>{{prettyDate(job.CreatedAt)}}</td>
+            <td>{{job.Id}}</td>
             <td><span class="mypopover" popover="{{job.ScriptDesc}}"
               popover-trigger="mouseenter">
               {{job.ScriptName}}</span>

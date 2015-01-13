@@ -55,6 +55,8 @@ mgrApp.controller("saltkeymgrCtrl", function ($scope,$http,$modal,$log,
   $scope.keylist_reject_empty = true;
   $scope.keylist_unaccepted_empty = true;
 
+  $rootScope.$broadcast( "searchdisabled", true );
+
   // ----------------------------------------------------------------------
   var clearMessages = function() {
   // ----------------------------------------------------------------------

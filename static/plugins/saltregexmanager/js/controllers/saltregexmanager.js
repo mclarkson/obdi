@@ -59,6 +59,8 @@ mgrApp.controller("saltregexmgrCtrl", function ($scope,$http,$modal,$log,
   $scope.newregex = {};
   $scope.newregex.Name = ""; // so watch works without error
 
+  $rootScope.$broadcast( "searchdisabled", true );
+
   // ----------------------------------------------------------------------
   $scope.$watch('newregex.Name', function() {
   // ----------------------------------------------------------------------

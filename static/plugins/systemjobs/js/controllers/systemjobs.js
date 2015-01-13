@@ -24,6 +24,8 @@ mgrApp.controller("systemjobsCtrl", function ($scope,$http,$modal,$log,
   $scope.jobs = [];
   $scope.jobfilter = "";
 
+  $rootScope.$broadcast( "searchdisabled", false );
+
   // ----------------------------------------------------------------------
   $scope.$on( "search", function( event, args ) {
   // ----------------------------------------------------------------------

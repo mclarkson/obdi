@@ -26,6 +26,8 @@ mgrApp.controller("saltrolloutCtrl", function ($scope,$http,$modal,$log,
   $scope.envchosen = false;
   $scope.env = {};
 
+  $rootScope.$broadcast( "searchdisabled", true );
+
   // ----------------------------------------------------------------------
   $scope.envChoice = function( envobj, $event ) {
   // ----------------------------------------------------------------------

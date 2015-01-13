@@ -23,6 +23,8 @@ mgrApp.controller("outputlinesCtrl", function ($scope,$http,$modal,$log,
 
   $scope.outputlines = [];
 
+  $rootScope.$broadcast( "searchdisabled", true );
+
   // ----------------------------------------------------------------------
   $scope.goBack = function( id ) {
   // ----------------------------------------------------------------------

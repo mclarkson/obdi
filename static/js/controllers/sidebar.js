@@ -71,6 +71,12 @@ mgrApp.controller("sidebarCtrl", function ($scope,$http,baseUrl,$timeout,
   });
 
   // ----------------------------------------------------------------------
+  $scope.$on( "searchdisabled", function( event, args ) {
+  // ----------------------------------------------------------------------
+    $scope.searchdisabled = args;
+  });
+
+  // ----------------------------------------------------------------------
   $scope.$on('onRepeatLast', function(scope, element, attrs){
   // ----------------------------------------------------------------------
   // Kicked off by the $last ng-repeat. Doesn't work though hence the

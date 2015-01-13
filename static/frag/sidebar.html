@@ -23,10 +23,11 @@
       <li class="sidebar-search">
         <div class="input-group custom-search-form">
           <input type="text" class="form-control" ng-model="text"
-            placeholder="Search..." ng-enter="search(text)">
+          placeholder="Search..." ng-enter="search(text)"
+          ng-disabled="searchdisabled">
           <span class="input-group-btn">
             <button class="btn btn-default" type="button"
-            ng-click="search(text)">
+            ng-click="search(text)" ng-disabled="searchdisabled">
                 <i class="fa fa-search"></i>
             </button>
           </span>
