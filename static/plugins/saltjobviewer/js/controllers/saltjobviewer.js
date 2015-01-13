@@ -45,9 +45,23 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
   $scope.result = {};
   $scope.joblist_ready = false;
   $scope.joblist_empty = true;
+  $scope.jobresult_ready = false;
+  $scope.jobresult_empty = true;
   $scope.joblist = {};
+  $scope.job = {};
   $scope.position = 0;
   $scope.spacing = 20;
+  $scope.joblistfilter = "";
+  $scope.page_main = true;
+  $scope.page_result = false;
+
+  $rootScope.$broadcast( "searchdisabled", false );
+
+  // ----------------------------------------------------------------------
+  $scope.$on( "search", function( event, args ) {
+  // ----------------------------------------------------------------------
+    $scope.joblistfilter = args;
+  });
 
   // ----------------------------------------------------------------------
   var clearMessages = function() {
@@ -102,10 +116,6 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
         $scope.result_empty = false;
 
       }
-
-      // Hide the buttons
-      //$scope.showkeybtnblockhidden = true;
-      //$scope.spacing = 0;
 
     }).error( function(data,status) {
       if (status>=500) {
@@ -204,7 +214,11 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
     clearMessages();
     $scope.envchosen.shown = true;
     $scope.envsetting.shown = false;
-    $rootScope.$broadcast( "setsearchtext", $scope.hostfilter );
+
+    $scope.page_main = true;
+    $scope.page_result = false;
+
+    $rootScope.$broadcast( "searchdisabled", false );
   }
 
   // ----------------------------------------------------------------------
@@ -218,19 +232,28 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
     $scope.btnshowjobsdisabled = true;
     $scope.joblist_ready = false;
     $scope.joblist_empty = true;
+    $scope.result_ready = false;
+    $scope.result_empty = true;
     $scope.position = 0;
     $scope.spacing = 20;
   };
 
   // ----------------------------------------------------------------------
-  $scope.ViewResult = function( jid ) {
+  $scope.ViewResult = function( job ) {
   // ----------------------------------------------------------------------
-    $scope.btnshowjobsdisabled = true;
-    $scope.listbtnpressed = true;
-    $scope.joblist_ready = false;
-    $scope.joblist_empty = false;
+    clearMessages();
 
-    $scope.FillResultTable( jid );
+    $scope.job = job;
+
+    $scope.page_main = false;
+    $scope.page_result = true;
+
+    $scope.result_ready = false;
+    $scope.result_empty = false;
+
+    $rootScope.$broadcast( "searchdisabled", true );
+
+    $scope.FillResultTable( job.key );
   };
 
   // ----------------------------------------------------------------------
@@ -239,7 +262,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
     $scope.btnshowjobsdisabled = true;
     $scope.listbtnpressed = true;
     $scope.joblist_ready = false;
-    $scope.joblist_empty = false;
+    $scope.joblist_empty = true;
 
     $scope.FillJobListTable();
   };
