@@ -611,6 +611,11 @@ mgrApp.controller("saltconfigserverCtrl", function ($scope,$http,$modal,$log,
   // ----------------------------------------------------------------------
     clearMessages();
 
+    if( !classname ) {
+      // It's in the list so leave
+      return;
+    }
+
     if( !$scope.config.Classes ) {
         $scope.config = {};
         $scope.config.Classes = [];
