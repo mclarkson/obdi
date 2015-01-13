@@ -16,6 +16,7 @@ get_main_version() {
 get_all_version_strings() {
 	cd $REPOHOME/$REPONAME.git
 
+	git fetch
 	git branch -av | \
 		sed -n 's#^\s*'"$BRANCH"'_\(\)#\1#p' | \
 		sort -rnt . -k1,1 -k2,2 -k3,3 -k4,4
