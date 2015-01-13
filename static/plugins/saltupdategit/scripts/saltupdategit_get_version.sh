@@ -16,6 +16,7 @@ get_main_version() {
 get_all_version_strings() {
 	cd $REPOHOME/$REPONAME.git
 
+    # Performs a git fetch to pull down other branches not already on the server
 	git fetch
 	git branch -av | \
 		sed -n 's#^\s*'"$BRANCH"'_\(\)#\1#p' | \
