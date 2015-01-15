@@ -42,7 +42,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
   $scope.showkeybtnblockhidden = false;
   $scope.btnshowjobsdisabled = true;
   $scope.joblist = [];
-  $scope.result = {};
+  $scope.result = [];
   $scope.joblist_ready = false;
   $scope.joblist_empty = true;
   $scope.jobresult_ready = false;
@@ -54,6 +54,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
   $scope.joblistfilter = "";
   $scope.page_main = true;
   $scope.page_result = false;
+  $scope.numerrors = 0;
 
   $rootScope.$broadcast( "searchdisabled", false );
 
@@ -98,14 +99,14 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
     }).success( function(data, status, headers, config) {
 
       try {
-        $scope.result = $.parseJSON(data[0].Text);
+        var result = $.parseJSON(data[0].Text);
       } catch (e) {
         clearMessages();
         $scope.message = "Error: " + e;
         $scope.message_jobid = id;
       }
 
-      if( $scope.result.length == 0 ) {
+      if( result.length == 0 ) {
 
         $scope.result_empty = true;
         $scope.result_ready = true;
@@ -116,6 +117,91 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
         $scope.result_empty = false;
 
       }
+
+      var doc=[];
+      indent=-1;
+
+      $scope.numerrors = 0;
+      var numok = 0;
+
+      var recurse = function( obj ) {
+        indent+=1;
+        isarray=false;
+        if( Array.isArray(obj) ) isarray=true;
+        for( i in obj ){
+          switch( typeof obj[i] ) {
+            case "object":
+              style="";
+              property = i;
+              if( indent==0 ) {
+                // Bold for top-level items
+                style = "bold";
+                property = i.replace(/_\|-/g,", ");
+              }
+              doc.push( {Indent:indent,Style:style,Property:property,Text:""} );
+              recurse( obj[i] );
+              break;
+            case "number":
+              if(isarray){
+                doc.push( {Indent:indent,Property:"- ",Text:obj[i]} );
+              } else {
+                doc.push( {Indent:indent,Property:i+": ",Text:obj[i]} );
+              }
+              break;
+            case "string":
+              if( i == "diff" ) {
+                  doc.push( {Indent:0,Style:"changes",Property:i+": ",Text:obj[i]} );
+              } else {
+                if(isarray) {
+                  doc.push( {Indent:indent,Property:"- ",Text:obj[i]} );
+                } else {
+                  doc.push( {Indent:indent,Property:i+": ",Text:obj[i]} );
+                }
+              }
+              break;
+            case "boolean":
+              var text = obj[i]?"OK":"Error";
+              if( i == "result" ) {
+                var style = obj[i]?"green":"red";
+                if( style == "red" ) ++$scope.numerrors;
+                if( style == "green" ) ++numok;
+                if(isarray) {
+                  doc.push( {Indent:indent,Style:style,Property:"- ",Text:text} );
+                } else {
+                  doc.push( {Indent:indent,Style:style,Property:i+": ",Text:text} );
+                }
+              } else {
+                if(isarray) {
+                  doc.push( {Indent:indent,Property:"- ",Text:text} );
+                } else {
+                  doc.push( {Indent:indent,Property:i+": ",Text:text} );
+                }
+              break;
+              }
+           }
+        }
+        indent-=1;
+      }
+
+      var extract = function( obj ) {
+        for( i in obj ) {
+          doc.push( {Indent:0,Style:"bold",Property:i} );
+          errindex = doc.push( {Indent:0,Style:"bold"} ); // Create a stub entry for numerrors
+          recurse( obj[i].return );
+          if( numok > 0 ) {
+            // Update the stub entry
+            if( $scope.numerrors > 0 ) {
+              doc[errindex-1] = ( {Indent:0,Style:"red",Property:"Number of errors:" + $scope.numerrors} );
+            } else {
+              doc[errindex-1] = ( {Indent:0,Style:"green",Property:"Number of errors:" + $scope.numerrors} );
+            }
+          }
+        }
+      }
+
+      extract( result.Result );
+
+      $scope.result = doc;
 
     }).error( function(data,status) {
       if (status>=500) {

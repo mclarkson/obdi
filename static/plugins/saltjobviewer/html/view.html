@@ -188,9 +188,25 @@
       for Salt Job ID, '{{job.key}}'. This might take a while
       <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
+      <style>
+        .green { color: green; font-weight: bold }
+        .red { color: red; font-weight: bold }
+        .bold { font-weight: bold }
+        .changes {
+              color: blue;
+              font-family: monospace;
+              font-size: 11px;
+              padding-left: 0;
+              white-space: pre-wrap;
+        }
+      </style>
       <div ng-if="result_ready && !result_empty">
         <p>Showing Salt job with ID, '{{job.key}}'.</p>
-        <p>{{result.Result}}</p>
+        <div ng-repeat="item in result">
+          <p ng-if="item.Property || item.Text"
+          style="padding-left: {{item.Indent*8}}px"
+          class="{{item.Style}}">{{item.Property}}{{item.Text}}</p>
+        </div>
       </div>
 
       <div ng-if="result_ready && result_empty">
