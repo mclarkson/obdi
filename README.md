@@ -2,7 +2,7 @@
 
 ## Screenshot
 
-![](images/screenshot-2014-10.27.png?raw=true)
+![](images/obdi-0.1.2.png?raw=true)
 
 ## What is it?
 
