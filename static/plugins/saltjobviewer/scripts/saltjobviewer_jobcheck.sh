@@ -261,8 +261,8 @@ while true; do
         echo -n '{"Error":"The job has no result output and is not running on the minion.'
         echo -n ' If the salt server or minion is under heavy load then the job'
         echo -n ' might not have started yet, so it might be worth querying again.'
-        echo -n ' If the problem persists then the minion might be down or the job'
-        echo ' is dying before outputting a result."}'
+        echo -n ' If the problem persists then the minion might have been down or died when'
+        echo ' the job was submitted. In that case check the minion then submit the job again."}'
         exit 1
     }
 
