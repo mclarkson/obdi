@@ -185,10 +185,33 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
 
       var extract = function( obj ) {
         for( i in obj ) {
+
           $scope.numerrors = 0;
+          $scope.numok = 0;
           doc.push( {Indent:0,Style:"bold",Property:i} );
           errindex = doc.push( {Indent:0,Style:"bold"} ); // Create a stub entry for numerrors
-          recurse( obj[i].return );
+
+          // Test top level items. Their types define their purpose (it seems)
+
+          switch( typeof obj[i].return ) {
+            case "object":
+              if( Array.isArray(obj[i].return) ) {
+                // Usually error output
+                var arr=obj[i].return;
+                for( var x=0; x < arr.length; ++x ) {
+                  doc.push( {Indent:indent,Style:"changes",Text:arr[x]} );
+                }
+              } else {
+                // Usually a result from state.highstate
+                recurse( obj[i].return );
+              }
+              break;
+            case "string":
+              // Usually a result from cmd.run
+              doc.push( {Indent:indent,Style:"changes",Text:obj[i].return} );
+              break;
+          }
+
           if( numok > 0 ) {
             // Update the stub entry
             if( $scope.numerrors > 0 ) {
