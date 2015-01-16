@@ -188,7 +188,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
 
           $scope.numerrors = 0;
           $scope.numok = 0;
-          doc.push( {Indent:0,Style:"bold",Property:i} );
+          doc.push( {Indent:0,Style:"page-header bold",Property:i} );
           errindex = doc.push( {Indent:0,Style:"bold"} ); // Create a stub entry for numerrors
 
           // Test top level items. Their types define their purpose (it seems)
