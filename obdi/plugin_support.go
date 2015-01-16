@@ -135,9 +135,25 @@ func (api *Api) CompilePlugin(w rest.ResponseWriter,
 
 	api.compile.Lock()
 
-	if _, err := os.Stat(pluginFile); os.IsNotExist(err) {
-		sourceDir := path.Join(config.GoPluginSource, endpoint, "go")
-		sourceFile := path.Join(sourceDir, subitem+".go")
+	sourceDir := path.Join(config.GoPluginSource, endpoint, "go")
+	sourceFile := path.Join(sourceDir, subitem+".go")
+
+	compile := false
+
+	if statExe, err := os.Stat(pluginFile); os.IsNotExist(err) {
+		compile = true
+	} else {
+		if statSrc, err := os.Stat(sourceFile); !os.IsNotExist(err) {
+			if statExe.ModTime().Before(statSrc.ModTime()) {
+				logit("Plugin is older than source. Recompiling plugin.")
+				compile = true
+			} else {
+				compile = false
+			}
+		}
+	}
+
+	if compile == true {
 		if _, err := os.Stat(sourceFile); os.IsNotExist(err) {
 			txt := fmt.Sprintf("Plugin endpoint '%s/%s' does not exist.",
 				endpoint, subitem)
