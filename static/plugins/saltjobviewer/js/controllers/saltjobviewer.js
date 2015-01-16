@@ -185,6 +185,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
 
       var extract = function( obj ) {
         for( i in obj ) {
+          $scope.numerrors = 0;
           doc.push( {Indent:0,Style:"bold",Property:i} );
           errindex = doc.push( {Indent:0,Style:"bold"} ); // Create a stub entry for numerrors
           recurse( obj[i].return );
