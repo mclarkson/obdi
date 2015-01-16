@@ -258,11 +258,11 @@ while true; do
 
         # No output from salt-run or salt list_job so there's a problem
 
-        echo -n '{"Error":"Job has no result output and is not running on minion.'
+        echo -n '{"Error":"The job has no result output and is not running on the minion.'
         echo -n ' If the salt server or minion is under heavy load then the job'
         echo -n ' might not have started yet, so it might be worth querying again.'
-        echo -n ' If the problem persists then the job is likely dying before'
-        echo ' outputting a result."}'
+        echo -n ' If the problem persists then the minion might be down or the job'
+        echo ' is dying before outputting a result."}'
         exit 1
     }
 
