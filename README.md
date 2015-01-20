@@ -4,6 +4,8 @@
 
 ![](images/obdi-0.1.2.png?raw=true)
 
+More pics here: http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html
+
 ## What is it?
 
 Obdi is an extendable graphical user interface for running scripts on
