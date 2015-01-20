@@ -45,22 +45,4 @@ BUILD_NUMBER=1 ./dist/jenkins-build.sh
 
 ## Todo
 
-Front-end
-
-* Per-minion configuration - custom pillar for minion classes
-* Scripting plugin (chainable)
-* System Log plugin
-* Monitoring plugin
-* Plugin loader (from Git)
-* Bulk Tools
-  * For example, change version for many servers at once.
-* DONE ~~(simple) Salt job viewer plugin~~
-* DONE ~~Regex manager - manage class to host mappings~~
-* DONE ~~Key Management plugin - interface for salt-key~~
-* DONE ~~Versioning plugin~~
-
-Back-end
-
-* Expose system log so plugins can use it
-* Split plugins out to their own repo
-
+Moved to GitHub Issues
