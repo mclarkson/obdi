@@ -88,7 +88,7 @@ def getServers( dc, env, __opts__ ):
     with open(os.devnull, 'wb') as f:
         sys.stdout = f
         #items = local.cmd( match, 'test.ping', [], expr_form='compound' )
-        items = local.cmd( match, 'grains.item', ["env","version"], expr_form='compound',timeout=30 )
+        items = local.cmd( match, 'grains.item', ["env","version"], expr_form='compound',timeout=10 )
     sys.stdout = stdout_bak
 
     arr = []

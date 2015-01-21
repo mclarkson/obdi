@@ -738,14 +738,14 @@ func main() {
 	config.Port = 49993
 	config.Portlock = NewPortLock(config.Port)
 
-	plugin := new(Plugin)
-	rpc.Register(plugin)
-
 	listener, err := net.Listen("tcp", ":"+os.Args[1])
 	if err != nil {
 		txt := fmt.Sprintf("Listen error. ", err)
 		logit(txt)
 	}
+
+	plugin := new(Plugin)
+	rpc.Register(plugin)
 
 	//for {
 	if conn, err := listener.Accept(); err != nil {
