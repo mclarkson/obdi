@@ -188,11 +188,11 @@ def main():
 
     g['guid'] = login( g )
 
-    # Unlock the lockfile, only 'login' matters
+    resp = enc_query( g )
+
+    # Unlock the lockfile
     fcntl.lockf(fp, fcntl.LOCK_UN)
     fp.close()
-
-    resp = enc_query( g )
 
     print resp
 
