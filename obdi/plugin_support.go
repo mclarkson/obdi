@@ -212,8 +212,9 @@ func (api *Api) CompilePlugin(w rest.ResponseWriter,
 func (api *Api) GenericGetEndpoint(w rest.ResponseWriter, r *rest.Request) {
 
 	// Reserve the tcp plugin port now
-	port := strconv.FormatInt(api.Port(), 10)
-	defer api.DecrementPort()
+	iport := api.Port()
+	port := strconv.FormatInt(iport, 10)
+	defer api.DecrementPort(iport)
 
 	// Check credentials
 
@@ -289,8 +290,9 @@ func (api *Api) GenericGetEndpoint(w rest.ResponseWriter, r *rest.Request) {
 func (api *Api) GenericPostEndpoint(w rest.ResponseWriter, r *rest.Request) {
 
 	// Reserve the tcp plugin port now
-	port := strconv.FormatInt(api.Port(), 10)
-	defer api.DecrementPort()
+	iport := api.Port()
+	port := strconv.FormatInt(iport, 10)
+	defer api.DecrementPort(iport)
 
 	// Check credentials
 
@@ -366,8 +368,9 @@ func (api *Api) GenericPostEndpoint(w rest.ResponseWriter, r *rest.Request) {
 func (api *Api) GenericDeleteEndpoint(w rest.ResponseWriter, r *rest.Request) {
 
 	// Reserve the tcp plugin port now
-	port := strconv.FormatInt(api.Port(), 10)
-	defer api.DecrementPort()
+	iport := api.Port()
+	port := strconv.FormatInt(iport, 10)
+	defer api.DecrementPort(iport)
 
 	// Check credentials
 
@@ -443,8 +446,9 @@ func (api *Api) GenericDeleteEndpoint(w rest.ResponseWriter, r *rest.Request) {
 func (api *Api) GenericPutEndpoint(w rest.ResponseWriter, r *rest.Request) {
 
 	// Reserve the tcp plugin port now
-	port := strconv.FormatInt(api.Port(), 10)
-	defer api.DecrementPort()
+	iport := api.Port()
+	port := strconv.FormatInt(iport, 10)
+	defer api.DecrementPort(iport)
 
 	// Check credentials
 

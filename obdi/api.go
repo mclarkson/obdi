@@ -31,7 +31,8 @@ var VERSION string
 
 type Api struct {
 	db       *gorm.DB
-	port     int64
+	port     [5000]int64
+	baseport int64
 	apimutex *sync.Mutex
 	compile  *sync.Mutex
 }
@@ -50,24 +51,28 @@ func (api *Api) SetDB(db *gorm.DB) {
 // next connection
 func (api *Api) Port() int64 {
 	apimutex.Lock()
-	portnum := api.port
-	api.port += 1
+	var portnum int64
+	for i := range api.port {
+		if api.port[i] == 0 {
+			api.port[i] = 1
+			portnum = api.baseport + int64(i)
+			break
+		}
+	}
 	apimutex.Unlock()
+	//logit( fmt.Sprintf("%d",portnum) )
 	return portnum
 }
 
 func (api *Api) SetPort(portnum int64) {
 	apimutex.Lock()
-	api.port = portnum
+	api.baseport = portnum
 	apimutex.Unlock()
 }
 
-func (api *Api) DecrementPort() {
+func (api *Api) DecrementPort(portnum int64) {
 	apimutex.Lock()
-	//startport,_ := strconv.ParseInt(config.GoPluginPortStart,10,64)
-	if api.port != config.GoPluginPortStart {
-		api.port -= 1
-	}
+	api.port[portnum-api.baseport] = 0
 	apimutex.Unlock()
 }
 
