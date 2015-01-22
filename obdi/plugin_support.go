@@ -154,6 +154,7 @@ func (api *Api) CompilePlugin(w rest.ResponseWriter,
 	}
 
 	if compile == true {
+    logit("Plugin does not exist. Compiling plugin.")
 		if _, err := os.Stat(sourceFile); os.IsNotExist(err) {
 			txt := fmt.Sprintf("Plugin endpoint '%s/%s' does not exist.",
 				endpoint, subitem)
