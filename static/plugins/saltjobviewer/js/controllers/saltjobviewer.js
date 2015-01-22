@@ -210,7 +210,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
             case "string":
               // Usually a result from cmd.run
               args=result.Arguments.toString();
-              args=args.replace(","," ");
+              args=args.replace(/,/g," ");
               doc.push( {Indent:indent,Style:"changes",Text:"# "+args} );
               doc.push( {Indent:indent,Style:"changes",Text:obj[i].return} );
               break;
