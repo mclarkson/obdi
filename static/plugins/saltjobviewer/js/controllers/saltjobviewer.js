@@ -100,6 +100,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
 
       try {
         var result = $.parseJSON(data[0].Text);
+        //$scope.test1 = $.parseJSON(data[0].Text);
       } catch (e) {
         clearMessages();
         $scope.message = "Error: " + e;
@@ -208,6 +209,9 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
               break;
             case "string":
               // Usually a result from cmd.run
+              args=result.Arguments.toString();
+              args=args.replace(","," ");
+              doc.push( {Indent:indent,Style:"changes",Text:"# "+args} );
               doc.push( {Indent:indent,Style:"changes",Text:obj[i].return} );
               break;
           }
