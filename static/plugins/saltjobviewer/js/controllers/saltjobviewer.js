@@ -487,7 +487,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
 
       }
 
-      // TODO: binary search
+      // Binary search
       function find_job( jid ) {
         var start = 0;
         var end = $scope.joblist.length;
