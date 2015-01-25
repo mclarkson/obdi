@@ -298,6 +298,12 @@ func (api *Api) DeletePlugin(w rest.ResponseWriter, r *rest.Request) {
 		rest.Error(w, err.Error(), 400)
 		return
 	}
+	if err := api.db.Where("plugin_id = ?",plugin.Id).
+  Delete(File{}).Error; err != nil {
+		mutex.Unlock()
+		rest.Error(w, err.Error(), 400)
+		return
+	}
 	mutex.Unlock()
 
 	api.LogActivity(session.Id,
