@@ -294,6 +294,74 @@ func ReturnError(text string, response *[]byte) {
 func (t *Plugin) GetRequest(args *Args, response *[]byte) error {
 	// --------------------------------------------------------------------------
 
+	var err error
+
+	// PluginDatabasePath is required to open our private db
+	if len(args.PathParams["PluginDatabasePath"]) == 0 {
+		ReturnError("Internal Error: 'PluginDatabasePath' must be set", response)
+		return nil
+	}
+
+	config.SetDBPath(args.PathParams["PluginDatabasePath"])
+
+	// Open/Create database
+	var gormInst *GormDB
+	if gormInst, err = NewDB(); err != nil {
+		txt := "GormDB open error for '" + config.DBPath() + "enc.db'. " +
+			err.Error()
+		ReturnError(txt, response)
+		return nil
+	}
+
+	db := gormInst.DB() // shortcut
+
+	jobs := []JobStatus{}
+  // No results is not an error
+  Lock()
+  dberr := db.Order("id desc").Find(&jobs)
+  Unlock()
+  if dberr.Error != nil {
+    if !dberr.RecordNotFound() {
+      ReturnError(dberr.Error.Error(), response)
+      return nil
+    }
+  }
+
+	// Create a slice of maps from users struct
+	// to selectively copy database fields for display
+
+	u := make([]map[string]interface{}, len(jobs))
+	for i := range jobs {
+		u[i] = make(map[string]interface{})
+		u[i]["Id"] = jobs[i].Id
+		u[i]["JobId"] = jobs[i].JobId
+		u[i]["Status"] = jobs[i].Status
+		u[i]["CreatedAt"] = jobs[i].CreatedAt
+	}
+
+	// Send the added record back
+
+  jobstatus_tmp, err := json.Marshal(u)
+
+  if err != nil {
+    ReturnError("Marshal error: "+err.Error(), response)
+    return nil
+  }
+
+  jobstatus_string := string(jobstatus_tmp)
+
+  // Put the record in the Reply
+
+	reply := Reply{jobstatus_string, SUCCESS, ""}
+	jsondata, err := json.Marshal(reply)
+
+	if err != nil {
+		ReturnError("Marshal error: "+err.Error(), response)
+		return nil
+	}
+
+	*response = jsondata
+
 	return nil
 }
 
@@ -340,6 +408,7 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 		ReturnError("Invalid JobId.", response)
 		return nil
 	}
+
 	db := gormInst.DB() // shortcut
 
 	// Add the JobId and Status
@@ -371,11 +440,6 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
 
 	reply := Reply{jobstatus_string, SUCCESS, ""}
 	jsondata, err := json.Marshal(reply)
-
-	if err != nil {
-		ReturnError("Marshal error: "+err.Error(), response)
-		return nil
-	}
 
 	if err != nil {
 		ReturnError("Marshal error: "+err.Error(), response)

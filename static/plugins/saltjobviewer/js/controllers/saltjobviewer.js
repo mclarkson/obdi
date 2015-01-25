@@ -55,6 +55,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
   $scope.page_main = true;
   $scope.page_result = false;
   $scope.numerrors = 0;
+  $scope.jobstatuslist = [];
 
   $rootScope.$broadcast( "searchdisabled", false );
 
@@ -190,7 +191,9 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
           $scope.numerrors = 0;
           $scope.numok = 0;
           doc.push( {Indent:0,Style:"page-header bold",Property:i} );
-          errindex = doc.push( {Indent:0,Style:"bold"} ); // Create a stub entry for numerrors
+
+          // Create a stub entry for numerrors
+          errindex = doc.push( {Indent:0,Style:"bold"} );
 
           // Test top level items. Their types define their purpose (it seems)
 
@@ -219,9 +222,11 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
           if( numok > 0 ) {
             // Update the stub entry
             if( $scope.numerrors > 0 ) {
-              doc[errindex-1] = ( {Indent:0,Style:"red",Property:"Number of errors:" + $scope.numerrors} );
+              doc[errindex-1] = ( { Indent:0,Style:"red",
+                  Property:"Number of errors:" + $scope.numerrors} );
             } else {
-              doc[errindex-1] = ( {Indent:0,Style:"green",Property:"Number of errors:" + $scope.numerrors} );
+              doc[errindex-1] = ( {Indent:0,Style:"green",
+                  Property:"Number of errors:" + $scope.numerrors} );
             }
           }
         }
@@ -290,6 +295,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
       for( var i in joblist ) {
         $scope.joblist[x] = joblist[i];
         $scope.joblist[x].key = i;
+        $scope.joblist[x].JobStatus = 0;
         ++x;
       }
 
@@ -299,6 +305,8 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
       // Hide the buttons
       $scope.showkeybtnblockhidden = true;
       $scope.spacing = 0;
+
+      $scope.FillJobStatusTable();
 
     }).error( function(data,status) {
       if (status>=500) {
@@ -446,6 +454,97 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
           }
         });
       }, delay );
+  };
+
+  // ----------------------------------------------------------------------
+  $scope.FillJobStatusTable = function( jid ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/saltjobviewer/saltjobstatus"
+           + '?time='+new Date().getTime().toString()
+    }).success( function(data, status, headers, config) {
+
+      try {
+        $scope.jobstatuslist = $.parseJSON(data.JobStatus);
+      } catch (e) {
+        clearMessages();
+        $scope.message = "Error: " + e;
+        $scope.message_jobid = id;
+      }
+
+      if( $scope.jobstatuslist.length == 0 ) {
+
+        $scope.jobstatuslist_empty = true;
+        $scope.jobstatuslist_ready = true;
+
+      } else {
+
+        $scope.jobstatuslist_ready = true;
+        $scope.jobstatuslist_empty = false;
+
+      }
+
+      // TODO: binary search
+      function find_job( jid ) {
+        var start = 0;
+        var end = $scope.joblist.length;
+        var mid = 0;
+        var oldmid = 0;
+        // Check the first item in the list. It never gets
+        // checked due to rounding
+        if( $scope.joblist[mid].key == jid ) {
+          return mid;
+        }
+        for( ;; ) {
+          oldmid = mid;
+          mid = start + Math.round((end-start)/2);
+          if( oldmid == mid || mid >= $scope.joblist.length) return -1; // Not found
+          if( $scope.joblist[mid].key == jid ) {
+            return mid;
+          }
+          if( $scope.joblist[mid].key < jid ) {
+            end = mid;
+          } else {
+            start = mid;
+          }
+        }
+      }
+
+      // Find JobStatus in joblist (key)
+      for( var i=0; i<$scope.jobstatuslist.length; ++i) {
+        var index = find_job( $scope.jobstatuslist[i].JobId );
+        if( index != -1 ) {
+          $scope.joblist[index].JobStatus = $scope.jobstatuslist[i].Status;
+        }
+      }
+
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        clearMessages();
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
   };
 
   // ----------------------------------------------------------------------
