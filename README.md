@@ -31,11 +31,6 @@ Development and testing phase. Not ready for use.
 
 ## Install
 
-This package is "go-gettable", but will require a lot of moving things around to get working.
-
-```
-go get github.com/mclarkson/obdi
-```
 For Red Hat based systems RPMs can be built using:
 ```
 cd
