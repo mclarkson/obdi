@@ -334,28 +334,38 @@ send_status() {
 }
 
 #echo "/var/cache/salt/master/jobs/6d/af04e79a4419d80b6ceef81237df5e" | \
-inotifywait -q -e isdir --format '%w%f' -m -r /var/cache/salt/master/jobs/ | \
+dir="/var/cache/salt/master/jobs"
+numslashes_base=`echo -n "$dir" | sed 's#/$##' | sed 's#[^/]##g' | wc -c`
+inotifywait -q -e isdir --format '%w%f' -m -r $dir/* | \
 while read line; do
-    [[ -e "$line/jid" ]] && {
-        JOBID=`cat "$line/jid"`
-        json=`job_header_check | decode_json`
-        if echo $json | grep -qs '\["Function"\].*"state.highstate"'; then
-            json=`job_check | decode_json`
-            if [[ $NOOUTPUT -eq 1 ]]; then
-                send_status $STATUS_NO_OUTPUT
-            else
-                # It's a highstate
-                #nsuccess=`echo "$json" | \
-                #    grep -E -c '\["Result",.*,"result"\]\s*true'`
-                nfail=`echo "$json" | \
-                    grep -E -c '\["Result",.*,"result"\]\s*false'`
-                if [[ $nfail -ge 1 ]]; then
-                    send_status $STATUS_ERRORS_FOUND
-                else
-                    send_status $STATUS_OK
+    # Only look for jid file 2 levels down from the base dir
+    numslashes=`echo -n "$line" | sed 's#/$##' | sed 's#[^/]##g' | wc -c`
+    level=$((numslashes-numslashes_base))
+    [[ $level -eq 2 ]] && {
+        for dummy in 1 2 3 4 5; do
+            [[ -e "$line/jid" ]] && {
+                JOBID=`cat "$line/jid"`
+                json=`job_header_check | decode_json`
+                if echo $json | grep -qs '\["Function"\].*"state.highstate"'; then
+                    json=`job_check | decode_json`
+                    if [[ $NOOUTPUT -eq 1 ]]; then
+                        send_status $STATUS_NO_OUTPUT
+                    else
+                        # It's a highstate
+                        #nsuccess=`echo "$json" | \
+                        #    grep -E -c '\["Result",.*,"result"\]\s*true'`
+                        nfail=`echo "$json" | \
+                            grep -E -c '\["Result",.*,"result"\]\s*false'`
+                        if [[ $nfail -ge 1 ]]; then
+                            send_status $STATUS_ERRORS_FOUND
+                        else
+                            send_status $STATUS_OK
+                        fi
+                    fi
                 fi
-            fi
-        fi
+                break
+            }
+        done
     }
 done
 
