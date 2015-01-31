@@ -365,6 +365,7 @@ while read line; do
                 fi
                 break
             }
+            sleep 2
         done
     }
 done
