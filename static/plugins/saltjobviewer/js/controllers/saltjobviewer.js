@@ -296,6 +296,7 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
         $scope.joblist[x] = joblist[i];
         $scope.joblist[x].key = i;
         $scope.joblist[x].JobStatus = 0;
+        $scope.joblist[x].JobStatusText = "UNKNOWN";
         ++x;
       }
 
@@ -518,6 +519,13 @@ mgrApp.controller("saltjobviewerCtrl", function ($scope,$http,$modal,$log,
         var index = find_job( $scope.jobstatuslist[i].JobId );
         if( index != -1 ) {
           $scope.joblist[index].JobStatus = $scope.jobstatuslist[i].Status;
+          switch( $scope.jobstatuslist[i].Status ) {
+            case 0: $scope.joblist[index].JobStatusText = "UNKNOWN"; break;
+            case 1: $scope.joblist[index].JobStatusText = "OK"; break;
+            case 2: $scope.joblist[index].JobStatusText = "FAIL"; break;
+            case 3: $scope.joblist[index].JobStatusText = "EMPTY"; break;
+            default: $scope.joblist[index].JobStatusText = "UNKNOWN"; break;
+          }
         }
       }
 
