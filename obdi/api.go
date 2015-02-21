@@ -194,6 +194,7 @@ func (api *Api) serveRunTemplate(w http.ResponseWriter, r *http.Request) {
 			`js/controllers/envcaps.js`,
 			`js/controllers/scripts.js`,
 			`js/controllers/plugins.js`,
+			`js/controllers/repos.js`,
 		}
 	} else {
 		// It's /manager/run

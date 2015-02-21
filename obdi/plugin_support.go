@@ -137,9 +137,10 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 	}
 	client.Close()
 
+  line := ""
   for err == nil {
     line, err = rdr.ReadString('\n')
-    logit( line )
+    if len(line)>2 { logit( line ) }
   }
 
 	err = cmd.Wait()

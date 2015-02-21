@@ -24,7 +24,7 @@
     <!-- PLUGIN DETAILS -->
 
     <div ng-include="'frag/plugins-main.html'"
-        ng-if="!(addplugins || editplugins)">
+        ng-if="!(addplugins || editplugins || managerepos)">
     </div>
 
     <!-- ADD PLUGIN -->
@@ -83,6 +83,11 @@
       </tabset>
 
       </form>
+  </div>
+
+  <!-- MANAGE REPOS -->
+
+  <div ng-include="'frag/plugins-managerepos.html'" ng-if="managerepos">
   </div>
 
 </div>

@@ -181,6 +181,12 @@ type File struct {
 	PluginId int64
 }
 
+type Repo struct {
+	Id        int64
+	Url       string
+  CreatedAt time.Time
+}
+
 type Database struct {
 	dB gorm.DB
 }
@@ -258,6 +264,10 @@ func (db *Database) InitDB() {
 	}
 	if err := db.dB.AutoMigrate(File{}).Error; err != nil {
 		txt := "AutoMigrate File table failed"
+		log.Fatal(fmt.Sprintf("%s: %s", txt, err))
+	}
+	if err := db.dB.AutoMigrate(Repo{}).Error; err != nil {
+		txt := "AutoMigrate Repos table failed"
 		log.Fatal(fmt.Sprintf("%s: %s", txt, err))
 	}
 

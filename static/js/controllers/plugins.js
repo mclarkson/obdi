@@ -53,6 +53,7 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   $scope.plugins = {};
   $scope.delcaps = {};
   $scope.delcaps.ids = [];
+  $scope.managerepos = false;
 
   //$scope.addplugintabs = [];
     //{ title:'Plugin Details', content:'frag/addplugin-detailstab.html'},
@@ -100,6 +101,13 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
     }
 
     $scope.FillPluginTable();
+    clearMessages();
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.ManageRepos = function(tf) {
+  // ----------------------------------------------------------------------
+    $scope.managerepos = tf;
     clearMessages();
   }
 
