@@ -100,6 +100,9 @@ func (gormInst *GormDB) InitDB() error {
 	// Unique index is also a constraint, so are forced to be unique
 	gormInst.db.Model(JobStatus{}).AddIndex("idx_jobstatus_job_id", "job_id")
 
+	// TODO: disable this
+	gormInst.db.LogMode(true)
+
 	return nil
 }
 
@@ -256,6 +259,7 @@ type Args struct {
 type PostedData struct {
 	JobId       string
 	Status      int64
+  KeepJobs    int64
 }
 
 type Plugin struct{}
@@ -424,6 +428,22 @@ func (t *Plugin) PostRequest(args *Args, response *[]byte) error {
     return nil
   }
   Unlock()
+
+  // Delete any jobs older than keep_jobs/24 days
+
+  keep_jobs := postedData.KeepJobs;
+  if keep_jobs > 0 {
+    // delete from job_status where created_at < date('now','-8 days');
+    days := (keep_jobs/24)+1
+    txt := fmt.Sprintf("created_at < date('now','-%d days')", days)
+    Lock()
+    if err := db.Where(txt).Delete(JobStatus{}); err.Error != nil {
+      Unlock()
+      ReturnError(err.Error.Error(), response)
+      return nil
+    }
+    Unlock()
+  }
 
 	// Send the added record back
 

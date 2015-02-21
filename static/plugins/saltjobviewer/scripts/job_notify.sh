@@ -312,6 +312,12 @@ STATUS_OK=1
 STATUS_ERRORS_FOUND=2
 STATUS_NO_OUTPUT=3
 
+# Get the number of hours that jobs are kept.
+# This is sent in the status so saltjobstatus can prune the list.
+# keep_jobs will be zero if there was an error.
+declare -i keep_jobs
+keep_jobs=`salt-call --output=newline_values_only config.get keep_jobs 2>/dev/null`
+
 send_status() {
     local status=$1
 
@@ -328,7 +334,7 @@ send_status() {
     ipport="127.0.0.1:443"
     guid=`curl $opts -d '{"Login":"'"$STATUS_USER"'","Password":"'"$STATUS_PASS"'"}' \
         $proto://$ipport/api/login | grep -o "[a-z0-9][^\"]*"`
-    curl $opts -d '{"JobId":"'"$JOBID"'","Status":'"$status"'}' \
+    curl $opts -d '{"JobId":"'"$JOBID"'","Status":'"$status"',"KeepJobs":'"$keep_jobs"'}' \
         $proto://$ipport/api/jobstatus/$guid/saltjobviewer/saltjobstatus
     echo
 }
