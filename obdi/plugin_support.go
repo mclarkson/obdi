@@ -26,6 +26,7 @@ import (
 	"net/rpc"
 	"os"
 	"os/exec"
+	"bufio"
 	"path"
 	"strconv"
 	"time"
@@ -41,7 +42,18 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 	reply := []byte{}
 
 	cmd := exec.Command(pluginFile, port)
-	err := cmd.Start()
+
+	// Set up buffer for stdout
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		txt := fmt.Sprintf("exec.StdoutPipe error. %s", err)
+		logit(txt)
+		rest.Error(w, txt, 400)
+		return reply, ApiError{"Error"}
+	}
+	rdr := bufio.NewReader(stdout)
+
+	err = cmd.Start()
 	if err != nil {
 		txt := fmt.Sprintf("exec.Command error. %s", err)
 		logit(txt)
@@ -124,6 +136,11 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 		return reply, ApiError{"Error"}
 	}
 	client.Close()
+
+  for err == nil {
+    line, err = rdr.ReadString('\n')
+    logit( line )
+  }
 
 	err = cmd.Wait()
 
