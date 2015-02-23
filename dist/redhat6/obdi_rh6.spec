@@ -14,7 +14,7 @@ Release: %{release}
 License: GPL
 Group: Application/System
 Source: obdi-%{version}.tar.gz
-#Requires: 
+Requires: git
 # PreReq: sh-utils
 BuildRoot: %{_builddir}/%{name}-%{version}/tmp
 Packager: Mark Clarkson
