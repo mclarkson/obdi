@@ -88,8 +88,6 @@ func (api *Api) GetAllPlugins(w rest.ResponseWriter, r *rest.Request) {
 		u[i]["Desc"] = plugins[i].Desc
 		u[i]["Parent"] = plugins[i].Parent
 		u[i]["HasView"] = plugins[i].HasView
-		u[i]["RestEndpoint"] = plugins[i].RestEndpoint
-		u[i]["RestExe"] = plugins[i].RestExe
 		u[i]["CreatedAt"] = plugins[i].CreatedAt
 		// UpdatedAt  doesn't get updated 'cos we use Save
 		// //u[i]["UpdatedAt"] = plugins[i].CreatedAt

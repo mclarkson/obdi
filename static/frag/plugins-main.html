@@ -55,7 +55,6 @@
       <tr>
         <th>Name</th>
         <th>Parent</th>
-        <th>End Point</th>
         <th>Action</th>
       </tr>
       </thead>
@@ -65,7 +64,6 @@
           popover-trigger="mouseenter">
           {{plugin.Name}}</span></td>
         <td>{{plugin.Parent}}</td>
-        <td>{{plugin.RestEndpoint}}</td>
         <td>
           <a href="#" ng-click="EditPlugin(plugin.Id)"><i class="fa fa-edit" title="Edit"></i></a>
           <a href="#" ng-click="dialog(plugin.Id,plugin.Name)"><i class="fa fa-trash-o red" title="Delete"></i></a>

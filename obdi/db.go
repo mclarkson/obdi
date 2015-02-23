@@ -165,8 +165,6 @@ type Plugin struct {
 	Desc         string
 	Parent       string // Parents Name
 	HasView      int64  // 1 - has a view, 2 - has not
-	RestEndpoint string
-	RestExe      string
 	CreatedAt    time.Time
 	UpdatedAt    time.Time
 	DeletedAt    time.Time
