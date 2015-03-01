@@ -1,0 +1,2 @@
+https://github.com/mclarkson/obdi-salt-repository.git
+https://github.com/mclarkson/obdi-core-repository.git

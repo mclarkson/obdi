@@ -27,6 +27,51 @@
     {{okmessage}}
   </div>
 
-	<p>Unimplemented</p>
+	<p ng-if="!pluginsAvailFinished">Getting available plugins
+    <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i></p>
 
+  <div ng-if="pluginsAvailFinished">
+
+    <p>Installable plugins:</p>
+
+    <div class="table-responsive" style="margin-top: 8px;">
+      <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+          <th>Plugin Name</th>
+          <th>Description</th>
+          <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="plugin in filteredItems =
+            (pluginsAvail | filter:pluginsAvailfilter)">
+          <td>{{plugin.Name}}</td>
+          <td>{{plugin.Description}}
+            <a href="#" ng-click="ChangeServerVersion(server)"
+            ng-if="server.Selected">
+              <i class="fa fa-plus-square" title="Change Version"></i></a>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-success append-xs-tiny"
+              ng-click="RestAddPlugin(plugin.Name)"
+              ng-if="!pluginsAvailMeta[$index].Disabled">Add</button>
+            <button class="btn btn-sm btn-success append-xs-tiny"
+              ng-disabled="true"
+              ng-if="pluginsAvailMeta[$index].Disabled">Installing
+              <i class="ellipsis"><i>.</i><i>.</i><i>.</i></i>
+            </button>
+          <!--
+            <a href="#" ng-click="ViewDetails(server)">
+              <i class="fa fa-eye" title="View Server Grains"></i></a>
+            <a href="#" ng-click="ViewConfig(server)"
+            ng-if="server.Selected">
+              <i class="fa fa-cog" title="Server Configuration"></i></a>
+            -->
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div> <!-- /table-responsive -->
+  </div> <!-- ng-if -->
 </div>

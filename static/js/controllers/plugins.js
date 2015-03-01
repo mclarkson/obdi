@@ -51,6 +51,8 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   $scope.newcap.newcapmaps = [];
   $scope.newcap.selected = {};
   $scope.plugins = {};
+  $scope.pluginsAvail = [];
+  $scope.pluginsAvailFinished = false;
   $scope.delcaps = {};
   $scope.delcaps.ids = [];
   $scope.managerepos = false;
@@ -80,11 +82,76 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   $scope.AddPlugin = function(tf) {
   // ----------------------------------------------------------------------
     $scope.addplugins = tf;
-    $scope.newcap = {};
-    $scope.newcap.newcapmaps = [];
-    $scope.newcap.selected = {};
-    $scope.plugin = {};
+    $scope.pluginsAvailMeta = [];
+    if(tf) {
+      $scope.pluginsAvail = [];
+      $scope.pluginsAvailFinished = false;
+      $scope.FillPluginsAvailTable(-1);
+    } else {
+      $scope.FillPluginTable();
+    }
     clearMessages();
+  }
+
+  // ----------------------------------------------------------------------
+  $scope.RestAddPlugin = function(name) {
+  // ----------------------------------------------------------------------
+
+    clearMessages();
+
+    var index = -1;
+    for( var i=0; i<$scope.pluginsAvail.length; ++i ) {
+      if( $scope.pluginsAvail[i].Name == name ) {
+        index = i;
+        break;
+      }
+    }
+    $scope.pluginsAvailMeta[index] = {};
+    $scope.pluginsAvailMeta[index].Completed = false;
+    $scope.pluginsAvailMeta[index].Disabled = true;
+    var data = {};
+    data.Name = $scope.pluginsAvail[index].Name;
+
+    $http({
+      method: 'POST',
+      data: data,
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/repoplugins"
+    }).success( function(data, status, headers, config) {
+      //$scope.FillPluginsAvailTable(index);
+      var index = -1;
+      // Delete from the meta table
+      for( var i=0; i<$scope.pluginsAvail.length; ++i ) {
+        if( $scope.pluginsAvail[i].Name == name ) {
+          index = i;
+          break;
+        }
+      }
+      $scope.pluginsAvailMeta.splice(index,1);
+      $scope.pluginsAvail.splice(index,1);
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
   }
 
   // ----------------------------------------------------------------------
@@ -300,6 +367,46 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   }
 
   // ----------------------------------------------------------------------
+  $scope.FillPluginsAvailTable = function(index) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/repoplugins?installable=true"
+    }).success( function(data, status, headers, config) {
+      $scope.pluginsAvail = data;
+      $scope.pluginsAvailFinished = true;
+      if( index >= 0 ) {
+        // Delete from the meta table
+        $scope.pluginsAvailMeta.splice(index,1);
+      }
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
   $scope.FillPluginTable = function() {
   // ----------------------------------------------------------------------
 
@@ -314,10 +421,13 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
         $scope.login.errtext = "Server error.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
-      } else if (status>=400) {
+      } else if (status==401) {
         $scope.login.errtext = "Session expired.";
         $scope.login.error = true;
         $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
       } else if (status==0) {
         // This is a guess really
         $scope.login.errtext = "Could not connect to server.";

@@ -37,6 +37,9 @@ type Config struct {
 	GoPluginSource    string `toml:"go_plugin_source"`
 	GoPluginPortStart int64  `toml:"go_plugin_port_start"`
 	GoRoot            string `toml:"go_root"`
+	CacheDir          string `toml:"cache_dir"`
+	HttpProxy         string `toml:"http_proxy"`
+	HttpsProxy        string `toml:"https_proxy"`
 	TransportTimeout  int64  `toml:"transport_timeout"` // Not used
 }
 

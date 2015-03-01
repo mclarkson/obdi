@@ -172,6 +172,16 @@ func main() {
 
 		&rest.Route{"PUT", "/#login/:GUID/plugins/:id", api.UpdatePlugin},
 
+		// Plugin manager
+
+		&rest.Route{"GET", "/#login/:GUID/repoplugins", api.GetAllRepoPlugins},
+
+		&rest.Route{"POST", "/#login/:GUID/repoplugins", api.AddRepoPlugin},
+
+		&rest.Route{"DELETE", "/#login/:GUID/repoplugins/:id", api.DeleteRepoPlugin},
+
+		&rest.Route{"PUT", "/#login/:GUID/repoplugins/:id", api.UpdateRepoPlugin},
+
 		// Files
 
 		&rest.Route{"GET", "/#login/:GUID/files", api.GetAllFiles},

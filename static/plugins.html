@@ -31,19 +31,23 @@
 
     <div class="panel-body" ng-if="addplugins">
 
+      <!--
       <form name="pluginForm" novalidate ng-submit="Apply()">
+      -->
 
       <button class="btn btn-sm btn-default append-xs-tiny" type="button"
       ng-click="AddPlugin(false)">
       <i class="fa fa-arrow-left"> </i> Go Back</button>
 
+      <!--
       <button class="btn btn-sm btn-success append-xs-tiny" type="submit"
         ng-disabled="pluginForm.$invalid">
       <i class="fa fa-check"> </i> Apply</button>
+      -->
 
       <h4 class="append-xs-tiny pull-right formhdng">Add New Plugin</h4>
 
-      <p>&nbsp;<br/>Unimplemented</p>
+      <div ng-include="'frag/addplugin-detailstab.html'"></div>
 
     </div>
 
