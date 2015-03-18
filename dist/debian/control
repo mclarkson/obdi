@@ -1,0 +1,20 @@
+Source: obdi
+Section: net
+Priority: optional
+Maintainer: Mark Clarkson <mark.clarkson@smorg.co.uk>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.5
+Homepage: http://smorg.co.uk
+Bugs: https://lists.sourceforge.net/lists/listinfo/obdi-users
+
+Package: obdi
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}, git
+Description: A REST interface and GUI for running scripts.
+ This package provides the main Obdi daemon.
+
+Package: obdi-worker
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: A REST interface and GUI for running scripts.
+ This package provides the Obdi worker daemon.

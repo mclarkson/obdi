@@ -1,0 +1,117 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+DESTDIR=$(CURDIR)/debian/obdi/
+WORKER_DESTDIR=$(CURDIR)/debian/obdi-worker/
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	touch configure-stamp
+
+build: build-stamp
+
+	# Fix include paths
+	mkdir -p src/github.com/mclarkson/obdi
+	ln -s ../../../../external src/github.com/mclarkson/obdi/external 
+
+	# Build
+	cd obdi; \
+	go build -ldflags "-X main.VERSION $(VERSION)" -o obdi
+	cd obdi-worker; \
+	go build -o obdi-worker
+
+build-stamp: configure-stamp
+	dh_testdir
+
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean
+	dh_installdirs
+
+	# Conf
+	install -d -m 755 $(DESTDIR)/etc/obdi/
+	install -D -m 640 conf/obdi.conf $(DESTDIR)/etc/obdi/obdi.conf
+	install -D -m 640 conf/obdi-worker.conf $(WORKER_DESTDIR)/etc/obdi-worker/obdi-worker.conf
+
+	# Copyright
+	#install -D -m 640 debian/copyright $(DESTDIR)/usr/share/doc/obdi/copyright
+	install -D -m 640 README.md $(DESTDIR)/usr/share/doc/obdi/README.md
+
+	# Golang single binary (/usr/sbin)
+	install -D -m 755 obdi/obdi $(DESTDIR)/sbin/obdi
+	install -D -m 755 obdi-worker/obdi-worker $(WORKER_DESTDIR)/sbin/obdi-worker
+
+	# Initrd
+	install -D -m 755 init/obdi $(DESTDIR)/etc/init.d/obdi
+	install -D -m 755 init/obdi-worker $(DESTDIR)/etc/init.d/obdi-worker
+
+	# Directories
+
+	# Main database directory (/var/lib)
+	install -d -m 755 $(DESTDIR)/var/lib/obdi/
+
+	# Database directory for plugins (/var/lib)
+	install -d -m 755 $(DESTDIR)/var/lib/obdi/plugins/
+
+	# Compiled Golang plugin directory (/usr/lib)
+	install -d -m 755 $(DESTDIR)/usr/lib/obdi/plugins/
+
+	# Golang plugin source code directory (/usr/lib)
+	install -d -m 755 $(DESTDIR)/usr/lib/obdi/plugins/src/
+
+	# Static Content Directories - Web server files (/usr/share)
+	install -d -m 755 $(DESTDIR)/usr/share/obdi/
+	cp -r static $(DESTDIR)/usr/share/obdi/
+
+# Build architecture-independent files here.
+binary-indep: build install
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs ChangeLog
+	dh_installdocs --exclude=.svn
+#	dh_installexamples
+#	dh_install
+#	dh_installmenu
+#	dh_installdebconf
+#	dh_installlogrotate
+#	dh_installemacsen
+#	dh_installpam
+#	dh_installmime
+#	dh_python
+	dh_installinit
+#	dh_installcron
+#	dh_installinfo
+	dh_installman
+	dh_link
+	dh_strip
+	dh_compress -X.sh
+	dh_fixperms
+	dh_perl
+#	dh_makeshlibs
+	dh_lintian
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install configure
+

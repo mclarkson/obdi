@@ -1,0 +1,17 @@
+# Change Log
+All notable changes to this project will be documented in this file.
+This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [Unreleased][unreleased]
+### Changed
+- Plugins removed from obdi. They are now in their own git repositories.
+- RPM now depends on git.
+### Added
+- Repository manager.
+- Can filter on Job Status.
+### Fixed
+- Job status tables is pruned after each job submission.
+
+## [0.1.3] - 2015-01-25
+### Changed
+- Initial packaged version.
