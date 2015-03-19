@@ -2,7 +2,7 @@ Source: obdi
 Section: net
 Priority: optional
 Maintainer: Mark Clarkson <mark.clarkson@smorg.co.uk>
-Build-Depends: debhelper (>= 9)
+Build-Depends: debhelper (>= 9), golang-go
 Standards-Version: 3.9.5
 Homepage: http://smorg.co.uk
 Bugs: https://lists.sourceforge.net/lists/listinfo/obdi-users

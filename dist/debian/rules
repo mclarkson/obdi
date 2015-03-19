@@ -4,8 +4,13 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-DESTDIR=$(CURDIR)/debian/obdi/
-WORKER_DESTDIR=$(CURDIR)/debian/obdi-worker/
+DESTDIR = $(CURDIR)/debian/obdi/
+WORKER_DESTDIR = $(CURDIR)/debian/obdi-worker/
+VERSION = $(shell cat VERSION | sed 's/OBDI_SEMANTIC_VERSION="\(.*\)"/\1/')
+export PATH := $(GOPATH)/bin:$(PATH)
+export GOPATH:=$(CURDIR)
+# Goroot should be set by the builder
+#export GOROOT = /usr/local/go
 
 configure: configure-stamp
 configure-stamp:
@@ -77,6 +82,12 @@ install: build
 	cp -r static $(DESTDIR)/usr/share/obdi/
 
 # Build architecture-independent files here.
+build-indep: binary-indep
+
+# Build architecture-dependent files here.
+build-arch: build-arch
+
+# Build architecture-independent files here.
 binary-indep: build install
 
 # Build architecture-dependent files here.
@@ -99,7 +110,7 @@ binary-arch: build install
 #	dh_installinfo
 	dh_installman
 	dh_link
-	dh_strip
+#	dh_strip
 	dh_compress -X.sh
 	dh_fixperms
 	dh_perl

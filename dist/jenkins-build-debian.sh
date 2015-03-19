@@ -11,22 +11,20 @@ fi
 
 V=$OBDI_SEMANTIC_VERSION
 
-[[ -e obdi-${V}.orig ]] && {
-    echo "Removing old build directory"
-    rm -rf obdi-${V}.orig
+[[ -e obdi-${V} ]] && {
+    echo "Removing old build directory and files"
+    rm -rf obdi-${V}
+    rm -f obdi_*.diff.gz obdi_*_source.build obdi_*.orig.tar.gz \
+          obdi_*.dsc obdi_*_source.changes 
 }
 
-# Include Golang binaries
-export PATH=$PATH:/usr/sbin:/usr/local/go/bin
-
-# Golang requirements
-export GOROOT=/usr/local/go
-export GOPATH=$PWD/obdi-${V}.orig
-
 # Create the original source tarball
-echo "Creating tarball"
-tar czf /tmp/obdi_${V}.orig.tar.gz --transform 's#^.#./obdi-'"$V"'.orig#' .
-mv /tmp/obdi_${V}.orig.tar.gz .
+#echo "Creating tarball"
+#tar --exclude-vcs -cvzf \
+  #/tmp/obdi_${V}.orig.tar.gz --transform 's#^.#./obdi-'"$V"'#' .
+#mv /tmp/obdi_${V}.orig.tar.gz .
+
+cp ../obdi_${V}.orig.tar.gz .
 
 # Unpack into the now correctly named directory
 echo "Unpacking tarball into obdi-${V}.orig"
@@ -34,15 +32,18 @@ tar xzf obdi_${V}.orig.tar.gz
 
 # Copy debian directory into build area
 echo "Copying 'debian' directory"
-cp -a dist/debian obdi-${V}.orig
+cp -a dist/debian obdi-${V}
 
 # Build without signing
 echo "Building with 'debuild -i -us -uc'"
-cd obdi-${V}.orig
-debuild -e PATH -e GOROOT -e GOPATH -e VERSION=$OBDI_SEMANTIC_VERSION -us -uc
+cd obdi-${V}
 
-#rpmbuild --define "_topdir `pwd`" \
-#         --define "BUILD_NUMBER $BUILD_NUMBER" \
-#         --define "OBDI_SEMANTIC_VERSION $OBDI_SEMANTIC_VERSION" \
-#         -bb SPECS/obdi_rh6.spec
+# Build binary
+debuild -us -uc
+
+# Build source - Include orig.tar.gz
+#debuild -S -sa
+
+# Build source - Exclude orig.tar.gz
+#debuild -S -sd
 
