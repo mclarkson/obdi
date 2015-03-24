@@ -1,0 +1,11 @@
+# obdi - script runner
+
+description     "script runner"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+exec obdi
+
