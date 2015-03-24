@@ -48,6 +48,7 @@ install: build
 
 	# Conf
 	install -d -m 755 $(DESTDIR)/etc/obdi/
+	install -d -m 755 $(DESTDIR)/etc/obdi-worker/
 	install -D -m 640 conf/obdi.conf $(DESTDIR)/etc/obdi/obdi.conf
 	install -D -m 640 conf/obdi-worker.conf $(WORKER_DESTDIR)/etc/obdi-worker/obdi-worker.conf
 
@@ -59,9 +60,9 @@ install: build
 	install -D -m 755 obdi/obdi $(DESTDIR)/sbin/obdi
 	install -D -m 755 obdi-worker/obdi-worker $(WORKER_DESTDIR)/sbin/obdi-worker
 
-	# Initrd
-	install -D -m 755 init/obdi $(DESTDIR)/etc/init.d/obdi
-	install -D -m 755 init/obdi-worker $(DESTDIR)/etc/init.d/obdi-worker
+	# Initrd (dh_installinit does this now)
+	#install -D -m 755 init/obdi $(DESTDIR)/etc/init.d/obdi
+	#install -D -m 755 init/obdi-worker $(DESTDIR)/etc/init.d/obdi-worker
 
 	# Directories
 
