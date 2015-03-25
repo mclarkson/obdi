@@ -66,6 +66,9 @@ install: build
 
 	# Directories
 
+	# Cache directory (/var/cache)
+	install -d -m 755 $(DESTDIR)/var/cache/obdi/
+
 	# Main database directory (/var/lib)
 	install -d -m 755 $(DESTDIR)/var/lib/obdi/
 

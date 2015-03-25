@@ -97,6 +97,9 @@ install -D -m 755 init/obdi-worker ${RPM_BUILD_ROOT}/%{_initrddir}/obdi-worker
 
 # Directories
 
+# Cache directory (/var/cache)
+install -d -m 755 ${RPM_BUILD_ROOT}/%{_var}/cache/obdi/
+
 # Main database directory (/var/lib)
 install -d -m 755 ${RPM_BUILD_ROOT}/%{_sharedstatedir}/obdi/
 
