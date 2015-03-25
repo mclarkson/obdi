@@ -20,7 +20,10 @@ set -e
 
 case "$1" in
     configure)
-      :
+        openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
+            -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=snakeoil" \
+            -keyout /etc/obdi-worker/certs/key.pem \
+            -out /etc/obdi-worker/certs/cert.pem
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

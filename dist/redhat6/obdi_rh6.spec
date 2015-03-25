@@ -120,6 +120,7 @@ cp -r static ${RPM_BUILD_ROOT}/%{_datarootdir}/obdi/
 %defattr(755,root,root,755)
 %_sbindir/obdi
 %_initrddir/obdi
+%_sysconfdir/obdi/certs
 %defattr(644,root,root,755)
 %dir %{_sharedstatedir}/obdi
 %dir %{_sharedstatedir}/obdi/plugins
@@ -134,6 +135,7 @@ cp -r static ${RPM_BUILD_ROOT}/%{_datarootdir}/obdi/
 %defattr(755,root,root,755)
 %_sbindir/obdi-worker
 %_initrddir/obdi-worker
+%_sysconfdir/obdi-worker/certs
 %config(noreplace) /etc/obdi-worker/obdi-worker.conf
 
 %clean

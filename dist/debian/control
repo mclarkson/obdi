@@ -9,7 +9,7 @@ Bugs: https://lists.sourceforge.net/lists/listinfo/obdi-users
 
 Package: obdi
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, git
+Depends: ${misc:Depends}, ${shlibs:Depends}, git, openssl
 Description: A REST interface and GUI for running scripts.
  This package provides the main Obdi daemon.
 
