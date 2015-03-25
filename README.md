@@ -1,5 +1,8 @@
 # Obdi
 
+## News
+Wed 25 Mar 2015 - Wiki pages started.
+
 ## Screenshot
 
 ![](images/obdi-0.1.2.png?raw=true)
@@ -14,7 +17,7 @@ manage users, data centres and environments, and includes a job manager.
 
 ## Status
 
-Development and testing phase. Not ready for use.
+Alpha - for the brave.
 
 ## Features
 
@@ -40,6 +43,5 @@ cd obdi
 BUILD_NUMBER=1 ./dist/jenkins-build.sh
 ```
 
-## Todo
+For Ubuntu Trusty refer to the Obdi GitHub Wiki.
 
-Moved to GitHub Issues
