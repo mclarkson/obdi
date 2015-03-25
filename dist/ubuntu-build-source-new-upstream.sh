@@ -39,7 +39,7 @@ echo "Building with 'debuild -i -us -uc'"
 cd obdi-${V}
 
 # Build binary
-debuild -us -uc
+#debuild -us -uc
 
 # Build source - Include orig.tar.gz
 debuild -S -sa
