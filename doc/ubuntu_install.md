@@ -29,5 +29,5 @@ There are a number of settings in `/etc/obdi/obdi.conf` and `/etc/obdi-worker/ob
 
 ## Next Steps
 Plugins will need to be installed to be able to do anything useful with Obdi.
-See the [Plugins](https://github.com/mclarkson/obdi/doc/plugins.md) wiki page for information on installing plugins.
+See the [Plugins](https://github.com/mclarkson/obdi/blob/master/doc/plugins.md) wiki page for information on installing plugins.
 
