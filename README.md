@@ -43,11 +43,21 @@ cd obdi
 BUILD_NUMBER=1 ./dist/jenkins-build.sh
 ```
 
-For Ubuntu Trusty refer to the Obdi GitHub Wiki.
-
 ## Documentation
+
+### About
+
+[About Plugins](https://github.com/mclarkson/obdi/doc/plugins.md)
+
+### Installation
+
+[Arch Installation](https://github.com/mclarkson/obdi/doc/arch_install.md)
+
+[RedHat/CentOS Installation](https://github.com/mclarkson/obdi/doc/redhat_install.md)
 
 [Ubuntu Installation](https://github.com/mclarkson/obdi/doc/ubuntu_install.md)
 
-[About Plugins](https://github.com/mclarkson/obdi/doc/plugins.md)
+### Building
+
+[RedHat/CentOS Building from Source](https://github.com/mclarkson/obdi/doc/redhat_build.md)
 
