@@ -10,9 +10,9 @@ Plugins are stored in their own Git repositories. To get a plugin, Obdi needs to
 
 After installation, Obdi contains no plugins, and has no plugin repositories configured. It's fairly simple to create a plugin repository, which can be stored in any public or private Git repository.
 
-## Mark's plugins
+## Known Plugins
 
-The Obdi author, Mark, has written some plugins using the procedure described in the About section, which are free to use and licensed under GPLv3 (as is Obdi). They are as follows:
+The following Plugins are free to use and licensed under GPLv3.
 
 ### Obdi Core Plugins
 The Obdi job viewer is here. When a script is run it is called a Job, and has a Job ID and other information that can be viewed with this plugin.
@@ -39,3 +39,8 @@ Once in the Admin interface, click on the 'Plugins' button, then 'Manage Reposit
 Next, click 'Back', then 'Add Plugin', a list of plugins will be shown. Click the green button to install a plugin. Only installable plugins will be shown, so if all the plugins are installed then the list will be empty.
 
 There is some more information and screen shots on the blog page: http://blogger.smorg.co.uk/2015/03/obdi-plugins-completed.html.
+
+## Next Steps
+
+Once the plugins are installed they may need to be configured. Refer to the documentation supplied with each plugin to find out how to use them.
+

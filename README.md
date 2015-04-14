@@ -48,9 +48,9 @@ BUILD_NUMBER=1 ./dist/jenkins-build.sh
 
 ### Installation
 
-[Arch Installation](https://github.com/mclarkson/obdi/blob/master/doc/arch_install.md)
+[Arch Installation](https://github.com/mclarkson/obdi/blob/master/doc/arch_install.md) TODO
 
-[RedHat/CentOS Installation](https://github.com/mclarkson/obdi/blob/master/doc/redhat_install.md)
+[RedHat/CentOS Installation](https://github.com/mclarkson/obdi/blob/master/doc/redhat_install.md) TODO
 
 [Ubuntu Installation](https://github.com/mclarkson/obdi/blob/master/doc/ubuntu_install.md)
 
