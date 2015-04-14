@@ -1,8 +1,5 @@
 # Obdi
 
-## News
-Wed 25 Mar 2015 - Wiki pages started.
-
 ## Screenshot
 
 ![](images/obdi-0.1.2.png?raw=true)
@@ -47,17 +44,17 @@ BUILD_NUMBER=1 ./dist/jenkins-build.sh
 
 ### About
 
-[About Plugins](https://github.com/mclarkson/obdi/doc/plugins.md)
+[About Plugins](https://github.com/mclarkson/obdi/blob/master/doc/plugins.md)
 
 ### Installation
 
-[Arch Installation](https://github.com/mclarkson/obdi/doc/arch_install.md)
+[Arch Installation](https://github.com/mclarkson/obdi/blob/master/doc/arch_install.md)
 
-[RedHat/CentOS Installation](https://github.com/mclarkson/obdi/doc/redhat_install.md)
+[RedHat/CentOS Installation](https://github.com/mclarkson/obdi/blob/master/doc/redhat_install.md)
 
-[Ubuntu Installation](https://github.com/mclarkson/obdi/doc/ubuntu_install.md)
+[Ubuntu Installation](https://github.com/mclarkson/obdi/blob/master/doc/ubuntu_install.md)
 
 ### Building
 
-[RedHat/CentOS Building from Source](https://github.com/mclarkson/obdi/doc/redhat_build.md)
+[RedHat/CentOS Building from Source](https://github.com/mclarkson/obdi/blob/master/doc/redhat_build.md)
 
