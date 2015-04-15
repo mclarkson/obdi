@@ -68,3 +68,7 @@ Server said: Plugin endpoint 'saltconfigserver/statedescs' does not exist.
     This variable should point at the plugins directory, where all the
     plugins are stored, containing the Go source files.
 
+Command, 'install_plugin.sh' failed.
+
+    Ensure that obdi is listening on 127.0.0.1:443 when installing plugins.
+    
