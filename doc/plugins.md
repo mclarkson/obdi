@@ -2,13 +2,13 @@
 
 ## About
 
-Obdi provides a framework for running scripts. A Linux System Administrator generally works on the command line and types lots of commands to get a job done. When these commands are repeated often, and in much the same order, they are usually grouped together to form scripts. Obdi attempts to provide the final step, putting a User Interface around those scripts by extending the Obdi User Interface using plugins.
+Obdi provides a framework for running scripts. A Linux System Administrator generally works on the command line and types lots of commands to get a job done. When these commands are repeated often, and in much the same order, they are usually grouped together to form scripts. Obdi attempts to provide the final step, putting a User Interface around those scripts to make using them easier. Wrapping the scripts is achieved by extending the Obdi User Interface using Plugins.
 
 ## Where are they
 
 Plugins are stored in their own Git repositories. To get a plugin, Obdi needs to be pointed at a list that describes the plugin and also tells Obdi where to get the plugin from. This list of plugins, or plugin repository, is also stored in a git repository containing at least one file, named `repodata.json`.
 
-After installation, Obdi contains no plugins, and has no plugin repositories configured. It's fairly simple to create a plugin repository, which can be stored in any public or private Git repository.
+After installation, Obdi has no plugins installed so doesn't do anything useful. Plugin repositories need to be added to be able to install the plugins. There are some plugin repositories available and it's fairly simple to create a plugin repository of your own, and they can be stored in any public or private Git repository.
 
 ## Known Plugins
 
