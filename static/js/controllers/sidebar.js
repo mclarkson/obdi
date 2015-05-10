@@ -122,7 +122,7 @@ mgrApp.controller("sidebarCtrl", function ($scope,$http,baseUrl,$timeout,
     // Get items without a parent (top level items) first
     for( var i=0; i < p.length; i++ ) {
       if( p[i].Parent.length == 0) {
-        if( p[i].Name == "" ) continue;
+        if( p[i].Name == "" || p[i].HasView == 0 ) continue;
         a = { name:        p[i].Name,
               template:    "plugins/"+p[i].Name+"/html/sidebar.html",
               hasview:     p[i].HasView,
@@ -133,7 +133,7 @@ mgrApp.controller("sidebarCtrl", function ($scope,$http,baseUrl,$timeout,
     // Add level 2 items
     for( var i=0; i < p.length; i++ ) {
       if( p[i].Parent.length > 0) {
-        if( p[i].Name == "" ) continue;
+        if( p[i].Name == "" || p[i].HasView == 0  ) continue;
         // Find the parent
         for( var j=0; j < s.length; j++ ) {
           if( p[i].Parent == s[j].name ) {
