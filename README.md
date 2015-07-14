@@ -29,6 +29,14 @@ Alpha - for the brave.
 * Sqlite3 used for data storage.
 * Obdi simply runs scripts on remote servers, so it can be used for lots of different tasks.
 
+## Plugins
+
+| Name/Link          | Description  |
+|--------------------|-------------------------------------------------------|
+| [Obdi Core Plugins](https://github.com/mclarkson/obdi-core-repository.git) | The Obdi job viewer plugin. |
+| [Salt Stack Plugins](https://github.com/mclarkson/obdi-salt-repository.git) | Plugins for managing Salt Stack. |
+| LXC Plugins       | Plugins for creating Linux containers in a cluster. Supports running Docker containers inside Linux containers. |
+
 ## Documentation
 
 ### About
