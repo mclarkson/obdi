@@ -29,17 +29,6 @@ Alpha - for the brave.
 * Sqlite3 used for data storage.
 * Obdi simply runs scripts on remote servers, so it can be used for lots of different tasks.
 
-## Install
-
-For Red Hat based systems RPMs can be built using:
-```
-cd
-yum install rpmdevtools gcc
-git clone https://github.com/mclarkson/obdi.git
-cd obdi
-BUILD_NUMBER=1 ./dist/jenkins-build.sh
-```
-
 ## Documentation
 
 ### About
