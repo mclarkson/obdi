@@ -2,7 +2,7 @@
 
 ## Screenshot
 
-![](images/obdi-0.1.2.png?raw=true)
+![](images/obdi-0.1.3.png?raw=true)
 
 More pics here: http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html
 
