@@ -45,10 +45,6 @@ Alpha - for the brave.
 
 ### Installation
 
-[Arch Installation](https://github.com/mclarkson/obdi/blob/master/doc/arch_install.md) TODO
-
-[RedHat/CentOS Installation](https://github.com/mclarkson/obdi/blob/master/doc/redhat_install.md) TODO
-
 [Installing Obdi Core on Ubuntu](https://github.com/mclarkson/obdi/blob/master/doc/ubuntu_install.md)
 
 [Complete Guide for Installing Obdi and Salt Stack Plugins on Ubuntu Trusty](https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/ubuntu_guide.md)
