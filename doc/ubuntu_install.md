@@ -7,7 +7,7 @@ The following steps will install Obdi from the Ubuntu Personal Package Archive (
 apt-get install software-properties-common
 add-apt-repository ppa:mark-clarkson/obdi
 apt-get update
-apt-get install obdi obdi-worker
+apt-get install obdi obdi-worker golang-go gcc
 ```
 Obdi should now be installed and running.
 
