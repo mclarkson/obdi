@@ -14,7 +14,7 @@ manage users, data centres and environments, and includes a job manager.
 
 ## Status
 
-Alpha - for the brave.
+Alpha - for test environments.
 
 ## Features
 
