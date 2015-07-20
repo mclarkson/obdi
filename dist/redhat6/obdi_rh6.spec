@@ -14,7 +14,7 @@ Release: %{release}
 License: GPL
 Group: Application/System
 Source: obdi-%{version}.tar.gz
-Requires: git
+Requires: git gcc golang
 # PreReq: sh-utils
 BuildRoot: %{_builddir}/%{name}-%{version}/tmp
 Packager: Mark Clarkson
@@ -39,11 +39,21 @@ Obdi worker daemon
 
 # Post Install
 %post
+if [ "$1" = 1 ]; then
+    # New install
+    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
+        -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=snakeoil" \
+        -keyout /etc/obdi/certs/key.pem \
+        -out /etc/obdi/certs/cert.pem
+fi
 
 %post worker
 if [ "$1" = 1 ]; then
     # New install
-    :
+    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
+        -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=snakeoil" \
+        -keyout /etc/obdi-worker/certs/key.pem \
+        -out /etc/obdi-worker/certs/cert.pem
 fi
 
 # Pre Uninstall
@@ -60,11 +70,13 @@ fi
 
 %build
 
+# Get GOROOT from go
+eval `go env | grep GOROOT`
+
 # Include Golang binaries
-export PATH=$PATH:/usr/sbin:/usr/local/go/bin
+export PATH=$PATH:/usr/sbin:$GOROOT/bin
 
 # Golang requirements
-export GOROOT=/usr/local/go
 export GOPATH=$PWD
 
 # Fix include paths
@@ -83,7 +95,8 @@ go build -o obdi-worker
 [ "$RPM_BUILD_ROOT" != "/" ] && %{__rm} -rf %{buildroot}
 
 # Config
-install -d -m 755 ${RPM_BUILD_ROOT}/%{_sysconfdir}/
+install -d -m 755 ${RPM_BUILD_ROOT}/%{_sysconfdir}/obdi/certs/
+install -d -m 755 ${RPM_BUILD_ROOT}/%{_sysconfdir}/obdi-worker/certs/
 install -D -m 640 conf/obdi.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi/obdi.conf
 install -D -m 640 conf/obdi-worker.conf ${RPM_BUILD_ROOT}/%_sysconfdir/obdi-worker/obdi-worker.conf
 
