@@ -49,6 +49,8 @@ Alpha - for test environments.
 
 [Complete Guide for Installing Obdi and Salt Stack Plugins on Ubuntu Trusty](https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/ubuntu_guide.md)
 
+[Complete Guide for Installing Obdi and Salt Stack Plugins on Centos 6](https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/centos_guide.md)
+
 ### Building
 
 [RedHat/CentOS Building from Source](https://github.com/mclarkson/obdi/blob/master/doc/redhat_build.md)
