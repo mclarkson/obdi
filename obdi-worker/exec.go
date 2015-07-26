@@ -102,6 +102,19 @@ func (api *Api) execCmd(job JobIn) {
 		return
 	}
 	rdr := bufio.NewReader(stdout)
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		if err := api.sendStatus(job, JobOut{
+			Status:        STATUS_SYSCANCELLED,
+			StatusReason:  fmt.Sprintf("Pipe error ('%s')", err.Error()),
+			StatusPercent: 0,
+			Errors:        0,
+		}); err != nil {
+			logit(fmt.Sprintf("Error: %s", err.Error()))
+		}
+		return
+	}
+	rdr_stderr := bufio.NewReader(stderr)
 
 	/*
 	   data := JobOut{}
@@ -173,9 +186,21 @@ func (api *Api) execCmd(job JobIn) {
 		api.sendOutputLine(job, a, 1)
 	}
 
+    serial++
+
+    // Read anything in stderr, but don't send it.
+    // It will be sent later if the script has non-zero exit status
+    error_output := ""
+    err = nil
+    for err == nil {
+        line, err = rdr_stderr.ReadString('\n')
+        error_output = error_output + line
+    }
+
 	// Process exit status
 	err = cmd.Wait()
 	if err != nil {
+        api.sendOutputLine(job, error_output, serial)
 		status := int64(0)
 		if api.UserCancel(job.JobID) == true {
 			status = STATUS_USERCANCELLED
