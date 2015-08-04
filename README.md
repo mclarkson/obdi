@@ -47,9 +47,9 @@ Alpha - for test environments.
 
 [Installing Obdi Core on Ubuntu](https://github.com/mclarkson/obdi/blob/master/doc/ubuntu_install.md)
 
-[Complete Guide for Installing Obdi and Salt Stack Plugins on Ubuntu Trusty](https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/ubuntu_guide.md)
+[Complete Guide to Installing Obdi and Salt Stack Plugins on Ubuntu Trusty](https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/ubuntu_guide.md)
 
-[Complete Guide for Installing Obdi and Salt Stack Plugins on Centos 6](https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/centos_guide.md)
+[Complete Guide to Installing Obdi and Salt Stack Plugins on Centos 6](https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/centos_guide.md)
 
 ### Building
 
