@@ -29,8 +29,13 @@ cd rpmbuild/SOURCES
 tar cvzf obdi-$OBDI_SEMANTIC_VERSION.tar.gz obdi-$OBDI_SEMANTIC_VERSION
 
 cd ..
-rpmbuild --define "_topdir `pwd`" \
-         --define "BUILD_NUMBER $BUILD_NUMBER" \
-         --define "OBDI_SEMANTIC_VERSION $OBDI_SEMANTIC_VERSION" \
-         -bb SPECS/obdi_rh6.spec
+
+# BUILD_NUMBER and OBDI_SEMANTIC_VERSION are now set in the spec file.
+# This was done to get COPR builds to work.
+#rpmbuild --define "_topdir `pwd`" \
+#         --define "BUILD_NUMBER $BUILD_NUMBER" \
+#         --define "OBDI_SEMANTIC_VERSION $OBDI_SEMANTIC_VERSION" \
+#         -bb SPECS/obdi_rh6.spec
+
+rpmbuild --define "_topdir `pwd`" -ba SPECS/obdi_rh6.spec
 

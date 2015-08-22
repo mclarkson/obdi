@@ -1,6 +1,6 @@
 %define name obdi
-%define version %{?OBDI_SEMANTIC_VERSION}
-%define release %{?BUILD_NUMBER}
+%define version 0.1.4
+%define release 2
 # Don't strip the Golang binaries
 %define __strip /bin/true
 # The following line may be required
@@ -14,7 +14,8 @@ Release: %{release}
 License: GPL
 Group: Application/System
 Source: obdi-%{version}.tar.gz
-Requires: git gcc golang
+Requires: gcc golang
+BuildRequires: golang
 # PreReq: sh-utils
 BuildRoot: %{_builddir}/%{name}-%{version}/tmp
 Packager: Mark Clarkson
@@ -135,6 +136,7 @@ cp -r static ${RPM_BUILD_ROOT}/%{_datarootdir}/obdi/
 %_initrddir/obdi
 %_sysconfdir/obdi/certs
 %defattr(644,root,root,755)
+%dir %{_var}/cache/obdi
 %dir %{_sharedstatedir}/obdi
 %dir %{_sharedstatedir}/obdi/plugins
 %dir %{_usr}/lib/obdi/plugins/
