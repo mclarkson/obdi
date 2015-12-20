@@ -1,10 +1,8 @@
 # Obdi
 
-## Screenshot
+## Screenshots
 
-![](images/obdi-0.1.3.png?raw=true)
-
-More pics here: http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html
+See: [Obdi in Pictures (Salt Stack Plugins)](http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html)
 
 ## What is it?
 
