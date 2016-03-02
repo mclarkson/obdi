@@ -26,18 +26,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Obdi</title>
 
-    <script src="js/jquery-1.11.1.min.js"></script>
-    <script src="js/angular.min_1.2.17.js"></script>
+    <script src="js/jquery-1.12.1.min.js"></script>
+    <script src="js/angular.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/autofill-event.js"></script>
     <script src="js/prettyprint.js"></script>
-    <script src="js/ui-bootstrap-tpls-0.11.0.min.js"></script>
-    <script src="js/bootstrap-select.min.js"></script>
+    <script src="js/ui-bootstrap-tpls-1.1.2.min.js"></script>
+    <script src="bootstrap-select/js/bootstrap-select.min.js"></script>
+    <script src="js/angular-bootstrap-select.js"></script>
     <script src="jasny-bootstrap/js/jasny-bootstrap.min.js"></script>
     <script src="metisMenu/js/metisMenu.min.js"></script>
 
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet">
     <link href="jasny-bootstrap/css/jasny-bootstrap.min.css"
       rel="stylesheet">
     <link href="metisMenu/css/metisMenu.min.css" rel="stylesheet">
@@ -45,10 +46,9 @@
       href="font-awesome-4.2.0/css/font-awesome.min.css">
     <link href="css/sb-admin-2.css" rel="stylesheet">
     <link href="css/custom.css" rel="stylesheet">
-    [(/* <link href="css/bootstrap.icon-large.css" rel="stylesheet"> */)]
 
     <script>
-        var mgrApp = angular.module("mgrApp", ['ui.bootstrap']);
+        var mgrApp = angular.module("mgrApp", ['ui.bootstrap','angular-bootstrap-select']);
     </script>
 
     [(/* Extra scripts, written by the Manager */)]

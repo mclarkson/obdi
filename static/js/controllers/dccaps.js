@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // ------------------------------------------------------------------------
-mgrApp.controller("capsCtrl", function ($log, $modal, $scope, $http, baseUrl) {
+mgrApp.controller("capsCtrl", function ($log, $uibModal, $scope, $http, baseUrl) {
 // ------------------------------------------------------------------------
 
   $scope.adddc = false;
@@ -146,7 +146,7 @@ mgrApp.controller("capsCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     $scope.Code = Code;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeleteDccap.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -203,18 +203,18 @@ mgrApp.controller("capsCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   }
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, Code) {
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, Code) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.Code = Code;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 
@@ -225,7 +225,7 @@ mgrApp.controller("capsCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     $scope.dccap = dccap;
     //$scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'EditDccap.html',
       controller: $scope.ModalInstanceEditCtrl,
       size: 'md',
@@ -246,18 +246,18 @@ mgrApp.controller("capsCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceEditCtrl = function ($scope, $modalInstance, dccap) {
+  $scope.ModalInstanceEditCtrl = function ($scope, $uibModalInstance, dccap) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.dccap = dccap;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

@@ -63,9 +63,8 @@
       </thead>
       <tbody>
       <tr ng-repeat="env in envs">
-        <td><span class="mypopover" popover="{{env.DcDispName}}"
-          popover-trigger="mouseenter">
-          {{env.DcSysName}}</span></td>
+        <td><span class="mypopover" uib-popover="{{env.DcDispName}}"
+          popover-trigger="mouseenter"> {{env.DcSysName}}</span></td>
         <td>{{env.SysName}}</td>
         <td>{{env.DispName}}</td>
         <td>

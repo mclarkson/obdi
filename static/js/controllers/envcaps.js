@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // ------------------------------------------------------------------------
-mgrApp.controller("envcapsCtrl", function ($log, $modal, $scope, $http,
+mgrApp.controller("envcapsCtrl", function ($log, $uibModal, $scope, $http,
       baseUrl) {
 // ------------------------------------------------------------------------
 
@@ -147,7 +147,7 @@ mgrApp.controller("envcapsCtrl", function ($log, $modal, $scope, $http,
     $scope.Code = Code;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeleteEnvcap.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -204,18 +204,18 @@ mgrApp.controller("envcapsCtrl", function ($log, $modal, $scope, $http,
   }
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, Code) {
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, Code) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.Code = Code;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 
@@ -226,7 +226,7 @@ mgrApp.controller("envcapsCtrl", function ($log, $modal, $scope, $http,
     $scope.envcap = envcap;
     //$scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'EditEnvcap.html',
       controller: $scope.ModalInstanceEditCtrl,
       size: 'md',
@@ -247,18 +247,18 @@ mgrApp.controller("envcapsCtrl", function ($log, $modal, $scope, $http,
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceEditCtrl = function ($scope, $modalInstance, envcap) {
+  $scope.ModalInstanceEditCtrl = function ($scope, $uibModalInstance, envcap) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.envcap = envcap;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

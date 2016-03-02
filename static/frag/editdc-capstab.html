@@ -58,28 +58,23 @@
           <tbody>
           <tr ng-repeat="capmap in dccapmaps">
             <td>
-              <span class="mypopover" popover="{{capmap.DcCapDesc}}"
-                popover-trigger="mouseenter">
-                {{capmap.DcCapCode}}</span></td>
+              <span class="mypopover" uib-popover="{{capmap.DcCapDesc}}"
+                popover-trigger="mouseenter"> {{capmap.DcCapCode}}</span></td>
             </td>
             <td>
               <a href="#" ng-click="Edit_DeleteModal(capmap.Id,capmap.DcCapCode)"><i class="fa fa-trash-o red" title="Delete"></i></a>
             </td>
           </tr>
           <tr>
-            <td>
-              <select ng-model="newcap.selected" class="selectpicker"
-                ng-options="dccap.Code for dccap in dccaps" updcapsel >
-                <option value="">Choose Capability</option>
-              </select>
-            </td>
-            <td>
-              <a href="#" style="margin-left:6px;" ng-click="EditAddCapMap()"><i class="fa fa-plus-circle green" title="Add Capability"></i></a>
-            </td>
           </tr>
           </tbody>
         </table>
       </div>
+      <select ng-model="newcap.selected" class="selectpicker"
+        ng-options="dccap.Code for dccap in dccaps" updcapsel >
+        <option value="">Choose Capability</option>
+      </select>
+      <a href="#" style="margin-left:6px;" ng-click="EditAddCapMap()"><i class="fa fa-plus-circle green" title="Add Capability"></i></a>
       <!-- /table-responsive -->
     </div>
   </div>

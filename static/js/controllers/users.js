@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // ------------------------------------------------------------------------
-mgrApp.controller("userCtrl", function ($log, $modal, $scope, $http, baseUrl) {
+mgrApp.controller("userCtrl", function ($log, $uibModal, $scope, $http, baseUrl) {
 // ------------------------------------------------------------------------
 
   $scope.adduser = false;
@@ -515,7 +515,7 @@ mgrApp.controller("userCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     $scope.loginname = loginname;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'myModalContent.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -536,18 +536,18 @@ mgrApp.controller("userCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, loginname) {
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, loginname) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.loginname = loginname;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

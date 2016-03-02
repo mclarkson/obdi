@@ -15,7 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // ------------------------------------------------------------------------
-mgrApp.controller("reposCtrl", function ($log, $modal, $scope, $http,
+mgrApp.controller("reposCtrl", function ($log, $uibModal, $scope, $http,
       baseUrl) {
 // ------------------------------------------------------------------------
 
@@ -148,7 +148,7 @@ mgrApp.controller("reposCtrl", function ($log, $modal, $scope, $http,
     $scope.Url = Url;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeleteRepo.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -207,18 +207,18 @@ mgrApp.controller("reposCtrl", function ($log, $modal, $scope, $http,
   }
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, Url) {
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, Url) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.Url = Url;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 
@@ -231,7 +231,7 @@ mgrApp.controller("reposCtrl", function ($log, $modal, $scope, $http,
     $scope.reponew.Id = repo.Id;
     $scope.reponew.Url = repo.Url;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'EditRepo.html',
       controller: $scope.ModalInstanceEditCtrl,
       size: 'md',
@@ -251,7 +251,7 @@ mgrApp.controller("reposCtrl", function ($log, $modal, $scope, $http,
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceEditCtrl = function ($scope, $modalInstance, reponew) {
+  $scope.ModalInstanceEditCtrl = function ($scope, $uibModalInstance, reponew) {
   // --------------------------------------------------------------------
   // UNUSED
 
@@ -259,11 +259,11 @@ mgrApp.controller("reposCtrl", function ($log, $modal, $scope, $http,
     $scope.reponew = reponew;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

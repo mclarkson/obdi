@@ -105,6 +105,14 @@ type EnvCap struct {
 	Desc string
 }
 
+type Worker struct {
+	Id        int64
+	EnvId     int64
+	EnvCapId  int64
+	WorkerUrl string // Worker URL Prefix
+	WorkerKey string // Key (password) for worker
+}
+
 type EnvCapMap struct {
 	Id       int64
 	EnvId    int64
@@ -160,14 +168,14 @@ type OutputLine struct {
 }
 
 type Plugin struct {
-	Id           int64
-	Name         string
-	Desc         string
-	Parent       string // Parents Name
-	HasView      int64  // 1 - has a view, 2 - has not
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	DeletedAt    time.Time
+	Id        int64
+	Name      string
+	Desc      string
+	Parent    string // Parents Name
+	HasView   int64  // 1 - has a view, 2 - has not
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
 }
 
 type File struct {
@@ -182,7 +190,7 @@ type File struct {
 type Repo struct {
 	Id        int64
 	Url       string
-  CreatedAt time.Time
+	CreatedAt time.Time
 }
 
 type Database struct {
@@ -266,6 +274,10 @@ func (db *Database) InitDB() {
 	}
 	if err := db.dB.AutoMigrate(Repo{}).Error; err != nil {
 		txt := "AutoMigrate Repos table failed"
+		log.Fatal(fmt.Sprintf("%s: %s", txt, err))
+	}
+	if err := db.dB.AutoMigrate(Worker{}).Error; err != nil {
+		txt := "AutoMigrate Workers table failed"
 		log.Fatal(fmt.Sprintf("%s: %s", txt, err))
 	}
 

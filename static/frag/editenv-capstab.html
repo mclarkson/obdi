@@ -58,28 +58,21 @@
           <tbody>
           <tr ng-repeat="capmap in envcapmaps">
             <td>
-              <span class="mypopover" popover="{{capmap.EnvCapDesc}}"
-                popover-trigger="mouseenter">
-                {{capmap.EnvCapCode}}</span></td>
+              <span class="mypopover" uib-popover="{{capmap.EnvCapDesc}}"
+                popover-trigger="mouseenter"> {{capmap.EnvCapCode}}</span></td>
             </td>
             <td>
               <a href="#" ng-click="Edit_DeleteModal(capmap.Id,capmap.EnvCapCode)"><i class="fa fa-trash-o red" title="Delete"></i></a>
             </td>
           </tr>
-          <tr>
-            <td>
-              <select ng-model="newcap.selected" class="selectpicker"
-                ng-options="envcap.Code for envcap in envcaps" updenvcapsel >
-                <option value="">Choose Capability</option>
-              </select>
-            </td>
-            <td>
-              <a href="#" style="margin-left:6px;" ng-click="EditAddCapMap()"><i class="fa fa-plus-circle green" title="Add Capability"></i></a>
-            </td>
-          </tr>
           </tbody>
         </table>
       </div>
+      <select ng-model="newcap.selected" selectpicker
+        ng-options="envcap.Code for envcap in envcaps">
+        <option value="">Choose Capability</option>
+      </select>
+      <a href="#" style="margin-left:6px;" ng-click="EditAddCapMap()"><i class="fa fa-plus-circle green" title="Add Capability"></i></a>
       <!-- /table-responsive -->
     </div>
   </div>

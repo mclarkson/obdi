@@ -55,9 +55,8 @@
       </thead>
       <tbody>
       <tr ng-repeat="script in scripts">
-      <td><span class="mypopover" popover="{{script.Type}}"
-        popover-trigger="mouseenter">
-          {{script.Name}}</span></td>
+      <td><span class="mypopover" uib-popover="{{script.Type}}"
+        popover-trigger="mouseenter"> {{script.Name}}</span></td>
         <td>{{script.Desc}}</td>
         <td>
           <a href="#" ng-click="EditScript(script.Id)"><i class="fa fa-edit" title="Edit"></i></a>

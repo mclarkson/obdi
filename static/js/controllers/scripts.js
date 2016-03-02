@@ -33,7 +33,7 @@ mgrApp.directive('fileUpload', function () {
 });
 
 // ------------------------------------------------------------------------
-mgrApp.controller("scriptCtrl", function ($log, $modal, $scope, $http,
+mgrApp.controller("scriptCtrl", function ($log, $uibModal, $scope, $http,
       baseUrl) {
 // ------------------------------------------------------------------------
 
@@ -303,7 +303,7 @@ mgrApp.controller("scriptCtrl", function ($log, $modal, $scope, $http,
     $scope.scriptname = scriptname;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'myModalContent.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -324,18 +324,18 @@ mgrApp.controller("scriptCtrl", function ($log, $modal, $scope, $http,
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, scriptname) {
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, scriptname) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.scriptname = scriptname;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

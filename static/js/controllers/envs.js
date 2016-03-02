@@ -15,48 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // ------------------------------------------------------------------------
-mgrApp.directive("updsel", function () {
-// ------------------------------------------------------------------------
-// Refreshes the bootstrap-select add-on after angularjs has
-// loaded dcs variable.
-
-    return function (scope, element, attrs) {
-        scope.$watch("dcs", function (value) {//I change here
-            var val = value || null;            
-            if (val)
-                element.selectpicker('refresh');
-                //$('.selectpicker').selectpicker('refresh');
-        });
-    };
-});
-
-// ------------------------------------------------------------------------
-mgrApp.directive("updenvcapsel", ['$timeout', function ( $timeout ) {
-// ------------------------------------------------------------------------
-// Used in addenv-capstab.html (Capabilities tab)
-// Refreshes the bootstrap-select add-on after angularjs has
-// processed the template.
-
-    return function (scope, element, attrs) {
-      scope.$watch("newcap.selected", function (value) {
-          $timeout( function() {
-              element.selectpicker('val',element.val());
-              element.selectpicker('refresh');
-              //$('.selectpicker').selectpicker('refresh');
-          });
-      });
-      scope.$watch("envcaps", function (value) {
-          $timeout( function() {
-              element.selectpicker('val',element.val());
-              element.selectpicker('refresh');
-              //$('.selectpicker').selectpicker('refresh');
-          });
-      });
-    }
-}]);
-
-// ------------------------------------------------------------------------
-mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
+mgrApp.controller("envCtrl", function ($log, $uibModal, $scope, $http,
+baseUrl, $timeout) {
 // ------------------------------------------------------------------------
 
   $scope.addenv = false;
@@ -128,9 +88,9 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     if (id) {
       // Find the item id in the environments array
       $scope.env = $.grep($scope.envs, function(e){ return e.Id == id; })[0];
-      //$log.info('$scope.dc.Login: ' + $scope.dc.Login);
 
-      // Set dc_obj so the select control works
+      // Set dc_obj since select is bound to it.
+      // dc_obj is a copy so must use 'track by' in the view.
       $scope.env.dc_obj = $.grep($scope.dcs,function(e)
         {return e.Id == $scope.env.DcId; })[0];
 
@@ -141,7 +101,9 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     }
 
     $scope.FillEnvTable();
+
     clearMessages();
+
   }
 
   // ----------------------------------------------------------------------
@@ -592,7 +554,7 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     $scope.DcSysName = DcSysName;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'myModalContent.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -616,7 +578,7 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, SysName,
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, SysName,
                                        DcSysName) {
   // --------------------------------------------------------------------
 
@@ -625,11 +587,11 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     $scope.DcSysName = DcSysName;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 
@@ -640,7 +602,7 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.Edit_DeleteModal = function (id,Code) {
   // --------------------------------------------------------------------
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeleteEnvcapmap.html',
       controller: $scope.ModalDeleteInstanceCtrl,
       size: 'sm',
@@ -664,7 +626,7 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.Add_DeleteModal = function (id,Code) {
   // --------------------------------------------------------------------
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeleteEnvcapmap.html',
       controller: $scope.ModalDeleteInstanceCtrl,
       size: 'sm',
@@ -685,18 +647,18 @@ mgrApp.controller("envCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalDeleteInstanceCtrl = function ($scope, $modalInstance, Code) {
+  $scope.ModalDeleteInstanceCtrl = function ($scope, $uibModalInstance, Code) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.Code = Code;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

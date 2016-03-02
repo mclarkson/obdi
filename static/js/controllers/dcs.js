@@ -39,7 +39,7 @@ mgrApp.directive("updcapsel", ['$timeout', function ( $timeout ) {
 }]);
 
 // ------------------------------------------------------------------------
-mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
+mgrApp.controller("dcCtrl", function ($log, $uibModal, $scope, $http, baseUrl) {
 // ------------------------------------------------------------------------
 
   $scope.adddc = false;
@@ -498,7 +498,7 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
     $scope.SysName = SysName;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'myModalContent.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -519,18 +519,18 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, SysName) {
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, SysName) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.SysName = SysName;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 
@@ -538,7 +538,7 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.Edit_DeleteModal = function (id,Code) {
   // --------------------------------------------------------------------
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeleteDccapmap.html',
       controller: $scope.ModalDeleteInstanceCtrl,
       size: 'sm',
@@ -562,7 +562,7 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   $scope.Add_DeleteModal = function (id,Code) {
   // --------------------------------------------------------------------
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeleteDccapmap.html',
       controller: $scope.ModalDeleteInstanceCtrl,
       size: 'sm',
@@ -583,18 +583,18 @@ mgrApp.controller("dcCtrl", function ($log, $modal, $scope, $http, baseUrl) {
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalDeleteInstanceCtrl = function ($scope, $modalInstance, Code) {
+  $scope.ModalDeleteInstanceCtrl = function ($scope, $uibModalInstance, Code) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.Code = Code;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

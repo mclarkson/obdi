@@ -60,9 +60,8 @@
       </thead>
       <tbody>
       <tr ng-repeat="plugin in plugins">
-        <td><span class="mypopover" popover="{{plugin.Desc}}"
-          popover-trigger="mouseenter">
-          {{plugin.Name}}</span></td>
+        <td><span class="mypopover" uib-popover="{{plugin.Desc}}"
+          popover-trigger="mouseenter"> {{plugin.Name}}</span></td>
         <td>{{plugin.Parent}}</td>
         <td>
           <a href="#" ng-click="EditPlugin(plugin.Id)"><i class="fa fa-edit" title="Edit"></i></a>

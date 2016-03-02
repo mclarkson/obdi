@@ -39,7 +39,7 @@
 // }]);
 
 // ------------------------------------------------------------------------
-mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
+mgrApp.controller("pluginCtrl", function ($log, $uibModal, $scope, $http,
             baseUrl) {
 // ------------------------------------------------------------------------
 
@@ -453,7 +453,7 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
     $scope.Name = Name;
     $scope.id = id;
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'myModalContent.html',
       controller: $scope.ModalInstanceCtrl,
       size: 'sm',
@@ -474,18 +474,18 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalInstanceCtrl = function ($scope, $modalInstance, Name) {
+  $scope.ModalInstanceCtrl = function ($scope, $uibModalInstance, Name) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.Name = Name;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 
@@ -493,7 +493,7 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   $scope.Edit_DeleteModal = function (id,Code) {
   // --------------------------------------------------------------------
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeletePlugincapmap.html',
       controller: $scope.ModalDeleteInstanceCtrl,
       size: 'sm',
@@ -517,7 +517,7 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   $scope.Add_DeleteModal = function (id,Code) {
   // --------------------------------------------------------------------
 
-    var modalInstance = $modal.open({
+    var modalInstance = $uibModal.open({
       templateUrl: 'DeletePlugincapmap.html',
       controller: $scope.ModalDeleteInstanceCtrl,
       size: 'sm',
@@ -538,18 +538,18 @@ mgrApp.controller("pluginCtrl", function ($log, $modal, $scope, $http,
   };
 
   // --------------------------------------------------------------------
-  $scope.ModalDeleteInstanceCtrl = function ($scope, $modalInstance, Code) {
+  $scope.ModalDeleteInstanceCtrl = function ($scope, $uibModalInstance, Code) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
     $scope.Code = Code;
 
     $scope.ok = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
 
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $uibModalInstance.dismiss('cancel');
     };
   };
 

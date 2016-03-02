@@ -31,10 +31,13 @@
   <div class="form-group">
     <label for="envcode" class="col-sm-3 control-label">Data Centre</label>
     <div class="col-sm-7">
-        <select ng-model="env.dc_obj" class="selectpicker"
-        ng-options="dc.SysName for dc in dcs" required updsel>
-          <option value="">Choose a data centre</option>
-        </select>
+      <div class="dropdown-close">
+	<!-- must use 'track by' as env.dc_obj is a copy of a dcs array item -->
+	<select selectpicker required ng-model="env.dc_obj"
+	  ng-options="dc as dc.SysName for dc in dcs track by dc.SysName">
+	  <option value="">Choose a data centre</option>
+	</select>
+      </div>
     </div>
   </div>
 
