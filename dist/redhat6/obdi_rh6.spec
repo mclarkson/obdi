@@ -42,7 +42,7 @@ Obdi worker daemon
 %post
 if [ "$1" = 1 ]; then
     # New install
-    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
+    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -sha256 \
         -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=snakeoil" \
         -keyout /etc/obdi/certs/key.pem \
         -out /etc/obdi/certs/cert.pem
@@ -51,7 +51,7 @@ fi
 %post worker
 if [ "$1" = 1 ]; then
     # New install
-    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
+    openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 -sha256 \
         -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=snakeoil" \
         -keyout /etc/obdi-worker/certs/key.pem \
         -out /etc/obdi-worker/certs/cert.pem
