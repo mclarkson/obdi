@@ -152,6 +152,16 @@ func main() {
 
 		&rest.Route{"PUT", "/#login/:GUID/jobs/:id", api.UpdateJob},
 
+		// Workers
+
+		&rest.Route{"GET", "/#login/:GUID/workers", api.GetAllWorkers},
+
+		&rest.Route{"POST", "/#login/:GUID/workers", api.AddWorker},
+
+		&rest.Route{"DELETE", "/#login/:GUID/workers/:id", api.DeleteWorker},
+
+		&rest.Route{"PUT", "/#login/:GUID/workers/:id", api.UpdateWorker},
+
 		// Repos
 
 		&rest.Route{"GET", "/#login/:GUID/repos", api.GetAllRepos},

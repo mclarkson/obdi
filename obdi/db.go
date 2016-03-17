@@ -100,9 +100,10 @@ type DcCapMap struct {
 }
 
 type EnvCap struct {
-	Id   int64
-	Code string
-	Desc string
+	Id          int64
+	Code        string
+	Desc        string
+	IsWorkerDef bool // Can it have a worker definition
 }
 
 type Worker struct {
@@ -155,8 +156,11 @@ type Job struct {
 	DeletedAt     time.Time
 	UserLogin     string
 	Errors        int64
-	EnvId         int64 // For WorkerUrl and WorkerKey
-	Type          int64 // 1 - user job, 2 - system job
+	EnvId         int64  // For WorkerUrl and WorkerKey, overridden by:
+	EnvCapDesc    string // E.g. "EZBACKUP_WORKER"
+	Type          int64  // 1 - user job, 2 - system job
+	WorkerUrl     string // Worker URL Prefix
+	WorkerKey     string // Key (password) for worker
 }
 
 type OutputLine struct {

@@ -195,6 +195,8 @@ func (api *Api) GetAllJobs(w rest.ResponseWriter, r *rest.Request) {
 		//u[i]["WorkerIp"] = jobs[i].WorkerIp
 		//u[i]["WorkerPort"] = jobs[i].WorkerPort
 		u[i]["EnvId"] = jobs[i].EnvId
+		u[i]["WorkerUrl"] = jobs[i].WorkerUrl
+		//u[i]["WorkerKey"] = jobs[i].WorkerKey
 
 		env := Env{}
 		mutex.Lock()
@@ -203,7 +205,7 @@ func (api *Api) GetAllJobs(w rest.ResponseWriter, r *rest.Request) {
 
 		u[i]["EnvSysName"] = env.SysName
 		u[i]["EnvDispName"] = env.DispName
-		u[i]["WorkerUrl"] = env.WorkerUrl
+		//u[i]["WorkerUrl"] = env.WorkerUrl
 
 		dc := Dc{}
 		mutex.Lock()
@@ -313,13 +315,42 @@ func (api *Api) AddJob(w rest.ResponseWriter, r *rest.Request) {
 
 	// We need WorkerUrl and WorkerKey
 
-	if env.WorkerUrl == "" || env.WorkerKey == "" {
-		txt := "WorkerUrl or WorkerKey not set for this environment"
-		jobData.Status = STATUS_ERROR
-		jobData.StatusReason = txt
-		saveJob()
-		w.WriteJson(jobData)
-		return
+	// If there's an entry in the workers table that matches the
+	// current env_id and env_cap_desc then use that instead of
+	// the default.
+
+	for {
+		envcaps := []EnvCap{}
+		mutex.Lock()
+		api.db.Order("code").Find(&envcaps, "code = ?", jobData.EnvCapDesc)
+		mutex.Unlock()
+		if len(envcaps) > 0 {
+			worker := Worker{}
+			if !api.db.Find(&worker, "env_id = ? and env_cap_id = ?",
+				env.Id, envcaps[0].Id).RecordNotFound() {
+				logit("Found custom worker details for " + jobData.EnvCapDesc)
+				jobData.WorkerUrl = worker.WorkerUrl
+				jobData.WorkerKey = worker.WorkerKey
+				break
+			}
+			logit("Found " + jobData.EnvCapDesc + " but no workers entry exists.")
+		}
+
+		logit("Custom worker details not found for '" + jobData.EnvCapDesc + "'")
+
+		if env.WorkerUrl == "" || env.WorkerKey == "" {
+			txt := "WorkerUrl or WorkerKey not set for this environment"
+			jobData.Status = STATUS_ERROR
+			jobData.StatusReason = txt
+			saveJob()
+			w.WriteJson(jobData)
+			return
+		}
+
+		jobData.WorkerUrl = env.WorkerUrl
+		jobData.WorkerKey = env.WorkerKey
+
+		break
 	}
 
 	// Send the job to the worker
@@ -359,7 +390,7 @@ func (api *Api) AddJob(w rest.ResponseWriter, r *rest.Request) {
 		ScriptSource: script.Source,
 		ScriptName:   script.Name,
 		JobID:        jobData.Id,
-		Key:          env.WorkerKey,
+		Key:          jobData.WorkerKey,
 		Args:         jobData.Args,
 		EnvVars:      jobData.EnvVars,
 		Type:         jobData.Type,
@@ -378,7 +409,7 @@ func (api *Api) AddJob(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 	// POST to worker
-	resp, err := POST(jsondata, env.WorkerUrl, "jobs")
+	resp, err := POST(jsondata, jobData.WorkerUrl, "jobs")
 	//fmt.Printf("%+v", jsondata)
 	if err != nil {
 		txt := "Could not send job to worker. ('" + err.Error() + "')"
@@ -563,10 +594,39 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 	api.db.Model(&job).Related(&env)
 	mutex.Unlock()
 
-	if env.WorkerUrl == "" || env.WorkerKey == "" {
-		txt := "WorkerUrl or WorkerKey not set for the target environment"
-		rest.Error(w, txt, 400)
-		return
+	// If there's an entry in the workers table that matches the
+	// current env_id and env_cap_desc then use that instead of
+	// the default.
+
+	for {
+		envcaps := []EnvCap{}
+		mutex.Lock()
+		api.db.Order("code").Find(&envcaps, "code = ?", job.EnvCapDesc)
+		mutex.Unlock()
+		if len(envcaps) > 0 {
+			worker := Worker{}
+			if !api.db.Find(&worker, "env_id = ? and env_cap_id = ?",
+				env.Id, envcaps[0].Id).RecordNotFound() {
+				logit("Found custom worker details for " + job.EnvCapDesc)
+				job.WorkerUrl = worker.WorkerUrl
+				job.WorkerKey = worker.WorkerKey
+				break
+			}
+			logit("Found " + job.EnvCapDesc + " but no workers entry exists.")
+		}
+
+		logit("Custom worker details not found for '" + job.EnvCapDesc + "'")
+
+		if env.WorkerUrl == "" || env.WorkerKey == "" {
+			txt := "WorkerUrl or WorkerKey not set for the target environment"
+			rest.Error(w, txt, 400)
+			return
+		}
+
+		job.WorkerUrl = env.WorkerUrl
+		job.WorkerKey = env.WorkerKey
+
+		break
 	}
 
 	type Jobkill struct {
@@ -575,7 +635,7 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 	}
 	data := Jobkill{
 		JobID: job.Id,
-		Key:   env.WorkerKey,
+		Key:   job.WorkerKey,
 	}
 	// Encode
 	jsondata, err := json.Marshal(data)
@@ -587,7 +647,7 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 	// POST to worker
-	resp, err := DELETE(jsondata, env.WorkerUrl, "jobs")
+	resp, err := DELETE(jsondata, job.WorkerUrl, "jobs")
 	if err != nil {
 		txt := "Could not send kill command to worker. ('" + err.Error() + "')"
 		rest.Error(w, txt, 400)
