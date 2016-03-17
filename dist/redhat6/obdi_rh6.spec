@@ -1,5 +1,5 @@
 %define name obdi
-%define version 0.1.5
+%define version 0.2.0
 %define release 1
 # Don't strip the Golang binaries
 %define __strip /bin/true
