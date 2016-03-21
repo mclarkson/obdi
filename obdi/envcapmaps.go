@@ -98,6 +98,7 @@ func (api *Api) GetAllEnvCapMaps(w rest.ResponseWriter, r *rest.Request) {
 
 		u[i]["EnvCapCode"] = envcap.Code
 		u[i]["EnvCapDesc"] = envcap.Desc
+		u[i]["EnvCapIsWorkerDef"] = envcap.IsWorkerDef
 	}
 
 	// Too much noise

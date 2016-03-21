@@ -82,6 +82,7 @@ func (api *Api) GetAllEnvCaps(w rest.ResponseWriter, r *rest.Request) {
 		u[i]["Id"] = envcaps[i].Id
 		u[i]["Code"] = envcaps[i].Code
 		u[i]["Desc"] = envcaps[i].Desc
+		u[i]["IsWorkerDef"] = envcaps[i].IsWorkerDef
 	}
 
 	// Too much noise

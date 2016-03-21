@@ -33,6 +33,7 @@ baseUrl, $timeout) {
   $scope.delcaps.ids = [];
   $scope.dcs = {};
   $scope.managecaps = false;
+  $scope.worker = {};
 
   $scope.addenvtabs = [
     { title:'Environment Details', content:'frag/addenv-detailstab.html'},
@@ -595,9 +596,6 @@ baseUrl, $timeout) {
     };
   };
 
-  $scope.FillEnvTable();
-  $scope.FillEnvCapsTable(); // For Capabilities dropdown
-
   // --------------------------------------------------------------------
   $scope.Edit_DeleteModal = function (id,Code) {
   // --------------------------------------------------------------------
@@ -661,6 +659,91 @@ baseUrl, $timeout) {
       $uibModalInstance.dismiss('cancel');
     };
   };
+
+  // ====================================================================
+
+  // --------------------------------------------------------------------
+  $scope.Edit_WorkerModal = function (EnvId, EnvCapId, EnvCapCode) {
+  // --------------------------------------------------------------------
+
+    $scope.WorkerUrl = "";
+    $scope.WorkerKey = "";
+    $scope.id = EnvCapId;
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/workers?env_id=" + EnvId + "&env_cap_id=" + EnvCapId
+    }).success( function(data, status, headers, config) {
+      $scope.worker = data;
+      var modalInstance = $uibModal.open({
+	templateUrl: 'EditWorkerDef.html',
+	controller: $scope.Edit_WorkerModalCtrl,
+	size: 'md',
+	resolve: {
+	  // these variables are passed to the ModalInstanceCtrl
+	  EnvCapCode: function () {
+	    return EnvCapCode;
+	  },
+	  WorkerUrl: function () {
+	    return $scope.worker[0].WorkerUrl;
+	  },
+	  WorkerKey: function () {
+	    return $scope.worker[0].WorkerKey;
+	  },
+	}
+      });
+
+      modalInstance.result.then(function (id) {
+	$log.info('Will delete: ' + $scope.SysName + '(' + $scope.id + ')' );
+	//$scope.Delete($scope.id);
+      }, function () {
+	$log.info('Modal dismissed at: ' + new Date());
+      });
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+
+  };
+
+  // --------------------------------------------------------------------
+  $scope.Edit_WorkerModalCtrl = function ($scope, $uibModalInstance,
+				EnvCapCode, WorkerUrl, WorkerKey) {
+  // --------------------------------------------------------------------
+
+    // So the template can access 'loginname' in this new scope
+    $scope.EnvCapCode = EnvCapCode;
+    $scope.WorkerUrl = WorkerUrl;
+    $scope.WorkerKey = WorkerKey;
+
+    $scope.ok = function () {
+      $uibModalInstance.close();
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss('cancel');
+    };
+  };
+
+  $scope.FillEnvTable();
+  $scope.FillEnvCapsTable(); // For Capabilities dropdown
 
 });
 

@@ -43,14 +43,30 @@ func (api *Api) GetAllWorkers(w rest.ResponseWriter, r *rest.Request) {
 
 	defer api.TouchSession(guid)
 
+	qs := r.URL.Query() // Query string - map[string][]string
+
 	workers := []Worker{}
-	mutex.Lock()
-	err := api.db.Order("env_id,env_cap_id").Find(&workers)
-	mutex.Unlock()
-	if err.Error != nil {
-		if !err.RecordNotFound() {
-			rest.Error(w, err.Error.Error(), 500)
-			return
+	if len(qs["env_id"]) > 0 && len(qs["env_cap_id"]) > 0 {
+		mutex.Lock()
+		err := api.db.Order("env_id,env_cap_id").Find(&workers,
+			"env_id = ? and env_cap_id = ?", qs["env_id"][0],
+			qs["env_cap_id"][0])
+		mutex.Unlock()
+		if err.Error != nil {
+			if !err.RecordNotFound() {
+				rest.Error(w, err.Error.Error(), 500)
+				return
+			}
+		}
+	} else {
+		mutex.Lock()
+		err := api.db.Order("env_id,env_cap_id").Find(&workers)
+		mutex.Unlock()
+		if err.Error != nil {
+			if !err.RecordNotFound() {
+				rest.Error(w, err.Error.Error(), 500)
+				return
+			}
 		}
 	}
 
@@ -110,45 +126,48 @@ func (api *Api) AddWorker(w rest.ResponseWriter, r *rest.Request) {
 
 	// Can't add if it exists already
 
-	envData := Env{}
+	worker := Worker{}
 
-	if err := r.DecodeJsonPayload(&envData); err != nil {
+	if err := r.DecodeJsonPayload(&worker); err != nil {
 		rest.Error(w, "Invalid data format received.", 400)
 		return
-	} else if len(envData.SysName) == 0 {
-		rest.Error(w, "Incorrect data format received.", 400)
+	} else if len(worker.WorkerUrl) == 0 {
+		rest.Error(w, "Incorrect data format received."+
+			" WorkerUrl is unset.", 400)
 		return
 	}
-	env := Env{}
-	mutex.Lock()
-	if !api.db.Find(&env, "sys_name = ? and dc_id = ?",
-		envData.SysName, envData.DcId).RecordNotFound() {
+	{
+		tmpworker := Worker{}
+		mutex.Lock()
+		if !api.db.Find(&tmpworker, "env_id = ? and env_cap_id = ?",
+			worker.EnvId, worker.EnvCapId).RecordNotFound() {
+			mutex.Unlock()
+			rest.Error(w, "Record exists.", 400)
+			return
+		}
 		mutex.Unlock()
-		rest.Error(w, "Record exists.", 400)
-		return
 	}
-	mutex.Unlock()
 
-	// Add env
+	// Add worker
 
 	mutex.Lock()
-	if err := api.db.Save(&envData).Error; err != nil {
+	if err := api.db.Save(&worker).Error; err != nil {
 		mutex.Unlock()
 		rest.Error(w, err.Error(), 400)
 		return
 	}
 	mutex.Unlock()
 
-	dc := Dc{}
+	env_cap := EnvCap{}
 	mutex.Lock()
-	api.db.First(&dc, envData.DcId)
+	api.db.First(&env_cap, worker.EnvCapId)
 	mutex.Unlock()
 
-	text := fmt.Sprintf("Added new environment '%s->%s'.",
-		dc.SysName, envData.SysName)
+	text := fmt.Sprintf("Added new worker '%s->%s'.",
+		env_cap.Desc, worker.WorkerUrl)
 
 	api.LogActivity(session.Id, text)
-	w.WriteJson(envData)
+	w.WriteJson(worker)
 }
 
 func (api *Api) UpdateWorker(w rest.ResponseWriter, r *rest.Request) {
@@ -185,9 +204,9 @@ func (api *Api) UpdateWorker(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	// Load data from db, then ...
-	env := Env{}
+	worker := Worker{}
 	mutex.Lock()
-	if api.db.Find(&env, id).RecordNotFound() {
+	if api.db.Find(&worker, id).RecordNotFound() {
 		mutex.Unlock()
 		rest.Error(w, "Record not found.", 400)
 		return
@@ -195,7 +214,7 @@ func (api *Api) UpdateWorker(w rest.ResponseWriter, r *rest.Request) {
 	mutex.Unlock()
 
 	// ... overwrite any sent fields
-	if err := r.DecodeJsonPayload(&env); err != nil {
+	if err := r.DecodeJsonPayload(&worker); err != nil {
 		//rest.Error(w, err.Error(), 400)
 		rest.Error(w, "Invalid data format received.", 400)
 		return
@@ -203,22 +222,23 @@ func (api *Api) UpdateWorker(w rest.ResponseWriter, r *rest.Request) {
 
 	// Force the use of the path id over an id in the payload
 	Id, _ := strconv.Atoi(id)
-	env.Id = int64(Id)
+	worker.Id = int64(Id)
 
 	mutex.Lock()
-	if err := api.db.Save(&env).Error; err != nil {
+	if err := api.db.Save(&worker).Error; err != nil {
 		mutex.Unlock()
 		rest.Error(w, err.Error(), 400)
 		return
 	}
 	mutex.Unlock()
 
-	dc := Dc{}
+	env_cap := EnvCap{}
 	mutex.Lock()
-	api.db.First(&dc, env.DcId)
+	api.db.First(&env_cap, worker.EnvCapId)
 	mutex.Unlock()
 
-	text := fmt.Sprintf("Updated environment '%s->%s'.", dc.SysName, env.SysName)
+	text := fmt.Sprintf("Updated worker '%s->%s'.",
+		env_cap.Desc, worker.WorkerUrl)
 
 	api.LogActivity(session.Id, text)
 
@@ -256,9 +276,9 @@ func (api *Api) DeleteWorker(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 
-	env := Env{}
+	worker := Worker{}
 	mutex.Lock()
-	if api.db.First(&env, id).RecordNotFound() {
+	if api.db.First(&worker, id).RecordNotFound() {
 		mutex.Unlock()
 		rest.Error(w, "Record not found.", 400)
 		return
@@ -266,20 +286,20 @@ func (api *Api) DeleteWorker(w rest.ResponseWriter, r *rest.Request) {
 	mutex.Unlock()
 
 	mutex.Lock()
-	if err := api.db.Delete(&env).Error; err != nil {
+	if err := api.db.Delete(&worker).Error; err != nil {
 		mutex.Unlock()
 		rest.Error(w, err.Error(), 400)
 		return
 	}
 	mutex.Unlock()
 
-	dc := Dc{}
+	env_cap := EnvCap{}
 	mutex.Lock()
-	api.db.First(&dc, env.DcId)
+	api.db.First(&env_cap, worker.EnvCapId)
 	mutex.Unlock()
 
-	text := fmt.Sprintf("Deleted environment '%s->%s'.",
-		dc.SysName, env.SysName)
+	text := fmt.Sprintf("Deleted worker '%s->%s'.",
+		env_cap.Desc, worker.WorkerUrl)
 
 	api.LogActivity(session.Id, text)
 

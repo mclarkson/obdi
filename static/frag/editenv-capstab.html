@@ -29,6 +29,41 @@
     </div>
 </script>
 
+<script type="text/ng-template" id="EditWorkerDef.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Worker Definition</h3>
+    </div>
+    <div class="modal-body">
+
+      <p>Editing Worker definition for '{{EnvCapCode}}' capability.</p>
+
+      <!-- WorkerUrl -->
+
+      <div class="form-group">
+	<label for="workerurl" class="control-label">Worker URL</label>
+	<div>
+	  <input class="form-control" id="workerurl" ng-model="WorkerUrl"
+	  placeholder="E.g. https://127.0.0.1:4443/" type="text" ng-trim='false' required>
+	</div>
+      </div>
+
+      <!-- WorkerKey -->
+
+      <div class="form-group">
+	<label for="workerkey" class="control-label">Worker Key</label>
+	<div>
+	  <input class="form-control" id="workerkey" ng-model="WorkerKey"
+	  placeholder="Password for the worker" type="text" ng-trim='false' required>
+	</div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-success" ng-click="ok()">Apply and Close</button>
+    </div>
+</script>
+
 <div class="panel-body">
 
   <form name="envCapsForm" novalidate ng-submit="EditApply()">
@@ -63,6 +98,9 @@
             </td>
             <td>
               <a href="#" ng-click="Edit_DeleteModal(capmap.Id,capmap.EnvCapCode)"><i class="fa fa-trash-o red" title="Delete"></i></a>
+              <span ng-if="capmap.EnvCapIsWorkerDef">
+              <a href="#" ng-click="Edit_WorkerModal(capmap.EnvId,capmap.EnvCapId,capmap.EnvCapCode)"><i class="fa fa-edit" title="Edit worker definition"></i></a>
+              </span>
             </td>
           </tr>
           </tbody>
