@@ -124,7 +124,7 @@ Environment Capabilities
 
 curl -s -d '{
     "Code":"HAS_CUSTOM_RPM_REPO",
-    "Desc":"Has a custom RPM repository."
+    "Desc":"Has a custom RPM repository.",
     "IsWorkerDef":false
 }' "http://$ipport/api/admin/$guid/envcaps"
 
@@ -252,8 +252,8 @@ Environment Capability Maps
 # Add a new mapping (HTTP POST)
 
 curl -s -d '{
-    "EnvId":'"1"',
-    "EnvCapId":'"1"'
+    "EnvId":1,
+    "EnvCapId":1
 }' "http://$ipport/api/admin/$guid/envcapmaps"
 
 # View details for all mappings (HTTP GET)
@@ -267,7 +267,7 @@ curl -s "http://$ipport/api/admin/$guid/envcapmaps?env_id=1"
 # Update a mapping (HTTP PUT)
 
 curl -s -X PUT -d '{
-    "DcCapId":'"1"}' "http://$ipport/api/admin/$guid/envcapmaps/1"
+    "DcCapId":1}' "http://$ipport/api/admin/$guid/envcapmaps/1"
 
 # Delete a mapping (HTTP DELETE)
 
