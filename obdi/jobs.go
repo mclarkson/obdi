@@ -315,28 +315,45 @@ func (api *Api) AddJob(w rest.ResponseWriter, r *rest.Request) {
 
 	// We need WorkerUrl and WorkerKey
 
-	// If there's an entry in the workers table that matches the
-	// current env_id and env_cap_desc then use that instead of
-	// the default.
+	// If there's an entry in the workers table that matches the current env_id
+	// and env_cap_desc (and the cap code is in envcaps and the env is mapped
+	// in env_cap_maps) then use that instead of the default.
 
 	for {
 		envcaps := []EnvCap{}
+		envcapmaps := []EnvCapMap{}
 		mutex.Lock()
 		api.db.Order("code").Find(&envcaps, "code = ?", jobData.EnvCapDesc)
 		mutex.Unlock()
 		if len(envcaps) > 0 {
-			worker := Worker{}
-			if !api.db.Find(&worker, "env_id = ? and env_cap_id = ?",
-				env.Id, envcaps[0].Id).RecordNotFound() {
-				logit("Found custom worker details for " + jobData.EnvCapDesc)
-				jobData.WorkerUrl = worker.WorkerUrl
-				jobData.WorkerKey = worker.WorkerKey
-				break
+			mutex.Lock()
+			api.db.Find(&envcapmaps, "env_id = ? and env_cap_id = ?",
+				env.Id, envcaps[0].Id)
+			mutex.Unlock()
+			if len(envcapmaps) > 0 {
+				worker := Worker{}
+				if !api.db.Find(&worker, "env_id = ? and env_cap_id = ?",
+					env.Id, envcaps[0].Id).RecordNotFound() {
+
+					logit("Found custom worker details for " + jobData.EnvCapDesc)
+
+					jobData.WorkerUrl = worker.WorkerUrl
+					jobData.WorkerKey = worker.WorkerKey
+					break
+				}
+
+				logit("Found " + jobData.EnvCapDesc + " but no workers entry exists.")
+
+			} else {
+				logit("Capability Map not found for '" + jobData.EnvCapDesc + "'" +
+					", using env_id = '" + strconv.Itoa(int(env.Id)) +
+					"' and env_cap_id = '" + strconv.Itoa(int(envcaps[0].Id)) + "'.")
 			}
-			logit("Found " + jobData.EnvCapDesc + " but no workers entry exists.")
+		} else {
+			logit("Capability not found for '" + jobData.EnvCapDesc + "'")
 		}
 
-		logit("Custom worker details not found for '" + jobData.EnvCapDesc + "'")
+		logit("Using default WorkerUrl and WorkerKey.")
 
 		if env.WorkerUrl == "" || env.WorkerKey == "" {
 			txt := "WorkerUrl or WorkerKey not set for this environment"

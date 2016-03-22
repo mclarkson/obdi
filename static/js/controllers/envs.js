@@ -222,7 +222,11 @@ baseUrl, $timeout) {
       $scope.delcaps.ids = [];
 
       $scope.okmessage = "Changes were applied."
-      //$scope.FillEnvTable();
+      $scope.FillEnvTable();
+      $scope.FillEnvCapsTable(); // For Capabilities
+      $scope.FillEnvCapsMapsTable($scope.env.Id);
+      $scope.newcap.newcapmaps = [];
+      $scope.newcap.selected = {};
 
     }).error( function(data,status) {
       if (status>=500) {
@@ -445,7 +449,7 @@ baseUrl, $timeout) {
         function(e){ return e.EnvCapId == $scope.newcap.selected.Id; });
 
       // Don't add it if it's there
-      if( found.length == 0 ) {
+      if( found.length == 0 && $scope.newcap.selected.Code ) {
         $scope.newcap.newcapmaps.push($scope.newcap.selected);
         table_item = {
                       "EnvCapCode":$scope.newcap.selected.Code,
@@ -512,6 +516,78 @@ baseUrl, $timeout) {
       $scope.delcaps.ids.push( id );
     }
   }
+
+  // ----------------------------------------------------------------------
+  $scope.AddWorkerEntry = function( newWorker ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'POST',
+      data: newWorker,
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/workers"
+    }).success( function(data, status, headers, config) {
+      $scope.okmessage = "The worker details were updated."
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
+  $scope.UpdateWorkerEntry = function( newWorker, id ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'PUT',
+      data: newWorker,
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/workers/" + id
+    }).success( function(data, status, headers, config) {
+      $scope.okmessage = "The worker details were updated."
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
 
   // ----------------------------------------------------------------------
   $scope.FillEnvCapsTable = function() {
@@ -670,35 +746,56 @@ baseUrl, $timeout) {
     $scope.WorkerKey = "";
     $scope.id = EnvCapId;
 
+    var recordexists=false;
+
     $http({
       method: 'GET',
       url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
            + "/workers?env_id=" + EnvId + "&env_cap_id=" + EnvCapId
     }).success( function(data, status, headers, config) {
       $scope.worker = data;
+      if( $scope.worker[0] ) recordexists=true;
       var modalInstance = $uibModal.open({
-	templateUrl: 'EditWorkerDef.html',
-	controller: $scope.Edit_WorkerModalCtrl,
-	size: 'md',
-	resolve: {
-	  // these variables are passed to the ModalInstanceCtrl
-	  EnvCapCode: function () {
-	    return EnvCapCode;
-	  },
-	  WorkerUrl: function () {
-	    return $scope.worker[0].WorkerUrl;
-	  },
-	  WorkerKey: function () {
-	    return $scope.worker[0].WorkerKey;
-	  },
-	}
+        templateUrl: 'EditWorkerDef.html',
+        controller: $scope.Edit_WorkerModalCtrl,
+        size: 'md',
+        resolve: {
+          // these variables are passed to the ModalInstanceCtrl
+          EnvCapCode: function () {
+            return EnvCapCode;
+          },
+          WorkerUrl: function () {
+            if( recordexists ) {
+                return $scope.worker[0].WorkerUrl;
+            } else {
+                return "";
+            }
+          },
+          WorkerKey: function () {
+            if( recordexists ) {
+                return $scope.worker[0].WorkerKey;
+            } else {
+                return "";
+            }
+          },
+        }
       });
 
-      modalInstance.result.then(function (id) {
-	$log.info('Will delete: ' + $scope.SysName + '(' + $scope.id + ')' );
-	//$scope.Delete($scope.id);
+      modalInstance.result.then(function (result) {
+
+        var newWorker = {};
+        newWorker.EnvId = EnvId;
+        newWorker.EnvCapId = EnvCapId;
+        newWorker.WorkerUrl = result.WorkerUrl;
+        newWorker.WorkerKey = result.WorkerKey;
+
+        if( recordexists ) {
+            return $scope.UpdateWorkerEntry(newWorker,$scope.worker[0].Id);
+        } else {
+            return $scope.AddWorkerEntry(newWorker);
+        }
       }, function () {
-	$log.info('Modal dismissed at: ' + new Date());
+        $log.info('Modal dismissed at: ' + new Date());
       });
     }).error( function(data,status) {
       if (status>=500) {
@@ -725,7 +822,7 @@ baseUrl, $timeout) {
 
   // --------------------------------------------------------------------
   $scope.Edit_WorkerModalCtrl = function ($scope, $uibModalInstance,
-				EnvCapCode, WorkerUrl, WorkerKey) {
+                                EnvCapCode, WorkerUrl, WorkerKey) {
   // --------------------------------------------------------------------
 
     // So the template can access 'loginname' in this new scope
@@ -734,7 +831,10 @@ baseUrl, $timeout) {
     $scope.WorkerKey = WorkerKey;
 
     $scope.ok = function () {
-      $uibModalInstance.close();
+      result = {};
+      result.WorkerUrl = $scope.WorkerUrl;
+      result.WorkerKey = $scope.WorkerKey;
+      $uibModalInstance.close(result);
     };
 
     $scope.cancel = function () {
