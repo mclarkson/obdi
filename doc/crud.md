@@ -230,7 +230,7 @@ curl -s -d '{
 
 curl -s "http://$ipport/api/admin/$guid/dccapmaps"
 
-# View permission details for a single data centre (HTTP GET)
+# View details for a single data centre (HTTP GET)
 
 curl -s "http://$ipport/api/admin/$guid/dccapmaps?dc_id=1"
 
@@ -260,7 +260,7 @@ curl -s -d '{
 
 curl -s "http://$ipport/api/admin/$guid/envcapmaps"
 
-# View permission details for a single data centre (HTTP GET)
+# View details for a single data centre (HTTP GET)
 
 curl -s "http://$ipport/api/admin/$guid/envcapmaps?env_id=1"
 
@@ -291,7 +291,7 @@ curl -s -d '{
 
 curl -s "http://$ipport/api/a.user/$guid/jobs"
 
-# View permission details for a single job (HTTP GET)
+# View details for a single job (HTTP GET)
 
 curl -s "http://$ipport/api/a.user/$guid/jobs?job_id=1"
 
@@ -400,11 +400,11 @@ curl -s -d '{
 
 curl -s "http://$ipport/api/admin/$guid/plugins"
 
-# View permission details for a single script (HTTP GET)
+# View details for a single plugin (HTTP GET)
 
 curl -s "http://$ipport/api/admin/$guid/plugins?name=mysuperplugin"
 
-# Update a script (HTTP PUT)
+# Update a plugin (HTTP PUT)
 
 curl -s -X PUT -d '{"Desc":"The super plugin"}'
     "http://$ipport/api/admin/$guid/plugins/1"
@@ -476,7 +476,7 @@ curl -s -d '{
 
 curl -s "http://$ipport/api/a.user/$guid/jobs"
 
-# View permission details for a single job (HTTP GET)
+# View details for a single job (HTTP GET)
 
 curl -s "http://$ipport/api/a.user/$guid/jobs?job_id=1"
 
