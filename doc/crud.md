@@ -350,7 +350,7 @@ Output Lines
 ------------
 
 Command line output from scripts. Output lines are stored over multiple rows.
-Output lines can be update and deleted, but they cannot be updated (changed).
+Output lines can be added and deleted, but they cannot be updated (changed).
 
 ```
 # Add a new outputline (HTTP POST)
