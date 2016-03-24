@@ -617,31 +617,51 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 
 	for {
 		envcaps := []EnvCap{}
+		envcapmaps := []EnvCapMap{}
 		mutex.Lock()
-		api.db.Order("code").Find(&envcaps, "code = ?", job.EnvCapDesc)
+		api.db.Order("code").Find(&envcaps, "code = ?", jobData.EnvCapDesc)
 		mutex.Unlock()
 		if len(envcaps) > 0 {
-			worker := Worker{}
-			if !api.db.Find(&worker, "env_id = ? and env_cap_id = ?",
-				env.Id, envcaps[0].Id).RecordNotFound() {
-				logit("Found custom worker details for " + job.EnvCapDesc)
-				job.WorkerUrl = worker.WorkerUrl
-				job.WorkerKey = worker.WorkerKey
-				break
+			mutex.Lock()
+			api.db.Find(&envcapmaps, "env_id = ? and env_cap_id = ?",
+				env.Id, envcaps[0].Id)
+			mutex.Unlock()
+			if len(envcapmaps) > 0 {
+				worker := Worker{}
+				if !api.db.Find(&worker, "env_id = ? and env_cap_id = ?",
+					env.Id, envcaps[0].Id).RecordNotFound() {
+
+					logit("Found custom worker details for " + jobData.EnvCapDesc)
+
+					jobData.WorkerUrl = worker.WorkerUrl
+					jobData.WorkerKey = worker.WorkerKey
+					break
+				}
+
+				logit("Found " + jobData.EnvCapDesc + " but no workers entry exists.")
+
+			} else {
+				logit("Capability Map not found for '" + jobData.EnvCapDesc + "'" +
+					", using env_id = '" + strconv.Itoa(int(env.Id)) +
+					"' and env_cap_id = '" + strconv.Itoa(int(envcaps[0].Id)) + "'.")
 			}
-			logit("Found " + job.EnvCapDesc + " but no workers entry exists.")
+		} else {
+			logit("Capability not found for '" + jobData.EnvCapDesc + "'")
 		}
 
-		logit("Custom worker details not found for '" + job.EnvCapDesc + "'")
+		logit("Using default WorkerUrl and WorkerKey.")
 
 		if env.WorkerUrl == "" || env.WorkerKey == "" {
-			txt := "WorkerUrl or WorkerKey not set for the target environment"
-			rest.Error(w, txt, 400)
+			txt := "WorkerUrl or WorkerKey not set for this environment"
+			jobData.Status = STATUS_ERROR
+			jobData.StatusReason = txt
+			saveJob()
+			w.WriteJson(jobData)
 			return
 		}
 
-		job.WorkerUrl = env.WorkerUrl
-		job.WorkerKey = env.WorkerKey
+		jobData.WorkerUrl = env.WorkerUrl
+		jobData.WorkerKey = env.WorkerKey
 
 		break
 	}
