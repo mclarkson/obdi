@@ -17,6 +17,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -26,7 +27,6 @@ import (
 	"net/rpc"
 	"os"
 	"os/exec"
-	"bufio"
 	"path"
 	"strconv"
 	"time"
@@ -137,11 +137,13 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 	}
 	client.Close()
 
-  line := ""
-  for err == nil {
-    line, err = rdr.ReadString('\n')
-    if len(line)>2 { logit( line ) }
-  }
+	line := ""
+	for err == nil {
+		line, err = rdr.ReadString('\n')
+		if len(line) > 2 {
+			logit(line)
+		}
+	}
 
 	err = cmd.Wait()
 
@@ -155,6 +157,7 @@ func (api *Api) CompilePlugin(w rest.ResponseWriter,
 
 	sourceDir := path.Join(config.GoPluginSource, endpoint, "go")
 	sourceFile := path.Join(sourceDir, subitem+".go")
+	clientLib := path.Join(sourceDir, "obdi_clientlib.go")
 
 	compile := false
 
@@ -172,7 +175,11 @@ func (api *Api) CompilePlugin(w rest.ResponseWriter,
 	}
 
 	if compile == true {
-    logit("Plugin does not exist. Compiling plugin.")
+		if _, err := os.Stat(clientLib); os.IsNotExist(err) {
+			clientLib = ""
+		}
+
+		logit("Plugin does not exist. Compiling plugin.")
 		if _, err := os.Stat(sourceFile); os.IsNotExist(err) {
 			txt := fmt.Sprintf("Plugin endpoint '%s/%s' does not exist.",
 				endpoint, subitem)
@@ -198,7 +205,12 @@ func (api *Api) CompilePlugin(w rest.ResponseWriter,
 		// Compile
 
 		os.Setenv("PATH", "/usr/bin:/bin:"+path.Join(config.GoRoot, "bin"))
-		cmd := exec.Command("go", "build", "-o", pluginFile, sourceFile)
+		var cmd *exec.Cmd
+		if len(clientLib) > 0 {
+			cmd = exec.Command("go", "build", "-o", pluginFile, sourceFile, clientLib)
+		} else {
+			cmd = exec.Command("go", "build", "-o", pluginFile, sourceFile)
+		}
 		// Need GOROOT and GOPATH to compile
 		cmd.Env = append(cmd.Env, "GOROOT="+config.GoRoot)
 		cmd.Env = append(cmd.Env, "GOPATH="+sourceDir)

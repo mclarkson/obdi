@@ -611,6 +611,18 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 	api.db.Model(&job).Related(&env)
 	mutex.Unlock()
 
+	// Add job to DB
+
+	saveJob := func() {
+		mutex.Lock()
+		if err := api.db.Save(&job).Error; err != nil {
+			mutex.Unlock()
+			rest.Error(w, err.Error(), 400)
+			return
+		}
+		mutex.Unlock()
+	}
+
 	// If there's an entry in the workers table that matches the
 	// current env_id and env_cap_desc then use that instead of
 	// the default.
@@ -619,7 +631,7 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 		envcaps := []EnvCap{}
 		envcapmaps := []EnvCapMap{}
 		mutex.Lock()
-		api.db.Order("code").Find(&envcaps, "code = ?", jobData.EnvCapDesc)
+		api.db.Order("code").Find(&envcaps, "code = ?", job.EnvCapDesc)
 		mutex.Unlock()
 		if len(envcaps) > 0 {
 			mutex.Lock()
@@ -631,37 +643,37 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 				if !api.db.Find(&worker, "env_id = ? and env_cap_id = ?",
 					env.Id, envcaps[0].Id).RecordNotFound() {
 
-					logit("Found custom worker details for " + jobData.EnvCapDesc)
+					logit("Found custom worker details for " + job.EnvCapDesc)
 
-					jobData.WorkerUrl = worker.WorkerUrl
-					jobData.WorkerKey = worker.WorkerKey
+					job.WorkerUrl = worker.WorkerUrl
+					job.WorkerKey = worker.WorkerKey
 					break
 				}
 
-				logit("Found " + jobData.EnvCapDesc + " but no workers entry exists.")
+				logit("Found " + job.EnvCapDesc + " but no workers entry exists.")
 
 			} else {
-				logit("Capability Map not found for '" + jobData.EnvCapDesc + "'" +
+				logit("Capability Map not found for '" + job.EnvCapDesc + "'" +
 					", using env_id = '" + strconv.Itoa(int(env.Id)) +
 					"' and env_cap_id = '" + strconv.Itoa(int(envcaps[0].Id)) + "'.")
 			}
 		} else {
-			logit("Capability not found for '" + jobData.EnvCapDesc + "'")
+			logit("Capability not found for '" + job.EnvCapDesc + "'")
 		}
 
 		logit("Using default WorkerUrl and WorkerKey.")
 
 		if env.WorkerUrl == "" || env.WorkerKey == "" {
 			txt := "WorkerUrl or WorkerKey not set for this environment"
-			jobData.Status = STATUS_ERROR
-			jobData.StatusReason = txt
+			job.Status = STATUS_ERROR
+			job.StatusReason = txt
 			saveJob()
-			w.WriteJson(jobData)
+			w.WriteJson(job)
 			return
 		}
 
-		jobData.WorkerUrl = env.WorkerUrl
-		jobData.WorkerKey = env.WorkerKey
+		job.WorkerUrl = env.WorkerUrl
+		job.WorkerKey = env.WorkerKey
 
 		break
 	}
