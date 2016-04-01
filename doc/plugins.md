@@ -40,6 +40,10 @@ Next, click 'Back', then 'Add Plugin', a list of plugins will be shown. Click th
 
 There is some more information and screen shots on the blog page: http://blogger.smorg.co.uk/2015/03/obdi-plugins-completed.html.
 
+## Anatomy of a plugin
+
+![](doc/PluginsOverview.png?raw=true)
+
 ## Next Steps
 
 Once the plugins are installed they may need to be configured. Refer to the documentation supplied with each plugin to find out how to use them.
