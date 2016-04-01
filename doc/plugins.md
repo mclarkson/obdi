@@ -42,7 +42,7 @@ There is some more information and screen shots on the blog page: http://blogger
 
 ## Anatomy of a plugin
 
-![](doc/PluginsOverview.png?raw=true)
+![](images/PluginsOverview.png?raw=true)
 
 ## Next Steps
 
