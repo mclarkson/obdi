@@ -289,6 +289,35 @@ func DELETE(jsondata []byte, url, endpoint string) (r *http.Response,
 	return resp, nil
 }
 
+func (t *Plugin) GetAllowedEnv(args *Args, env_id_str string, response *[]byte) (Env, error) {
+
+	// Get the Env (SysName) for this env_id using REST.
+	// The Environment name (e.g. dev) is stored in:
+	//   envs[0].SysName
+	// GET queries always return an array of items, even for 1 item.
+	envs := []Env{}
+	resp, _ := GET("https://127.0.0.1/api/"+
+		args.PathParams["login"]+"/"+args.PathParams["GUID"], "envs"+
+		"?env_id="+env_id_str)
+	if b, err := ioutil.ReadAll(resp.Body); err != nil {
+		txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
+		ReturnError(txt, response)
+		return Env{}, ApiError{"Error"}
+	} else {
+		json.Unmarshal(b, &envs)
+	}
+	// If envs is empty then we don't have permission to see it
+	// or the env does not exist so bug out.
+	if len(envs) == 0 {
+		txt := "The requested environment id does not exist" +
+			" or the permissions to access it are insufficient."
+		ReturnError(txt, response)
+		return Env{}, ApiError{"Error"}
+	}
+
+	return envs[0], nil
+}
+
 func (t *Plugin) RunScript(args *Args, sa ScriptArgs, response *[]byte) (int64, error) {
 
 	// Check for required query string entries

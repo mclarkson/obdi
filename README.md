@@ -33,7 +33,7 @@ Alpha - for test environments.
 |--------------------|-------------------------------------------------------|
 | [Obdi Core Plugins](https://github.com/mclarkson/obdi-core-repository.git) | The Obdi job viewer plugin. |
 | [Salt Stack Plugins](https://github.com/mclarkson/obdi-salt-repository.git) | Plugins for managing Salt Stack. |
-| LXC Plugins       | Plugins for creating Linux containers in a cluster.<br> Supports running Docker containers inside Linux containers. |
+| [Dev Plugins](https://github.com/mclarkson/obdi-dev-repository.git)| Hello World plugins |
 
 ## Documentation
 
