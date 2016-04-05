@@ -24,6 +24,7 @@ import (
 	"os/exec"
 	"regexp"
 	"syscall"
+	"time"
 	//"encoding/json"
 	//"strings"
 )
@@ -152,7 +153,6 @@ func (api *Api) execCmd(job JobIn) {
 	api.SetPid(job.JobID, int64(cmd.Process.Pid))
 
 	// Process the output
-	// TODO: Use channels and simple timeout pattern from The Way To Go.
 	serial := int64(1)
 	line := ""
 	if job.Type != 2 {
@@ -162,18 +162,15 @@ func (api *Api) execCmd(job JobIn) {
 		for err == nil {
 			serial++
 			a := ""
-			line, err = rdr.ReadString('\n')
-			a = a + line
-			/* TODO: Send multiple lines in one go
-			   line, err = rdr.ReadString('\n')
-			   a = a + line
-			   line, err = rdr.ReadString('\n')
-			   a = a + line
-			   line, err = rdr.ReadString('\n')
-			   a = a + line
-			   line, err = rdr.ReadString('\n')
-			   a = a + line
-			*/
+			starttime := time.Now()
+			// Up to 50 lines can be read in one hit
+			for i := 0; i < 50; i++ {
+				if time.Duration(time.Since(starttime)) > time.Second {
+					break
+				}
+				line, err = rdr.ReadString('\n')
+				a = a + line
+			}
 			api.sendOutputLine(job, a, serial)
 		}
 	} else {
@@ -186,21 +183,21 @@ func (api *Api) execCmd(job JobIn) {
 		api.sendOutputLine(job, a, 1)
 	}
 
-    serial++
+	serial++
 
-    // Read anything in stderr, but don't send it.
-    // It will be sent later if the script has non-zero exit status
-    error_output := ""
-    err = nil
-    for err == nil {
-        line, err = rdr_stderr.ReadString('\n')
-        error_output = error_output + line
-    }
+	// Read anything in stderr, but don't send it.
+	// It will be sent later if the script has non-zero exit status
+	error_output := ""
+	err = nil
+	for err == nil {
+		line, err = rdr_stderr.ReadString('\n')
+		error_output = error_output + line
+	}
 
 	// Process exit status
 	err = cmd.Wait()
 	if err != nil {
-        api.sendOutputLine(job, error_output, serial)
+		api.sendOutputLine(job, error_output, serial)
 		status := int64(0)
 		if api.UserCancel(job.JobID) == true {
 			status = STATUS_USERCANCELLED
@@ -208,14 +205,14 @@ func (api *Api) execCmd(job JobIn) {
 			status = STATUS_ERROR
 		}
 		if err := api.sendStatus(job, JobOut{
-			Status:        status,
-			StatusReason:  fmt.Sprintf("Script, '%s', exited with error status ('%s')",
-                           job.ScriptName, err.Error()),
+			Status: status,
+			StatusReason: fmt.Sprintf("Script, '%s', exited with error status ('%s')",
+				job.ScriptName, err.Error()),
 			StatusPercent: 0,
 			Errors:        0,
 		}); err != nil {
 			logit(fmt.Sprintf("Error: (Script: '%s') %s", job.ScriptName,
-            err.Error()))
+				err.Error()))
 		}
 		api.RemoveJob(job.JobID)
 		return
