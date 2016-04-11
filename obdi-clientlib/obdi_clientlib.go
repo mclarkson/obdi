@@ -5,9 +5,12 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
 	"log"
 	"log/syslog"
+	"net"
 	"net/http"
 	"strconv"
 	"strings"
@@ -229,66 +232,6 @@ func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
 	return resp, nil
 }
 
-func PUT(jsondata []byte, url, endpoint string) (r *http.Response,
-	e error) {
-
-	buf := bytes.NewBuffer(jsondata)
-
-	// accept bad certs
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{Transport: tr}
-
-	resp := &http.Response{}
-
-	for strings.HasSuffix(url, "/") {
-		url = strings.TrimSuffix(url, "/")
-	}
-	req, err := http.NewRequest("PUT", url+"/"+endpoint, buf)
-	if err != nil {
-		txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
-		return resp, ApiError{txt}
-	}
-
-	req.Header.Add("Content-Type", `application/json`)
-
-	req.Close = true
-	resp, err = client.Do(req)
-
-	return resp, nil
-}
-
-func DELETE(jsondata []byte, url, endpoint string) (r *http.Response,
-	e error) {
-
-	buf := bytes.NewBuffer(jsondata)
-
-	// accept bad certs
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{Transport: tr}
-
-	resp := &http.Response{}
-
-	for strings.HasSuffix(url, "/") {
-		url = strings.TrimSuffix(url, "/")
-	}
-	req, err := http.NewRequest("DELETE",
-		url+"/api/"+endpoint, buf)
-	if err != nil {
-		txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
-		return resp, ApiError{txt}
-	}
-
-	req.Header.Add("Content-Type", `application/json`)
-
-	resp, err = client.Do(req)
-
-	return resp, nil
-}
-
 func (t *Plugin) GetAllowedEnv(args *Args, env_id_str string, response *[]byte) (Env, error) {
 
 	// Get the Env (SysName) for this env_id using REST.
@@ -390,4 +333,119 @@ func (t *Plugin) RunScript(args *Args, sa ScriptArgs, response *[]byte) (int64, 
 	// Send the Job ID as the RPC reply (back to the master)
 
 	return job.Id, nil
+}
+
+// --
+
+var config *Config
+
+type Config struct {
+	Dbname   string
+	Portlock *PortLock
+	Port     int
+}
+
+func (c *Config) DBPath() string {
+
+	return c.Dbname
+}
+
+func (c *Config) SetDBPath(path string) {
+
+	c.Dbname = path
+}
+
+func NewConfig() {
+
+	config = &Config{}
+}
+
+// --
+
+type GormDB struct {
+	db *gorm.DB
+}
+
+func (gormInst *GormDB) DB() *gorm.DB {
+
+	return gormInst.db
+}
+
+func NewDB(args *Args, dbname string) (*GormDB, error) {
+
+	var err error
+	var gormInst GormDB
+
+	// PluginDatabasePath is required to open our private db
+	if len(args.PathParams["PluginDatabasePath"]) == 0 {
+		return &gormInst,
+			ApiError{"Internal Error: 'PluginDatabasePath' must be set."}
+	}
+
+	config.SetDBPath(args.PathParams["PluginDatabasePath"])
+	dbpath := config.DBPath()
+
+	// Open the database file
+	gormInst.db, err = gorm.Open("sqlite3", dbpath+dbname)
+	if err != nil {
+		return &gormInst,
+			ApiError{"Open " + dbpath + dbname + " failed. " + err.Error()}
+	}
+
+	if err = gormInst.InitDB(dbname); err != nil {
+		return &gormInst, err
+	}
+
+	return &gormInst, nil
+}
+
+// ***************************************************************************
+// PORT LOCKING
+// ***************************************************************************
+
+// PortLock is a locker which locks by binding to a port on the loopback IPv4
+// interface
+type PortLock struct {
+	hostport string
+	ln       net.Listener
+}
+
+func NewPortLock(port int) *PortLock {
+
+	// NewFLock creates new Flock-based lock (unlocked first)
+	return &PortLock{hostport: net.JoinHostPort("127.0.0.1", strconv.Itoa(port))}
+}
+
+func (p *PortLock) Lock() {
+
+	// Lock acquires the lock, blocking
+	t := 50 * time.Millisecond
+	for {
+		if l, err := net.Listen("tcp", p.hostport); err == nil {
+			p.ln = l // thanks to zhangpy
+			return
+		}
+		//log.Printf("spinning lock on %s (%s)", p.hostport, err)
+		time.Sleep(t)
+		//t = time.Duration(
+		//  math.Min( float64(time.Duration(float32(t) * 1.5)), 2000 ))
+	}
+}
+
+func (p *PortLock) Unlock() {
+
+	// Unlock releases the lock
+	if p.ln != nil {
+		p.ln.Close()
+	}
+}
+
+func Unlock() {
+
+	config.Portlock.Unlock()
+}
+
+func Lock() {
+
+	config.Portlock.Lock()
 }
