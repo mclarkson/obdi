@@ -18,6 +18,7 @@ package main
 
 import (
 	//"fmt"
+	"crypto/tls"
 	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
 	"net/http"
 )
@@ -25,12 +26,17 @@ import (
 func main() {
 	logit("Worker Starting")
 
+	// Assign to global Transport var - accept self-signed certs
+	tr = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+
 	api := NewApi()
 
 	handler := rest.ResourceHandler{
 		EnableRelaxedContentType: true,
 		//DisableJsonIndent: true,
-		//EnableGzip:        true,
+		EnableGzip: true,
 	}
 	handler.SetRoutes(
 
@@ -51,13 +57,17 @@ func main() {
 	// Add the REST API handle
 	http.Handle("/api/", http.StripPrefix("/api", &handler))
 
+	s := http.Server{}
+	//s.SetKeepAlivesEnabled(false)
+	s.Addr = config.ListenAddr
+
 	if config.SSLEnabled {
-		if err := http.ListenAndServeTLS(config.ListenAddr,
-			config.SSLCertFile, config.SSLKeyFile, nil); err != nil {
+		if err := s.ListenAndServeTLS(config.SSLCertFile,
+			config.SSLKeyFile); err != nil {
 			logit(err.Error())
 		}
 	} else {
-		if err := http.ListenAndServe(config.ListenAddr, nil); err != nil {
+		if err := s.ListenAndServe(); err != nil {
 			logit(err.Error())
 		}
 	}

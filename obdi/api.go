@@ -41,6 +41,9 @@ type ApiError struct {
 	details string
 }
 
+// Shared transport, to ensure connections are reused
+var tr *http.Transport
+
 // SetDB: Allows to set the gorm.DB
 //
 func (api *Api) SetDB(db *gorm.DB) {

@@ -20,10 +20,10 @@ package main
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -48,22 +48,26 @@ func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
 
 	buf := bytes.NewBuffer(jsondata)
 
-	// accept bad certs
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 	client := &http.Client{Transport: tr}
 
-	//fmt.Printf("\n%s/api/%s\n",url,endpoint)
 	for strings.HasSuffix(url, "/") {
 		url = strings.TrimSuffix(url, "/")
 	}
-	resp, err := client.Post(url+"/api/"+endpoint,
-		"application/json", buf)
+	resp := &http.Response{}
+
+	for strings.HasSuffix(url, "/") {
+		url = strings.TrimSuffix(url, "/")
+	}
+	req, err := http.NewRequest("POST",
+		url+"/api/"+endpoint, buf)
 	if err != nil {
 		txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
 		return resp, ApiError{txt}
 	}
+
+	req.Header.Add("Content-Type", `application/json`)
+
+	resp, err = client.Do(req)
 
 	if resp.StatusCode != 200 {
 		var body []byte
@@ -86,6 +90,9 @@ func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
 
 		//txt := fmt.Sprintf("%s", resp.StatusCode)
 		return resp, ApiError{errstr.Error}
+	} else {
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
 	}
 
 	return resp, nil
@@ -99,10 +106,6 @@ func DELETE(jsondata []byte, url, endpoint string) (r *http.Response,
 
 	buf := bytes.NewBuffer(jsondata)
 
-	// accept bad certs
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 	client := &http.Client{Transport: tr}
 
 	resp := &http.Response{}
@@ -727,6 +730,9 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 			errstr.Error + "'"
 		rest.Error(w, txt, 400)
 		return
+	} else {
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
 	}
 
 	api.LogActivity(session.Id, fmt.Sprintf("Killed job %d.", job.Id))

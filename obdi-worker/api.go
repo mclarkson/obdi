@@ -18,9 +18,9 @@ package main
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"sync"
@@ -80,6 +80,14 @@ const (
 	STATUS_ERROR
 )
 
+type Login struct {
+	Login    string
+	Password string
+}
+
+// Shared transport, to ensure connections are reused
+var tr *http.Transport
+
 func (api *Api) sendOutputLine(job JobIn, line string, serial int64) error {
 
 	data := OutputLine{}
@@ -92,11 +100,14 @@ func (api *Api) sendOutputLine(job JobIn, line string, serial int64) error {
 		return ApiError{"Internal error: Manager login, JSON Encode"}
 	}
 
-	_, err = POST(jsondata,
+	r, err := POST(jsondata,
 		config.User+"/"+api.Guid()+"/outputlines")
 	if err != nil {
 		return ApiError{err.Error()}
 	}
+
+	io.Copy(ioutil.Discard, r.Body)
+	r.Body.Close()
 
 	return nil
 }
@@ -119,6 +130,8 @@ func (api *Api) sendStatus(jobin JobIn, jobout JobOut) error {
 			return ApiError{err.Error()}
 		}
 		r = resp
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
 		// Retry login (only once) on a 401
 		if resp.StatusCode != 401 {
 			break
@@ -126,7 +139,6 @@ func (api *Api) sendStatus(jobin JobIn, jobout JobOut) error {
 		if tries == 1 {
 			break
 		}
-		resp.Body.Close()
 		tries = tries + 1
 		api.Login()
 	}
@@ -137,6 +149,9 @@ func (api *Api) sendStatus(jobin JobIn, jobout JobOut) error {
 		// Read the response body for details
 
 		var body []byte
+
+		defer r.Body.Close()
+
 		if b, err := ioutil.ReadAll(r.Body); err != nil {
 			txt := fmt.Sprintf("Error reading Body ('%s').", err.Error())
 			return ApiError{txt}
@@ -155,9 +170,10 @@ func (api *Api) sendStatus(jobin JobIn, jobout JobOut) error {
 			errstr.Error)
 		return ApiError{txt}
 
+	} else {
+		io.Copy(ioutil.Discard, r.Body)
+		r.Body.Close()
 	}
-
-	r.Body.Close()
 
 	return nil
 }
@@ -166,24 +182,13 @@ func (e ApiError) Error() string {
 	return fmt.Sprintf("%s", e.details)
 }
 
-type Login struct {
-	Login    string
-	Password string
-}
-
 func POST(jsondata []byte, endpoint string) (r *http.Response,
 	e error) {
 
 	buf := bytes.NewBuffer(jsondata)
 
-	// accept bad certs
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 	client := &http.Client{Transport: tr}
 
-	//resp, err := client.Post(config.ManUrlPrefix+"/api/"+endpoint,
-	//	"application/json", buf)
 	resp := &http.Response{}
 	req, err := http.NewRequest("POST",
 		config.ManUrlPrefix+"/api/"+endpoint, buf)
@@ -192,7 +197,6 @@ func POST(jsondata []byte, endpoint string) (r *http.Response,
 		return resp, ApiError{txt}
 	}
 
-	req.Close = true
 	resp, err = client.Do(req)
 
 	return resp, nil
@@ -203,10 +207,6 @@ func PUT(jsondata []byte, endpoint string) (r *http.Response,
 
 	buf := bytes.NewBuffer(jsondata)
 
-	// accept bad certs
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
 	client := &http.Client{Transport: tr}
 
 	resp := &http.Response{}
@@ -220,7 +220,6 @@ func PUT(jsondata []byte, endpoint string) (r *http.Response,
 
 	req.Header.Add("Content-Type", `application/json`)
 
-	req.Close = true
 	resp, err = client.Do(req)
 
 	return resp, nil
@@ -298,11 +297,14 @@ func (api *Api) Logout() error {
 
 	jsondata := []byte{} // No json for logout
 
-	_, err := POST(jsondata,
+	r, err := POST(jsondata,
 		config.User+"/"+api.Guid()+"/logout")
 	if err != nil {
 		return ApiError{err.Error()}
 	}
+
+	io.Copy(ioutil.Discard, r.Body)
+	r.Body.Close()
 
 	api.UpdateGuid("")
 

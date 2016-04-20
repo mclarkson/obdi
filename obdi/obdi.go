@@ -19,6 +19,7 @@ package main
 
 import (
 	//"fmt"
+	"crypto/tls"
 	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
 	"net/http"
 	"sync"
@@ -28,6 +29,11 @@ var mutex = &sync.Mutex{}
 var apimutex = &sync.Mutex{}
 
 func main() {
+
+	// Assign to global Transport var - accept self-signed certs
+	tr = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 
 	db := NewDB()
 	api := NewApi(db)
@@ -267,13 +273,17 @@ func main() {
 	// Add the Admin template handle
 	http.HandleFunc("/manager/admin", api.serveRunTemplate)
 
+	s := http.Server{}
+	//s.SetKeepAlivesEnabled(false)
+	s.Addr = config.ListenAddr
+
 	if config.SSLEnabled {
-		if err := http.ListenAndServeTLS(config.ListenAddr,
-			config.SSLCertFile, config.SSLKeyFile, nil); err != nil {
+		if err := s.ListenAndServeTLS(config.SSLCertFile,
+			config.SSLKeyFile); err != nil {
 			logit(err.Error())
 		}
 	} else {
-		if err := http.ListenAndServe(config.ListenAddr, nil); err != nil {
+		if err := s.ListenAndServe(); err != nil {
 			logit(err.Error())
 		}
 	}
