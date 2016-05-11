@@ -82,11 +82,11 @@ func (api *Api) execCmd(job JobIn) {
 		cmd.Env = r.FindAllString(job.EnvVars, -1)
 		// Remove speech marks around the value of quoted strings. Matches, for
 		// example, `var="val val"`, and changes to `var=val val`
-		for i, j := range Env {
+		for i, j := range cmd.Env {
 			r := regexp.MustCompile(`([^ ]+=)"(.*)"`)
 			if r.Match([]byte(j)) {
 				k := r.ReplaceAll([]byte(j), []byte(`$1$2`))
-				Env[i] = string(k)
+				cmd.Env[i] = string(k)
 			}
 		}
 	} else {
