@@ -78,7 +78,7 @@ func (api *Api) execCmd(job JobIn) {
 	// Apply the sent environment variables, split on spaces
 	// but preserve quoted strings
 	if len(job.EnvVars) > 0 {
-		r = regexp.MustCompile("[^ ]*='[^']+'|[^ ]*=\"[^']+\"|\\S+")
+		r = regexp.MustCompile(`[^ ]*='[^']+'|[^ ]*="[^"]+"|\S+`)
 		cmd.Env = r.FindAllString(job.EnvVars, -1)
 		// Remove speech marks around the value of quoted strings. Matches, for
 		// example, `var="val val"`, and changes to `var=val val`
