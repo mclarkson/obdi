@@ -95,19 +95,32 @@ func (api *Api) sendOutputLine(job JobIn, line string, serial int64) error {
 	data.JobId = job.JobID
 	data.Text = line
 
-	jsondata, err := json.Marshal(data)
-	if err != nil {
-		return ApiError{"Internal error: Manager login, JSON Encode"}
-	}
+	r := &http.Response{}
 
-	r, err := POST(jsondata,
-		config.User+"/"+api.Guid()+"/outputlines")
-	if err != nil {
-		return ApiError{err.Error()}
-	}
+	for {
+		jsondata, err := json.Marshal(data)
+		if err != nil {
+			return ApiError{"Internal error: Manager login, JSON Encode"}
+		}
 
-	io.Copy(ioutil.Discard, r.Body)
-	r.Body.Close()
+		resp, err := POST(jsondata,
+			config.User+"/"+api.Guid()+"/outputlines")
+		if err != nil {
+			return ApiError{err.Error()}
+		}
+		r = resp
+		io.Copy(ioutil.Discard, r.Body)
+		r.Body.Close()
+		// Retry login (only once) on a 401
+		if resp.StatusCode != 401 {
+			break
+		}
+		if tries == 1 {
+			break
+		}
+		tries = tries + 1
+		api.Login()
+	}
 
 	return nil
 }
