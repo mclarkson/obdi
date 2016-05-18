@@ -112,6 +112,7 @@ func (api *Api) CheckLoginNoExpiry(login, guid string) (Session, error) {
 
 	user := User{}
 	session := Session{}
+	sessions := []Session{}
 
 	// select * from users where login = login
 	mutex.Lock()
