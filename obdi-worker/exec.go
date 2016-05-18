@@ -83,7 +83,7 @@ func (api *Api) execCmd(job JobIn) {
 		// Remove speech marks around the value of quoted strings. Matches, for
 		// example, `var="val val"`, and changes to `var=val val`
 		for i, j := range cmd.Env {
-			r := regexp.MustCompile(`(?s)([^ ]+=)["'](.*)["']`)
+			r := regexp.MustCompile(`(?sU)([^ ]+=)["'](.*)["']`)
 			if r.Match([]byte(j)) {
 				k := r.ReplaceAll([]byte(j), []byte(`$1$2`))
 				cmd.Env[i] = string(k)
