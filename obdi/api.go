@@ -120,15 +120,22 @@ func (api *Api) CheckLoginNoExpiry(login, guid string) (Session, error) {
 		return session, ApiError{"Invalid credentials."}
 	}
 	// select * from sessions where user_id = user.userid
-	if err := api.db.Model(&user).Related(&session).Error; err != nil {
+	if err := api.db.Model(&user).Related(&sessions).Error; err != nil {
 		mutex.Unlock()
 		return session, ApiError{"Not logged in."}
 	}
 	mutex.Unlock()
 
 	// Check GUID
-	if session.Guid != guid {
-		return session, ApiError{"Invalid GUID."}
+	loggedIn := false
+	for i := range sessions {
+		if sessions[i].Guid == guid {
+			loggedIn = true
+			session = sessions[i]
+		}
+	}
+	if loggedIn == false {
+		return Session{}, ApiError{"Invalid GUID."}
 	}
 
 	return session, nil
@@ -138,6 +145,7 @@ func (api *Api) CheckLogin(login, guid string) (Session, error) {
 
 	user := User{}
 	session := Session{}
+	sessions := []Session{}
 
 	// select * from users where login = login
 	mutex.Lock()
@@ -149,15 +157,22 @@ func (api *Api) CheckLogin(login, guid string) (Session, error) {
 
 	// select * from sessions where user_id = user.userid
 	mutex.Lock()
-	if err := api.db.Model(&user).Related(&session).Error; err != nil {
+	if err := api.db.Model(&user).Related(&sessions).Error; err != nil {
 		mutex.Unlock()
 		return session, ApiError{"Not logged in."}
 	}
 	mutex.Unlock()
 
 	// Check GUID
-	if session.Guid != guid {
-		return session, ApiError{"Invalid GUID."}
+	loggedIn := false
+	for i := range sessions {
+		if sessions[i].Guid == guid {
+			loggedIn = true
+			session = sessions[i]
+		}
+	}
+	if loggedIn == false {
+		return Session{}, ApiError{"Invalid GUID."}
 	}
 
 	// Check session age
