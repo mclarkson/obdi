@@ -97,6 +97,8 @@ func (api *Api) sendOutputLine(job JobIn, line string, serial int64) error {
 
 	r := &http.Response{}
 
+	tries := 0
+
 	for {
 		jsondata, err := json.Marshal(data)
 		if err != nil {
