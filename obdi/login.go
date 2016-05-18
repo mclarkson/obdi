@@ -75,9 +75,7 @@ func (api *Api) DoLogin(w rest.ResponseWriter, r *rest.Request) {
 	for {
 		session = Session{}
 		mutex.Lock()
-		if api.db.Where(Session{UserId: user.Id}).
-			First(&session).RecordNotFound() {
-
+		if user.MultiLogin {
 			session = Session{
 				Guid:   guid,
 				UserId: user.Id,
@@ -89,10 +87,24 @@ func (api *Api) DoLogin(w rest.ResponseWriter, r *rest.Request) {
 			}
 			mutex.Unlock()
 			break
-
 		} else {
+			if api.db.Where(Session{UserId: user.Id}).
+				First(&session).RecordNotFound() {
 
-			if !user.MultiLogin {
+				session = Session{
+					Guid:   guid,
+					UserId: user.Id,
+				}
+				if err := api.db.Save(&session).Error; err != nil {
+					rest.Error(w, err.Error(), 400)
+					mutex.Unlock()
+					return
+				}
+				mutex.Unlock()
+				break
+
+			} else {
+
 				if err := api.db.Delete(&session).Error; err != nil {
 					rest.Error(w, err.Error(), 400)
 					mutex.Unlock()
