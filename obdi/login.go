@@ -67,7 +67,7 @@ func (api *Api) DoLogin(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	// The user's password matches.
-	// Delete old session(s) and create a new one.
+	// Delete old session(s) (if not MultiLogin) and create a new one
 
 	guid := NewGUID()
 	session := Session{}
@@ -92,10 +92,12 @@ func (api *Api) DoLogin(w rest.ResponseWriter, r *rest.Request) {
 
 		} else {
 
-			if err := api.db.Delete(&session).Error; err != nil {
-				rest.Error(w, err.Error(), 400)
-				mutex.Unlock()
-				return
+			if !user.MultiLogin {
+				if err := api.db.Delete(&session).Error; err != nil {
+					rest.Error(w, err.Error(), 400)
+					mutex.Unlock()
+					return
+				}
 			}
 		}
 		mutex.Unlock()

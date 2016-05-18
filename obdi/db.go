@@ -26,16 +26,17 @@ import (
 
 // Maps to the users table
 type User struct {
-	Id        int64
-	Login     string `sql:"not null"`
-	Forename  string
-	Surname   string
-	Passhash  string
-	Enabled   bool
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
-	Email     string
+	Id         int64
+	Login      string `sql:"not null"`
+	Forename   string
+	Surname    string
+	Passhash   string
+	Enabled    bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  time.Time
+	Email      string
+	MultiLogin bool
 
 	//Session     Session
 	//SessionId   sql.NullInt64

@@ -90,6 +90,7 @@ func (api *Api) GetAllUsers(w rest.ResponseWriter, r *rest.Request) {
 		u[i]["Enabled"] = users[i].Enabled
 		u[i]["CreatedAt"] = users[i].CreatedAt
 		u[i]["Email"] = users[i].Email
+		u[i]["MultiLogin"] = users[i].MultiLogin
 	}
 
 	// Too much noise
