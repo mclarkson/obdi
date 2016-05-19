@@ -179,6 +179,8 @@ mgrApp.controller("userCtrl", function ($log, $uibModal, $scope, $http, baseUrl)
       $scope.FillEnvTable();
       // Fill 'user' object for edituser-detailstab.html
       $scope.user = $.grep($scope.users, function(e){ return e.Id == id; })[0];
+    } else {
+      $scope.FillUserTable();
     }
 
     clearMessages();
