@@ -68,6 +68,10 @@ func POST(jsondata []byte, url, endpoint string) (r *http.Response, e error) {
 	req.Header.Add("Content-Type", `application/json`)
 
 	resp, err = client.Do(req)
+	if err != nil {
+		txt := fmt.Sprintf("Could not send REST request ('%s').", err.Error())
+		return resp, ApiError{txt}
+	}
 
 	if resp.StatusCode != 200 {
 		var body []byte
