@@ -423,7 +423,7 @@ func (api *Api) AddJob(w rest.ResponseWriter, r *rest.Request) {
 	// Encode
 	jsondata, err := json.Marshal(data)
 	if err != nil {
-		txt := fmt.Sprintf("Error sending job to worker, JSON Encode:",
+		txt := fmt.Sprintf("Error sending job to worker, JSON Encode: %s",
 			err.Error())
 		jobData.Status = STATUS_ERROR
 		jobData.StatusReason = txt
@@ -697,7 +697,7 @@ func (api *Api) KillJob(w rest.ResponseWriter, r *rest.Request) {
 	jsondata, err := json.Marshal(data)
 	if err != nil {
 		txt := fmt.Sprintf(
-			"Error sending kill command to worker, JSON Encode:",
+			"Error sending kill command to worker, JSON Encode: %s",
 			err.Error())
 		rest.Error(w, txt, 400)
 		return

@@ -225,7 +225,7 @@ func (api *Api) CompilePlugin(w rest.ResponseWriter,
 		if err != nil {
 			txt := fmt.Sprintf("Plugin endpoint '%s/%s' does not exist. "+
 				"Compile failed for '%s'."+
-				" System said '%s'. STDOUT: %s STDERR:",
+				" System said '%s'. STDOUT: %s STDERR: %s",
 				endpoint, subitem, pluginFile, err,
 				cmd.Stdout, cmd.Stderr)
 			logit(txt)
