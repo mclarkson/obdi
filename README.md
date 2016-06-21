@@ -35,6 +35,7 @@ Alpha - for test environments.
 | [Salt Stack Plugins](https://github.com/mclarkson/obdi-salt-repository.git) | Plugins for managing Salt Stack. |
 | [Dev Plugins](https://github.com/mclarkson/obdi-dev-repository.git)| Hello World plugins |
 | [Net Tools](https://github.com/mclarkson/obdi-nettools-repository.git)| Rsync backup + dedup + compression + snapshots. |
+| [AWS Tools](https://github.com/mclarkson/obdi-awstools-repository.git)| Create Amazon EC2 instance from an rsync backup. |
 
 ## Documentation
 
