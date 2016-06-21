@@ -118,7 +118,7 @@ func main() {
 
 		// Environment Capabilities
 
-		&rest.Route{"GET", "/:login/:GUID/envcaps", api.GetAllEnvCaps},
+		&rest.Route{"GET", "/#login/:GUID/envcaps", api.GetAllEnvCaps},
 
 		&rest.Route{"POST", "/:login/:GUID/envcaps", api.AddEnvCap},
 
