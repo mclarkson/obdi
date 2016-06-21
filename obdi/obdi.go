@@ -128,7 +128,7 @@ func main() {
 
 		// Data Centre Capability Maps
 
-		&rest.Route{"GET", "/:login/:GUID/envcapmaps", api.GetAllEnvCapMaps},
+		&rest.Route{"GET", "/#login/:GUID/envcapmaps", api.GetAllEnvCapMaps},
 
 		&rest.Route{"POST", "/:login/:GUID/envcapmaps", api.AddEnvCapMap},
 

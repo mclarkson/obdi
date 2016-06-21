@@ -35,12 +35,12 @@ func (api *Api) GetAllEnvCapMaps(w rest.ResponseWriter, r *rest.Request) {
 	login := r.PathParam("login")
 	guid := r.PathParam("GUID")
 
-	// Only admin is allowed
-
-	if login != "admin" {
-		rest.Error(w, "Not allowed", 400)
-		return
-	}
+	// Anyone can read environment capability maps
+	//
+	//if login != "admin" {
+	//	rest.Error(w, "Not allowed", 400)
+	//	return
+	//}
 
 	//session := Session{}
 	var errl error = nil
