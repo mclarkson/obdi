@@ -555,7 +555,7 @@ baseUrl, $timeout) {
   };
 
   // ----------------------------------------------------------------------
-  $scope.UpdateJsonObjectEntry = function( newWorker, id ) {
+  $scope.UpdateJsonObjectEntry = function( newJsonObject, id ) {
   // ----------------------------------------------------------------------
 
     $http({
