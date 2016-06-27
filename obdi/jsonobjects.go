@@ -24,7 +24,7 @@ import (
 	"strconv"
 )
 
-func (api *Api) GetAllWorkers(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) GetAllJsonObjects(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
@@ -96,7 +96,7 @@ func (api *Api) GetAllWorkers(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(&u)
 }
 
-func (api *Api) AddWorker(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) AddJsonObject(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
@@ -165,7 +165,7 @@ func (api *Api) AddWorker(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(jsonobject)
 }
 
-func (api *Api) UpdateWorker(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) UpdateJsonObject(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
@@ -240,7 +240,7 @@ func (api *Api) UpdateWorker(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson("Success")
 }
 
-func (api *Api) DeleteWorker(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) DeleteJsonObject(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
