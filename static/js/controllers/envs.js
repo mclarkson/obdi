@@ -854,9 +854,9 @@ baseUrl, $timeout) {
         newJsonObject.Json = result.Json;
 
         if( recordexists ) {
-            return $scope.UpdateJsonObjectEntry(newWorker,$scope.worker[0].Id);
+            return $scope.UpdateJsonObjectEntry(newJsonObject,$scope.jsonobjects[0].Id);
         } else {
-            return $scope.AddJsonObjectEntry(newWorker);
+            return $scope.AddJsonObjectEntry(newJsonObject);
         }
       }, function () {
         $log.info('Modal dismissed at: ' + new Date());
