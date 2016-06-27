@@ -168,6 +168,16 @@ func main() {
 
 		&rest.Route{"PUT", "/#login/:GUID/workers/:id", api.UpdateWorker},
 
+		// JsonObjects
+
+		&rest.Route{"GET", "/#login/:GUID/jsonobjects", api.GetAllJsonObjects},
+
+		&rest.Route{"POST", "/#login/:GUID/jsonobjects", api.AddJsonObject},
+
+		&rest.Route{"DELETE", "/#login/:GUID/jsonobjects/:id", api.DeleteJsonObject},
+
+		&rest.Route{"PUT", "/#login/:GUID/jsonobjects/:id", api.UpdateJsonObject},
+
 		// Repos
 
 		&rest.Route{"GET", "/#login/:GUID/repos", api.GetAllRepos},

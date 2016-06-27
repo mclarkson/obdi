@@ -64,6 +64,31 @@
     </div>
 </script>
 
+<script type="text/ng-template" id="EditJsonObjectDef.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Edit Json Object Definition</h3>
+    </div>
+    <div class="modal-body">
+
+      <p>Editing Json object definition for '{{EnvCapCode}}' capability.</p>
+
+      <!-- JsonObject -->
+
+      <div class="form-group">
+	<label for="jsonobject" class="control-label">JSON Object</label>
+	<div>
+	  <input class="form-control" id="jsonobject" ng-model="Json"
+      placeholder='E.g. { "var":val" }' type="text" ng-trim='false' required>
+	</div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-success" ng-click="ok()">Apply and Close</button>
+    </div>
+</script>
+
 <div class="panel-body">
 
   <form name="envCapsForm" novalidate ng-submit="EditApply()">
@@ -100,6 +125,9 @@
               <a href="#" ng-click="Edit_DeleteModal(capmap.Id,capmap.EnvCapCode)"><i class="fa fa-trash-o red" title="Delete"></i></a>
               <span ng-if="capmap.EnvCapIsWorkerDef">
               <a href="#" ng-click="Edit_WorkerModal(capmap.EnvId,capmap.EnvCapId,capmap.EnvCapCode)"><i class="fa fa-edit" title="Edit worker definition"></i></a>
+              </span>
+              <span ng-if="capmap.EnvCapIsJsonObjectDef">
+              <a href="#" ng-click="Edit_JsonObjectModal(capmap.EnvId,capmap.EnvCapId,capmap.EnvCapCode)"><i class="fa fa-tag" title="Edit json object definition"></i></a>
               </span>
             </td>
           </tr>

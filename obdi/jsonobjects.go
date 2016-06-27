@@ -20,27 +20,18 @@ package main
 
 import (
 	"fmt"
-	//"bytes"
-	//"net/url"
-	//"time"
-	//"github.com/jinzhu/gorm"
 	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
 	"strconv"
 )
 
-func (api *Api) GetAllEnvCapMaps(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) GetAllWorkers(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
 	login := r.PathParam("login")
 	guid := r.PathParam("GUID")
 
-	// Anyone can read environment capability maps
-	//
-	//if login != "admin" {
-	//	rest.Error(w, "Not allowed", 400)
-	//	return
-	//}
+	// Anyone can view envs
 
 	//session := Session{}
 	var errl error = nil
@@ -54,16 +45,22 @@ func (api *Api) GetAllEnvCapMaps(w rest.ResponseWriter, r *rest.Request) {
 
 	qs := r.URL.Query() // Query string - map[string][]string
 
-	envcapmaps := []EnvCapMap{}
-
-	if len(qs["env_id"]) > 0 {
-		srch := qs["env_id"][0]
+	jsonobjects := []JsonObject{}
+	if len(qs["env_id"]) > 0 && len(qs["env_cap_id"]) > 0 {
 		mutex.Lock()
-		api.db.Order("env_id").Find(&envcapmaps, "env_id = ?", srch)
+		err := api.db.Order("env_id,env_cap_id").Find(&jsonobjects,
+			"env_id = ? and env_cap_id = ?", qs["env_id"][0],
+			qs["env_cap_id"][0])
 		mutex.Unlock()
+		if err.Error != nil {
+			if !err.RecordNotFound() {
+				rest.Error(w, err.Error.Error(), 500)
+				return
+			}
+		}
 	} else {
 		mutex.Lock()
-		err := api.db.Order("env_id").Find(&envcapmaps)
+		err := api.db.Order("env_id,env_cap_id").Find(&jsonobjects)
 		mutex.Unlock()
 		if err.Error != nil {
 			if !err.RecordNotFound() {
@@ -76,30 +73,22 @@ func (api *Api) GetAllEnvCapMaps(w rest.ResponseWriter, r *rest.Request) {
 	// Create a slice of maps from users struct
 	// to selectively copy database fields for display
 
-	u := make([]map[string]interface{}, len(envcapmaps))
-	for i := range envcapmaps {
+	u := make([]map[string]interface{}, len(jsonobjects))
+	for i := range jsonobjects {
 		u[i] = make(map[string]interface{})
-		u[i]["Id"] = envcapmaps[i].Id
-		u[i]["EnvId"] = envcapmaps[i].EnvId
-		u[i]["EnvCapId"] = envcapmaps[i].EnvCapId
+		u[i]["Id"] = jsonobjects[i].Id
+		u[i]["EnvId"] = jsonobjects[i].EnvId
+		u[i]["EnvCapId"] = jsonobjects[i].EnvCapId
+		u[i]["Json"] = jsonobjects[i].Json
 
-		env := Env{}
+		env_caps := EnvCap{}
 		mutex.Lock()
-		api.db.Model(&envcapmaps[i]).Related(&env)
+		api.db.Model(&jsonobjects[i]).Related(&env_caps)
 		mutex.Unlock()
 
-		u[i]["EnvSysName"] = env.SysName
-		u[i]["EnvDispName"] = env.DispName
-
-		envcap := EnvCap{}
-		mutex.Lock()
-		api.db.Model(&envcapmaps[i]).Related(&envcap)
-		mutex.Unlock()
-
-		u[i]["EnvCapCode"] = envcap.Code
-		u[i]["EnvCapDesc"] = envcap.Desc
-		u[i]["EnvCapIsWorkerDef"] = envcap.IsWorkerDef
-		u[i]["EnvCapIsJsonObjectDef"] = envcap.IsJsonObjectDef
+		u[i]["EnvCapCode"] = env_caps.Code
+		u[i]["EnvCapDesc"] = env_caps.Desc
+		u[i]["EnvCapId"] = env_caps.Id
 	}
 
 	// Too much noise
@@ -107,7 +96,7 @@ func (api *Api) GetAllEnvCapMaps(w rest.ResponseWriter, r *rest.Request) {
 	w.WriteJson(&u)
 }
 
-func (api *Api) AddEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) AddWorker(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
@@ -132,61 +121,51 @@ func (api *Api) AddEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
 
 	// Can't add if it exists already
 
-	envCapMapData := EnvCapMap{}
+	jsonobject := JsonObject{}
 
-	if err := r.DecodeJsonPayload(&envCapMapData); err != nil {
+	if err := r.DecodeJsonPayload(&jsonobject); err != nil {
 		rest.Error(w, "Invalid data format received.", 400)
 		return
-	} else if envCapMapData.EnvId == 0 || envCapMapData.EnvCapId == 0 {
-		rest.Error(w, "A required field is empty.", 400)
+	} else if len(jsonobject.Json) == 0 {
+		rest.Error(w, "Incorrect data format received."+
+			" Json is unset.", 400)
 		return
 	}
-	envCapMap := EnvCapMap{}
-	mutex.Lock()
-	if !api.db.Find(&envCapMap, "env_id = ? and env_cap_id = ?",
-		envCapMapData.EnvId, envCapMapData.EnvCapId).RecordNotFound() {
+	{
+		tmpjsonobject := JsonObject{}
+		mutex.Lock()
+		if !api.db.Find(&tmpjsonobject, "env_id = ? and env_cap_id = ?",
+			jsonobject.EnvId, jsonobject.EnvCapId).RecordNotFound() {
+			mutex.Unlock()
+			rest.Error(w, "Record exists.", 400)
+			return
+		}
 		mutex.Unlock()
-		rest.Error(w, "Record exists.", 400)
-		return
 	}
-	mutex.Unlock()
 
-	// Check that EnvId and EnvCapId exist
-	env := Env{}
-	mutex.Lock()
-	if api.db.Find(&env, envCapMapData.EnvId).RecordNotFound() {
-		mutex.Unlock()
-		rest.Error(w, "Invalid environment id.", 400)
-		return
-	}
-	mutex.Unlock()
-	envCap := EnvCap{}
-	mutex.Lock()
-	if api.db.Find(&envCap, envCapMapData.EnvCapId).RecordNotFound() {
-		mutex.Unlock()
-		rest.Error(w, "Invalid environment capability id.", 400)
-		return
-	}
-	mutex.Unlock()
-
-	// Add EnvCapMap
+	// Add jsonobject
 
 	mutex.Lock()
-	if err := api.db.Save(&envCapMapData).Error; err != nil {
+	if err := api.db.Save(&jsonobject).Error; err != nil {
 		mutex.Unlock()
 		rest.Error(w, err.Error(), 400)
 		return
 	}
 	mutex.Unlock()
 
-	text := fmt.Sprintf("Added new EnvCapMap, '%d'.",
-		envCapMapData.Id)
+	env_cap := EnvCap{}
+	mutex.Lock()
+	api.db.First(&env_cap, jsonobject.EnvCapId)
+	mutex.Unlock()
+
+	text := fmt.Sprintf("Added new jsonobject '%s->%s'.",
+		env_cap.Desc, jsonobject.Json)
 
 	api.LogActivity(session.Id, text)
-	w.WriteJson(envCapMapData)
+	w.WriteJson(jsonobject)
 }
 
-func (api *Api) UpdateEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) UpdateWorker(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
@@ -220,18 +199,17 @@ func (api *Api) UpdateEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
 	}
 
 	// Load data from db, then ...
-	envCapMap := EnvCapMap{}
+	jsonobject := JsonObject{}
 	mutex.Lock()
-	if api.db.Find(&envCapMap, id).RecordNotFound() {
+	if api.db.Find(&jsonobject, id).RecordNotFound() {
 		mutex.Unlock()
-		//rest.Error(w, err.Error(), 400)
 		rest.Error(w, "Record not found.", 400)
 		return
 	}
 	mutex.Unlock()
 
 	// ... overwrite any sent fields
-	if err := r.DecodeJsonPayload(&envCapMap); err != nil {
+	if err := r.DecodeJsonPayload(&jsonobject); err != nil {
 		//rest.Error(w, err.Error(), 400)
 		rest.Error(w, "Invalid data format received.", 400)
 		return
@@ -239,25 +217,30 @@ func (api *Api) UpdateEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
 
 	// Force the use of the path id over an id in the payload
 	Id, _ := strconv.Atoi(id)
-	envCapMap.Id = int64(Id)
+	jsonobject.Id = int64(Id)
 
 	mutex.Lock()
-	if err := api.db.Save(&envCapMap).Error; err != nil {
+	if err := api.db.Save(&jsonobject).Error; err != nil {
 		mutex.Unlock()
 		rest.Error(w, err.Error(), 400)
 		return
 	}
 	mutex.Unlock()
 
-	text := fmt.Sprintf("Updated EnvCapMap, '%d'.",
-		envCapMap.Id)
+	env_cap := EnvCap{}
+	mutex.Lock()
+	api.db.First(&env_cap, jsonobject.EnvCapId)
+	mutex.Unlock()
+
+	text := fmt.Sprintf("Updated jsonobject '%s->%s'.",
+		env_cap.Desc, jsonobject.Json)
 
 	api.LogActivity(session.Id, text)
 
 	w.WriteJson("Success")
 }
 
-func (api *Api) DeleteEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
+func (api *Api) DeleteWorker(w rest.ResponseWriter, r *rest.Request) {
 
 	// Check credentials
 
@@ -288,9 +271,9 @@ func (api *Api) DeleteEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
 		return
 	}
 
-	envCapMap := EnvCapMap{}
+	jsonobject := JsonObject{}
 	mutex.Lock()
-	if api.db.First(&envCapMap, id).RecordNotFound() {
+	if api.db.First(&jsonobject, id).RecordNotFound() {
 		mutex.Unlock()
 		rest.Error(w, "Record not found.", 400)
 		return
@@ -298,15 +281,20 @@ func (api *Api) DeleteEnvCapMap(w rest.ResponseWriter, r *rest.Request) {
 	mutex.Unlock()
 
 	mutex.Lock()
-	if err := api.db.Delete(&envCapMap).Error; err != nil {
+	if err := api.db.Delete(&jsonobject).Error; err != nil {
 		mutex.Unlock()
 		rest.Error(w, err.Error(), 400)
 		return
 	}
 	mutex.Unlock()
 
-	text := fmt.Sprintf("Deleted EnvCapMap, '%d'.",
-		envCapMap.Id)
+	env_cap := EnvCap{}
+	mutex.Lock()
+	api.db.First(&env_cap, jsonobject.EnvCapId)
+	mutex.Unlock()
+
+	text := fmt.Sprintf("Deleted jsonobject '%s->%s'.",
+		env_cap.Desc, jsonobject.Json)
 
 	api.LogActivity(session.Id, text)
 

@@ -34,6 +34,7 @@ baseUrl, $timeout) {
   $scope.dcs = {};
   $scope.managecaps = false;
   $scope.worker = {};
+  $scope.jsonobject = {};
 
   $scope.addenvtabs = [
     { title:'Environment Details', content:'frag/addenv-detailstab.html'},
@@ -518,6 +519,78 @@ baseUrl, $timeout) {
   }
 
   // ----------------------------------------------------------------------
+  $scope.AddJsonObjectEntry = function( newWorker ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'POST',
+      data: newJsonObject,
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/jsonobjects"
+    }).success( function(data, status, headers, config) {
+      $scope.okmessage = "The json object details were updated."
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
+  $scope.UpdateJsonObjectEntry = function( newWorker, id ) {
+  // ----------------------------------------------------------------------
+
+    $http({
+      method: 'PUT',
+      data: newJsonObject,
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/jsonobjects/" + id
+    }).success( function(data, status, headers, config) {
+      $scope.okmessage = "The json object details were updated."
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==401) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.message = "Server said: " + data['Error'];
+        $scope.error = true;
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+  };
+
+  // ----------------------------------------------------------------------
   $scope.AddWorkerEntry = function( newWorker ) {
   // ----------------------------------------------------------------------
 
@@ -737,6 +810,99 @@ baseUrl, $timeout) {
   };
 
   // ====================================================================
+
+  // --------------------------------------------------------------------
+  $scope.Edit_JsonObjectModal = function (EnvId, EnvCapId, EnvCapCode) {
+  // --------------------------------------------------------------------
+
+    $scope.Json = "";
+    $scope.id = EnvCapId;
+
+    var recordexists=false;
+
+    $http({
+      method: 'GET',
+      url: baseUrl + "/" + $scope.login.userid + "/" + $scope.login.guid
+           + "/jsonobjects?env_id=" + EnvId + "&env_cap_id=" + EnvCapId
+    }).success( function(data, status, headers, config) {
+      $scope.jsonobjects = data;
+      if( $scope.jsonobjects[0] ) recordexists=true;
+      var modalInstance = $uibModal.open({
+        templateUrl: 'EditJsonObjectDef.html',
+        controller: $scope.Edit_JsonObjectModalCtrl,
+        size: 'md',
+        resolve: {
+          // these variables are passed to the ModalInstanceCtrl
+          EnvCapCode: function () {
+            return EnvCapCode;
+          },
+          Json: function () {
+            if( recordexists ) {
+                return $scope.jsonobjects[0].Json;
+            } else {
+                return "";
+            }
+          },
+        }
+      });
+
+      modalInstance.result.then(function (result) {
+
+        var newJsonObject = {};
+        JsonObject.EnvId = EnvId;
+        JsonObject.EnvCapId = EnvCapId;
+        JsonObject.Json = result.Json;
+
+        if( recordexists ) {
+            return $scope.UpdateJsonObjectEntry(newWorker,$scope.worker[0].Id);
+        } else {
+            return $scope.AddJsonObjectEntry(newWorker);
+        }
+      }, function () {
+        $log.info('Modal dismissed at: ' + new Date());
+      });
+    }).error( function(data,status) {
+      if (status>=500) {
+        $scope.login.errtext = "Server error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status>=400) {
+        $scope.login.errtext = "Session expired.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else if (status==0) {
+        // This is a guess really
+        $scope.login.errtext = "Could not connect to server.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      } else {
+        $scope.login.errtext = "Logged out due to an unknown error.";
+        $scope.login.error = true;
+        $scope.login.pageurl = "login.html";
+      }
+    });
+
+  };
+
+  // --------------------------------------------------------------------
+  $scope.Edit_JsonObjectModalCtrl = function ($scope, $uibModalInstance,
+                                EnvCapCode, Json) {
+  // --------------------------------------------------------------------
+
+    // So the template can access 'loginname' in this new scope
+    $scope.EnvCapCode = EnvCapCode;
+    $scope.Json = Json;
+
+    $scope.ok = function () {
+      result = {};
+      result.Json = $scope.Json;
+      $uibModalInstance.close(result);
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.dismiss('cancel');
+    };
+  };
 
   // --------------------------------------------------------------------
   $scope.Edit_WorkerModal = function (EnvId, EnvCapId, EnvCapCode) {

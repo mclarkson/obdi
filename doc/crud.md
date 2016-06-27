@@ -126,6 +126,7 @@ curl -s -d '{
     "Code":"HAS_CUSTOM_RPM_REPO",
     "Desc":"Has a custom RPM repository.",
     "IsWorkerDef":false
+    "IsJsonObjectDef":false
 }' "http://$ipport/api/admin/$guid/envcaps"
 
 # View details for all capabilities (HTTP GET)
@@ -180,6 +181,41 @@ curl -s -X PUT -d '{
 # Delete a worker (HTTP DELETE)
 
 curl -i -X DELETE "http://$ipport/api/admin/$guid/workers/1"
+
+```
+
+JsonObjects
+-----------
+
+If an environment capability has `IsJsonObjectsDef` set to `true` then a JsonObject
+entry is expected for that capability.
+
+```
+# Add a new json object (HTTP POST)
+
+curl -s -d '{
+    "EnvId":1,
+    "EnvCapId":3,
+    "Json":"{\"var\":\"val\"}",
+}' "http://$ipport/api/admin/$guid/jsonobjects"
+
+# View details for all json objects (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/jsonobjects"
+
+# View details for a single json object (HTTP GET)
+# Supports using env_id *and* env_cap_id
+
+curl -s "http://$ipport/api/admin/$guid/jsonobjects?env_id=1&env_cap_id=3"
+
+# Update json object details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "Json":"{\"var\":\"newval\"}"}' "http://$ipport/api/admin/$guid/jsonobjects/1"
+
+# Delete a json object (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/jsonobjects/1"
 
 ```
 

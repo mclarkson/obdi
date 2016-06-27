@@ -101,10 +101,11 @@ type DcCapMap struct {
 }
 
 type EnvCap struct {
-	Id          int64
-	Code        string
-	Desc        string
-	IsWorkerDef bool // Can it have a worker definition
+	Id              int64
+	Code            string
+	Desc            string
+	IsWorkerDef     bool // Can it have a worker definition
+	IsJsonObjectDef bool // Can it have a json object definition
 }
 
 type Worker struct {
@@ -113,6 +114,13 @@ type Worker struct {
 	EnvCapId  int64
 	WorkerUrl string // Worker URL Prefix
 	WorkerKey string // Key (password) for worker
+}
+
+type JsonObject struct {
+	Id       int64
+	EnvId    int64
+	EnvCapId int64
+	Json     string
 }
 
 type EnvCapMap struct {
@@ -285,6 +293,10 @@ func (db *Database) InitDB() {
 		txt := "AutoMigrate Workers table failed"
 		log.Fatal(fmt.Sprintf("%s: %s", txt, err))
 	}
+	if err := db.dB.AutoMigrate(JsonObject{}).Error; err != nil {
+		txt := "AutoMigrate JsonObjects table failed"
+		log.Fatal(fmt.Sprintf("%s: %s", txt, err))
+	}
 
 	// Unique index is also a constraint. So these are forced to be unique
 	db.dB.Model(User{}).AddUniqueIndex("idx_login", "login")
@@ -292,6 +304,10 @@ func (db *Database) InitDB() {
 	db.dB.Model(Session{}).AddIndex("idx_user_id", "user_id")
 	db.dB.Model(Activity{}).AddIndex("idx_session_id", "session_id")
 	db.dB.Model(Script{}).AddIndex("idx_script_name", "name")
+	db.dB.Model(Worker{}).AddIndex("idx_worker_env_id", "env_id")
+	db.dB.Model(Worker{}).AddIndex("idx_worker_env_cap_id", "env_cap_id")
+	db.dB.Model(JsonObject{}).AddIndex("idx_jsonobject_env_id", "env_id")
+	db.dB.Model(JsonObject{}).AddIndex("idx_jsonobject_env_cap_id", "env_cap_id")
 	// TODO: OutputLines table should be in a separate DB file if
 	// TODO: performance drops.
 	db.dB.Model(OutputLine{}).AddIndex("idx_id_serial", "job_id", "serial")
