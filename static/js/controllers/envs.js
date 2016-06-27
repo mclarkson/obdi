@@ -849,9 +849,9 @@ baseUrl, $timeout) {
       modalInstance.result.then(function (result) {
 
         var newJsonObject = {};
-        JsonObject.EnvId = EnvId;
-        JsonObject.EnvCapId = EnvCapId;
-        JsonObject.Json = result.Json;
+        newJsonObject.EnvId = EnvId;
+        newJsonObject.EnvCapId = EnvCapId;
+        newJsonObject.Json = result.Json;
 
         if( recordexists ) {
             return $scope.UpdateJsonObjectEntry(newWorker,$scope.worker[0].Id);
