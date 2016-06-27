@@ -519,7 +519,7 @@ baseUrl, $timeout) {
   }
 
   // ----------------------------------------------------------------------
-  $scope.AddJsonObjectEntry = function( newWorker ) {
+  $scope.AddJsonObjectEntry = function( newJsonObject ) {
   // ----------------------------------------------------------------------
 
     $http({
