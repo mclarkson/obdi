@@ -187,7 +187,7 @@ curl -i -X DELETE "http://$ipport/api/admin/$guid/workers/1"
 JsonObjects
 -----------
 
-If an environment capability has `IsJsonObjectsDef` set to `true` then a JsonObject
+If an environment capability has `IsJsonObjectDef` set to `true` then a JsonObject
 entry is expected for that capability.
 
 ```
