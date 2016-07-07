@@ -61,6 +61,35 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 		return reply, ApiError{"Error"}
 	}
 
+	// Secret Data Token - used by plugins to access jsonobjects.
+	// Create a GUID and add it to sessions for this user.
+
+	user := User{}
+	sdtoken_user := "sduser"
+	SDToken := ""
+	mutex.Lock()
+	if api.db.First(&user, "login = ?", sdtoken_user).RecordNotFound() {
+		mutex.Unlock()
+		logit("'sduser' not found. Access to secret data is NOT possible.")
+	} else {
+		mutex.Unlock()
+
+		SDToken = NewGUID()
+		session := Session{}
+
+		session = Session{
+			Guid:   SDToken,
+			UserId: user.Id,
+		}
+		mutex.Lock()
+		if err := api.db.Save(&session).Error; err != nil {
+			rest.Error(w, err.Error(), 400)
+			mutex.Unlock()
+			return reply, ApiError{"Error"}
+		}
+		mutex.Unlock()
+	}
+
 	// Make the RPC call
 
 	type Args struct {
@@ -68,10 +97,11 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 		QueryString map[string][]string
 		PostData    []byte
 		QueryType   string
+		SDToken     string // secret data token
 	}
 
 	// Give it 5ms to start
-	time.Sleep(5 * time.Millisecond)
+	time.Sleep(3 * time.Millisecond)
 
 	client, err := rpc.Dial("tcp", ":"+port)
 	numtries := 1
@@ -125,7 +155,7 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 	case "DELETE": //do nowt
 	}
 
-	args := &Args{r.PathParams, r.URL.Query(), postData, queryType}
+	args := &Args{r.PathParams, r.URL.Query(), postData, queryType, SDToken}
 	args.PathParams["PluginDatabasePath"] = config.PluginDbPath
 	err = client.Call("Plugin.HandleRequest", args, &reply)
 	if err != nil {
@@ -282,7 +312,7 @@ func (api *Api) GenericGetEndpoint(w rest.ResponseWriter, r *rest.Request) {
 	var err error
 
 	if reply, err = api.RunPluginUsingRPC(w, r, pluginFile, port, "GET"); err != nil {
-		return // Just return full error was written in RunPluginUsingRPC
+		return // Just return. Full error was written in RunPluginUsingRPC
 	}
 
 	// Decode arbitrary JSON. Pull out the mandatory PluginReturn

@@ -31,7 +31,12 @@ func (api *Api) GetAllJsonObjects(w rest.ResponseWriter, r *rest.Request) {
 	login := r.PathParam("login")
 	guid := r.PathParam("GUID")
 
-	// Anyone can view envs
+	// Only admin is allowed
+
+	if !(login == "admin" || login == "sduser") {
+		rest.Error(w, "Not allowed", 400)
+		return
+	}
 
 	//session := Session{}
 	var errl error = nil
