@@ -66,6 +66,7 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 
 	user := User{}
 	sdtoken_user := "sduser"
+	session := Session{}
 	SDToken := ""
 	mutex.Lock()
 	if api.db.First(&user, "login = ?", sdtoken_user).RecordNotFound() {
@@ -75,7 +76,6 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 		mutex.Unlock()
 
 		SDToken = NewGUID()
-		session := Session{}
 
 		session = Session{
 			Guid:   SDToken,
@@ -176,6 +176,15 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 	}
 
 	err = cmd.Wait()
+
+	// We delete the sdtoken after the plugin exits
+	mutex.Lock()
+	if err := api.db.Delete(&session).Error; err != nil {
+		rest.Error(w, err.Error(), 400)
+		mutex.Unlock()
+		return reply, ApiError{"Error"}
+	}
+	mutex.Unlock()
 
 	return reply, nil
 }
