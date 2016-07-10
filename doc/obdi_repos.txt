@@ -1,3 +1,5 @@
 https://github.com/mclarkson/obdi-salt-repository.git
 https://github.com/mclarkson/obdi-core-repository.git
 https://github.com/mclarkson/obdi-dev-repository.git
+https://github.com/mclarkson/obdi-nettools-repository.git
+https://github.com/mclarkson/obdi-awstools-repository.git
