@@ -129,17 +129,7 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 	var postData []byte
 
 	switch queryType {
-	case "GET": //do nowt - nope. Allow post data for GET reqs
-		// We don't know how to decode the data so save it raw
-		postData, err = ioutil.ReadAll(r.Body)
-		r.Body.Close()
-		if err != nil {
-			txt := fmt.Sprintf("Could not get post data. %s", err)
-			rest.Error(w, txt, 400)
-			logit(txt)
-			err = cmd.Wait()
-			return reply, ApiError{"Error"}
-		}
+	case "GET": //do nowt
 	case "POST":
 		// We don't know how to decode the data so save it raw
 		postData, err = ioutil.ReadAll(r.Body)
