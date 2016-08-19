@@ -2,6 +2,10 @@
 
 [![Codewake](https://www.codewake.com/badges/codewake2.svg)](https://www.codewake.com/p/obdi-22339bd4-adee-4c1c-a1f0-5c2a9c8857ca)
 
+# License
+
+[Apache License 2.0](http://choosealicense.com/licenses/apache-2.0/#)
+
 ## Screenshots
 
 See: [Obdi in Pictures (Salt Stack Plugins)](http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html)

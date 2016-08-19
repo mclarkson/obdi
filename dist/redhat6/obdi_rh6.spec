@@ -11,7 +11,7 @@ Summary: A REST interface and GUI for deploying software
 Name: obdi
 Version: %{version}
 Release: %{release}
-License: GPL
+License: Apache-2.0
 Group: Application/System
 Source: obdi-%{version}.tar.gz
 Requires: gcc golang

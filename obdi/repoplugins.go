@@ -1,18 +1,16 @@
-// Obdi - a REST interface and GUI for deploying software
-// Copyright (C) 2014  Mark Clarkson
+// Copyright 2016 Mark Clarkson
 //
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
 package main
 
@@ -20,47 +18,47 @@ package main
 
 import (
 	//"fmt"
+	"encoding/json"
+	"fmt"
 	"github.com/mclarkson/obdi/external/ant0ine/go-json-rest/rest"
+	"io/ioutil"
+	"os"
 	"os/exec"
+	"path"
+	"strings"
+	"sync"
 	"syscall"
-  "path"
-  "fmt"
-  "os"
-  "strings"
-  "encoding/json"
-  "io/ioutil"
-  "sync"
 )
 
 var cachemutex = &sync.Mutex{}
 
 type RepoType struct {
-  Name              string
-  Description       string
-  Url               string
-  // Multiple dependencies
-  Depends           []DependsType
-  // Each repo can have multiple version referenced by the commit sha
-  Versions          []VersionsType
+	Name        string
+	Description string
+	Url         string
+	// Multiple dependencies
+	Depends []DependsType
+	// Each repo can have multiple version referenced by the commit sha
+	Versions []VersionsType
 }
 
 type DependsType struct {
-  Name              string
-  Version           string
-  VersionMatchType  string
+	Name             string
+	Version          string
+	VersionMatchType string
 }
 
 type VersionsType struct {
-  Version           string
-  CommitSHA         string
-  CodeName          string
-  Type              string
-  ObdiCompatibility ObdiCompatibilityType
+	Version           string
+	CommitSHA         string
+	CodeName          string
+	Type              string
+	ObdiCompatibility ObdiCompatibilityType
 }
 
 type ObdiCompatibilityType struct {
-  Version           string
-  Type              string
+	Version string
+	Type    string
 }
 
 func (api *Api) GetAllRepoPlugins(w rest.ResponseWriter, r *rest.Request) {
@@ -89,193 +87,193 @@ func (api *Api) GetAllRepoPlugins(w rest.ResponseWriter, r *rest.Request) {
 
 	defer api.TouchSession(guid)
 
-  // Get the list of remote repositories to check
+	// Get the list of remote repositories to check
 
 	repos := []Repo{}
 	qs := r.URL.Query() // Query string - map[string][]string
 
-  mutex.Lock()
-  dbresult := api.db.Order("id").Find(&repos)
-  mutex.Unlock()
-  if dbresult.Error != nil {
-    if !dbresult.RecordNotFound() {
-      rest.Error(w, dbresult.Error.Error(), 500)
-      return
-    }
+	mutex.Lock()
+	dbresult := api.db.Order("id").Find(&repos)
+	mutex.Unlock()
+	if dbresult.Error != nil {
+		if !dbresult.RecordNotFound() {
+			rest.Error(w, dbresult.Error.Error(), 500)
+			return
+		}
 		rest.Error(w, "No repositories are configured.", 400)
-    return
-  }
+		return
+	}
 
-  // Check for git binary
-  _, err := exec.LookPath("git")
-  if err != nil {
+	// Check for git binary
+	_, err := exec.LookPath("git")
+	if err != nil {
 		rest.Error(w, "Could not find 'git' command. Please install git.", 400)
-    return
-  }
+		return
+	}
 
-  // Test the remote repositories
+	// Test the remote repositories
 
-  for i := range repos {
-    url := repos[i].Url
+	for i := range repos {
+		url := repos[i].Url
 
-    cmd := exec.Command("git", "ls-remote", url )
-    //cmd.Dir = path.Join(config.StaticContent, "plugins")
-    err := cmd.Start()
-    if err != nil {
-      txt := fmt.Sprintf("exec.Command error. %s", err)
-      logit(txt)
-      rest.Error(w, txt, 400)
-      return
-    }
-    err = cmd.Wait()
-    status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-    if status != 0 {
-      rest.Error(w, "Git command failed: git ls-remote " + url, 400)
-      return
-    }
-  }
+		cmd := exec.Command("git", "ls-remote", url)
+		//cmd.Dir = path.Join(config.StaticContent, "plugins")
+		err := cmd.Start()
+		if err != nil {
+			txt := fmt.Sprintf("exec.Command error. %s", err)
+			logit(txt)
+			rest.Error(w, txt, 400)
+			return
+		}
+		err = cmd.Wait()
+		status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
+		if status != 0 {
+			rest.Error(w, "Git command failed: git ls-remote "+url, 400)
+			return
+		}
+	}
 
-  // Get the metadata list(s)
+	// Get the metadata list(s)
 
-  cachemutex.Lock()
-  defer cachemutex.Unlock()
+	cachemutex.Lock()
+	defer cachemutex.Unlock()
 
-  for i := range repos {
-    url := repos[i].Url
+	for i := range repos {
+		url := repos[i].Url
 
-    // cd
-    if err := os.Chdir( config.CacheDir ); err != nil {
-      rest.Error(w, "Could not change into directory: " + config.CacheDir, 400)
-      return
-    }
+		// cd
+		if err := os.Chdir(config.CacheDir); err != nil {
+			rest.Error(w, "Could not change into directory: "+config.CacheDir, 400)
+			return
+		}
 
-    // http://address/repodir.git -> repodir
-    tmpval := strings.Split( url, "/" )
-    repodirname := strings.TrimRight( tmpval[len(tmpval)-1], ".git" )
+		// http://address/repodir.git -> repodir
+		tmpval := strings.Split(url, "/")
+		repodirname := strings.TrimRight(tmpval[len(tmpval)-1], ".git")
 
-    // rm -rf repodir
-    repodir := path.Join( config.CacheDir,repodirname )
-    if err := os.RemoveAll( repodir ); err != nil {
-      rest.Error(w, "Could not delete directory: " + repodir, 400)
-      return
-    }
+		// rm -rf repodir
+		repodir := path.Join(config.CacheDir, repodirname)
+		if err := os.RemoveAll(repodir); err != nil {
+			rest.Error(w, "Could not delete directory: "+repodir, 400)
+			return
+		}
 
-    cmd := exec.Command("git", "clone", url, repodir)
+		cmd := exec.Command("git", "clone", url, repodir)
 
 		cmd.Env = []string{}
-    if len(config.HttpProxy) > 0 {
-      cmd.Env = append(cmd.Env, "http_proxy="+config.HttpProxy)
-    }
-    if len(config.HttpsProxy) > 0 {
-      cmd.Env = append(cmd.Env, "https_proxy="+config.HttpsProxy)
-    }
+		if len(config.HttpProxy) > 0 {
+			cmd.Env = append(cmd.Env, "http_proxy="+config.HttpProxy)
+		}
+		if len(config.HttpsProxy) > 0 {
+			cmd.Env = append(cmd.Env, "https_proxy="+config.HttpsProxy)
+		}
 
-    err := cmd.Start()
-    if err != nil {
-      txt := fmt.Sprintf("exec.Command error. %s", err)
-      logit(txt)
-      rest.Error(w, txt, 400)
-      return
-    }
-    err = cmd.Wait()
-    status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-    if status != 0 {
-      rest.Error(w, "Git command failed: git clone " + url, 400)
-      return
-    }
-  }
+		err := cmd.Start()
+		if err != nil {
+			txt := fmt.Sprintf("exec.Command error. %s", err)
+			logit(txt)
+			rest.Error(w, txt, 400)
+			return
+		}
+		err = cmd.Wait()
+		status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
+		if status != 0 {
+			rest.Error(w, "Git command failed: git clone "+url, 400)
+			return
+		}
+	}
 
-  // Read and join the repodata.json files
+	// Read and join the repodata.json files
 
-  /* For example
-  {
-    "Name":"saltregexmanager",
-    "Description":"Plugin to allow Salt state ... expressions.",
-    "Url":"https://github.com/mclarkson/obdi-saltregexmanager.git",
-    "Depends":[{
-      "Name":"salt",
-      "Version":"0.1.3",
-      "VersionMatchType":"AtLeast"
-    }],
-    "Versions":[
-      {
-        "Version":"0.1.3",
-        "CommitSHA":"5ae1e2c7496669ca63391d87f04c426f2e7dd6ce",
-        "CodeName":"china",
-        "Type":"alpha",
-        "ObdiCompatibility":{"Version":"0.1.3","Type":"AtLeast"}
-      }
-    ]
-  }
-  */
+	/* For example
+	{
+	  "Name":"saltregexmanager",
+	  "Description":"Plugin to allow Salt state ... expressions.",
+	  "Url":"https://github.com/mclarkson/obdi-saltregexmanager.git",
+	  "Depends":[{
+	    "Name":"salt",
+	    "Version":"0.1.3",
+	    "VersionMatchType":"AtLeast"
+	  }],
+	  "Versions":[
+	    {
+	      "Version":"0.1.3",
+	      "CommitSHA":"5ae1e2c7496669ca63391d87f04c426f2e7dd6ce",
+	      "CodeName":"china",
+	      "Type":"alpha",
+	      "ObdiCompatibility":{"Version":"0.1.3","Type":"AtLeast"}
+	    }
+	  ]
+	}
+	*/
 
-  var repodata []RepoType
+	var repodata []RepoType
 
-  for i := range repos {
-    // Work out where the repo (repodir) would have been written
-    url := repos[i].Url
-    tmpval := strings.Split( url, "/" )
-    repodirname := strings.TrimRight( tmpval[len(tmpval)-1], ".git" )
-    repodir := path.Join( config.CacheDir,repodirname,"repodata.json" )
+	for i := range repos {
+		// Work out where the repo (repodir) would have been written
+		url := repos[i].Url
+		tmpval := strings.Split(url, "/")
+		repodirname := strings.TrimRight(tmpval[len(tmpval)-1], ".git")
+		repodir := path.Join(config.CacheDir, repodirname, "repodata.json")
 
-    // Read the repodata.json file
-    file, err := ioutil.ReadFile( repodir )
-    if err != nil {
-      rest.Error(w, "Could not read repodata.json file: " + err.Error(), 400)
-      return
-    }
-    //fmt.Printf("%s\n", string(file))
+		// Read the repodata.json file
+		file, err := ioutil.ReadFile(repodir)
+		if err != nil {
+			rest.Error(w, "Could not read repodata.json file: "+err.Error(), 400)
+			return
+		}
+		//fmt.Printf("%s\n", string(file))
 
-    var tmprepodata []RepoType
-    err = json.Unmarshal(file, &tmprepodata)
-    if err != nil {
-      rest.Error(w, "Error decoding json: " + err.Error(), 400)
-      return
-    }
-    repodata = append(repodata,tmprepodata...)
-  }
+		var tmprepodata []RepoType
+		err = json.Unmarshal(file, &tmprepodata)
+		if err != nil {
+			rest.Error(w, "Error decoding json: "+err.Error(), 400)
+			return
+		}
+		repodata = append(repodata, tmprepodata...)
+	}
 
-  if len(qs["installable"]) > 0 {
+	if len(qs["installable"]) > 0 {
 
-    // Get list of installed plugins and subtract from list of
-    // available plugins
+		// Get list of installed plugins and subtract from list of
+		// available plugins
 
-    /*
-        TODO: Check - Depends, ObdiCompatibility 
-    */
+		/*
+		   TODO: Check - Depends, ObdiCompatibility
+		*/
 
-    plugins := []Plugin{}
+		plugins := []Plugin{}
 
-    mutex.Lock()
-    err := api.db.Order("name").Find(&plugins)
-    mutex.Unlock()
-    if err.Error != nil {
-      // No results is not an error
-      if !err.RecordNotFound() {
-        rest.Error(w, err.Error.Error(), 500)
-        return
-      }
-    }
+		mutex.Lock()
+		err := api.db.Order("name").Find(&plugins)
+		mutex.Unlock()
+		if err.Error != nil {
+			// No results is not an error
+			if !err.RecordNotFound() {
+				rest.Error(w, err.Error.Error(), 500)
+				return
+			}
+		}
 
-    var repoInstallable []RepoType
+		var repoInstallable []RepoType
 
-RepoLoop:
-    for i := range repodata {
-      reponame := repodata[i].Name
-      for j := range plugins {
-        if reponame == plugins[j].Name {
-          continue RepoLoop
-        }
-      }
-      repoInstallable = append( repoInstallable, repodata[i] )
-    }
+	RepoLoop:
+		for i := range repodata {
+			reponame := repodata[i].Name
+			for j := range plugins {
+				if reponame == plugins[j].Name {
+					continue RepoLoop
+				}
+			}
+			repoInstallable = append(repoInstallable, repodata[i])
+		}
 
-    repodata = repoInstallable
-  }
+		repodata = repoInstallable
+	}
 
-  if len(repodata) == 0 {
-    repodata = []RepoType{}
-  }
+	if len(repodata) == 0 {
+		repodata = []RepoType{}
+	}
 
 	// Too much noise
 	//api.LogActivity( session.Id, "Sent list of users" )
@@ -307,9 +305,9 @@ func (api *Api) AddRepoPlugin(w rest.ResponseWriter, r *rest.Request) {
 
 	// Decode the POST data.
 
-  type RepoPlugin struct {
-    Name    string
-  }
+	type RepoPlugin struct {
+		Name string
+	}
 
 	pluginData := RepoPlugin{}
 
@@ -330,287 +328,287 @@ func (api *Api) AddRepoPlugin(w rest.ResponseWriter, r *rest.Request) {
 	}
 	mutex.Unlock()
 
-  // Get the list of remote repositories to check
+	// Get the list of remote repositories to check
 
 	repos := []Repo{}
 
-  mutex.Lock()
-  dbresult := api.db.Order("id").Find(&repos)
-  mutex.Unlock()
-  if dbresult.Error != nil {
-    if !dbresult.RecordNotFound() {
-      rest.Error(w, dbresult.Error.Error(), 500)
-      return
-    }
+	mutex.Lock()
+	dbresult := api.db.Order("id").Find(&repos)
+	mutex.Unlock()
+	if dbresult.Error != nil {
+		if !dbresult.RecordNotFound() {
+			rest.Error(w, dbresult.Error.Error(), 500)
+			return
+		}
 		rest.Error(w, "No repositories are configured.", 400)
-    return
-  }
+		return
+	}
 
-  // Check for git binary
-  _, err := exec.LookPath("git")
-  if err != nil {
+	// Check for git binary
+	_, err := exec.LookPath("git")
+	if err != nil {
 		rest.Error(w, "Could not find 'git' command. Please install git.", 400)
-    return
-  }
+		return
+	}
 
-  // Test the remote repositories
+	// Test the remote repositories
 
-  for i := range repos {
-    url := repos[i].Url
+	for i := range repos {
+		url := repos[i].Url
 
-    cmd := exec.Command("git", "ls-remote", url )
-    //cmd.Dir = path.Join(config.StaticContent, "plugins")
-    err := cmd.Start()
-    if err != nil {
-      txt := fmt.Sprintf("exec.Command error. %s", err)
-      logit(txt)
-      rest.Error(w, txt, 400)
-      return
-    }
-    err = cmd.Wait()
-    status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-    if status != 0 {
-      rest.Error(w, "Git command failed: git ls-remote " + url, 400)
-      return
-    }
-  }
+		cmd := exec.Command("git", "ls-remote", url)
+		//cmd.Dir = path.Join(config.StaticContent, "plugins")
+		err := cmd.Start()
+		if err != nil {
+			txt := fmt.Sprintf("exec.Command error. %s", err)
+			logit(txt)
+			rest.Error(w, txt, 400)
+			return
+		}
+		err = cmd.Wait()
+		status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
+		if status != 0 {
+			rest.Error(w, "Git command failed: git ls-remote "+url, 400)
+			return
+		}
+	}
 
-  // Get the metadata list(s)
+	// Get the metadata list(s)
 
-  cachemutex.Lock()
-  defer cachemutex.Unlock()
+	cachemutex.Lock()
+	defer cachemutex.Unlock()
 
-  for i := range repos {
-    url := repos[i].Url
+	for i := range repos {
+		url := repos[i].Url
 
-    // cd
-    if err := os.Chdir( config.CacheDir ); err != nil {
-      rest.Error(w, "Could not change into directory: " + config.CacheDir, 400)
-      return
-    }
+		// cd
+		if err := os.Chdir(config.CacheDir); err != nil {
+			rest.Error(w, "Could not change into directory: "+config.CacheDir, 400)
+			return
+		}
 
-    // http://address/repodir.git -> repodir
-    tmpval := strings.Split( url, "/" )
-    repodirname := strings.TrimRight( tmpval[len(tmpval)-1], ".git" )
+		// http://address/repodir.git -> repodir
+		tmpval := strings.Split(url, "/")
+		repodirname := strings.TrimRight(tmpval[len(tmpval)-1], ".git")
 
-    // rm -rf repodir
-    repodir := path.Join( config.CacheDir,repodirname )
-    if err := os.RemoveAll( repodir ); err != nil {
-      rest.Error(w, "Could not delete directory: " + repodir, 400)
-      return
-    }
+		// rm -rf repodir
+		repodir := path.Join(config.CacheDir, repodirname)
+		if err := os.RemoveAll(repodir); err != nil {
+			rest.Error(w, "Could not delete directory: "+repodir, 400)
+			return
+		}
 
-    cmd := exec.Command("git", "clone", url, repodir)
+		cmd := exec.Command("git", "clone", url, repodir)
 
 		cmd.Env = []string{}
-    if len(config.HttpProxy) > 0 {
-      cmd.Env = append(cmd.Env, "http_proxy="+config.HttpProxy)
-    }
-    if len(config.HttpsProxy) > 0 {
-      cmd.Env = append(cmd.Env, "https_proxy="+config.HttpsProxy)
-    }
+		if len(config.HttpProxy) > 0 {
+			cmd.Env = append(cmd.Env, "http_proxy="+config.HttpProxy)
+		}
+		if len(config.HttpsProxy) > 0 {
+			cmd.Env = append(cmd.Env, "https_proxy="+config.HttpsProxy)
+		}
 
-    err := cmd.Start()
-    if err != nil {
-      txt := fmt.Sprintf("exec.Command error. %s", err)
-      logit(txt)
-      rest.Error(w, txt, 400)
-      return
-    }
-    err = cmd.Wait()
-    status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-    if status != 0 {
-      rest.Error(w, "Git command failed: git clone " + url, 400)
-      return
-    }
-  }
+		err := cmd.Start()
+		if err != nil {
+			txt := fmt.Sprintf("exec.Command error. %s", err)
+			logit(txt)
+			rest.Error(w, txt, 400)
+			return
+		}
+		err = cmd.Wait()
+		status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
+		if status != 0 {
+			rest.Error(w, "Git command failed: git clone "+url, 400)
+			return
+		}
+	}
 
-  // Read and join the repodata.json files
+	// Read and join the repodata.json files
 
-  /* For example
-  {
-    "Name":"saltregexmanager",
-    "Description":"Plugin to allow Salt state ... expressions.",
-    "Url":"https://github.com/mclarkson/obdi-saltregexmanager.git",
-    "Depends":[{
-      "Name":"salt",
-      "Version":"0.1.3",
-      "VersionMatchType":"AtLeast"
-    }],
-    "Versions":[
-      {
-        "Version":"0.1.3",
-        "CommitSHA":"5ae1e2c7496669ca63391d87f04c426f2e7dd6ce",
-        "CodeName":"china",
-        "Type":"alpha",
-        "ObdiCompatibility":{"Version":"0.1.3","Type":"AtLeast"}
-      }
-    ]
-  }
-  */
+	/* For example
+	{
+	  "Name":"saltregexmanager",
+	  "Description":"Plugin to allow Salt state ... expressions.",
+	  "Url":"https://github.com/mclarkson/obdi-saltregexmanager.git",
+	  "Depends":[{
+	    "Name":"salt",
+	    "Version":"0.1.3",
+	    "VersionMatchType":"AtLeast"
+	  }],
+	  "Versions":[
+	    {
+	      "Version":"0.1.3",
+	      "CommitSHA":"5ae1e2c7496669ca63391d87f04c426f2e7dd6ce",
+	      "CodeName":"china",
+	      "Type":"alpha",
+	      "ObdiCompatibility":{"Version":"0.1.3","Type":"AtLeast"}
+	    }
+	  ]
+	}
+	*/
 
-  var repodata []RepoType
+	var repodata []RepoType
 
-  for i := range repos {
-    // Work out where the repo (repodir) would have been written
-    url := repos[i].Url
-    tmpval := strings.Split( url, "/" )
-    repodirname := strings.TrimRight( tmpval[len(tmpval)-1], ".git" )
-    repodir := path.Join( config.CacheDir,repodirname,"repodata.json" )
+	for i := range repos {
+		// Work out where the repo (repodir) would have been written
+		url := repos[i].Url
+		tmpval := strings.Split(url, "/")
+		repodirname := strings.TrimRight(tmpval[len(tmpval)-1], ".git")
+		repodir := path.Join(config.CacheDir, repodirname, "repodata.json")
 
-    // Read the repodata.json file
-    file, err := ioutil.ReadFile( repodir )
-    if err != nil {
-      rest.Error(w, "Could not read repodata.json file: " + err.Error(), 400)
-      return
-    }
-    //fmt.Printf("%s\n", string(file))
+		// Read the repodata.json file
+		file, err := ioutil.ReadFile(repodir)
+		if err != nil {
+			rest.Error(w, "Could not read repodata.json file: "+err.Error(), 400)
+			return
+		}
+		//fmt.Printf("%s\n", string(file))
 
-    var tmprepodata []RepoType
-    err = json.Unmarshal(file, &tmprepodata)
-    if err != nil {
-      rest.Error(w, "Error decoding json: " + err.Error(), 400)
-      return
-    }
-    repodata = append(repodata,tmprepodata...)
-  }
+		var tmprepodata []RepoType
+		err = json.Unmarshal(file, &tmprepodata)
+		if err != nil {
+			rest.Error(w, "Error decoding json: "+err.Error(), 400)
+			return
+		}
+		repodata = append(repodata, tmprepodata...)
+	}
 
-  {
+	{
 
-    // Get list of installed plugins and subtract from list of
-    // available plugins
+		// Get list of installed plugins and subtract from list of
+		// available plugins
 
-    /*
-        TODO: Check - Depends, ObdiCompatibility 
-    */
+		/*
+		   TODO: Check - Depends, ObdiCompatibility
+		*/
 
-    plugins := []Plugin{}
+		plugins := []Plugin{}
 
-    mutex.Lock()
-    err := api.db.Order("name").Find(&plugins)
-    mutex.Unlock()
-    if err.Error != nil {
-      // No results is not an error
-      if !err.RecordNotFound() {
-        rest.Error(w, err.Error.Error(), 500)
-        return
-      }
-    }
+		mutex.Lock()
+		err := api.db.Order("name").Find(&plugins)
+		mutex.Unlock()
+		if err.Error != nil {
+			// No results is not an error
+			if !err.RecordNotFound() {
+				rest.Error(w, err.Error.Error(), 500)
+				return
+			}
+		}
 
-    var repoInstallable []RepoType
+		var repoInstallable []RepoType
 
-RepoLoop:
-    for i := range repodata {
-      reponame := repodata[i].Name
-      for j := range plugins {
-        if reponame == plugins[j].Name {
-          continue RepoLoop
-        }
-      }
-      repoInstallable = append( repoInstallable, repodata[i] )
-    }
+	RepoLoop:
+		for i := range repodata {
+			reponame := repodata[i].Name
+			for j := range plugins {
+				if reponame == plugins[j].Name {
+					continue RepoLoop
+				}
+			}
+			repoInstallable = append(repoInstallable, repodata[i])
+		}
 
-    repodata = repoInstallable
-  }
+		repodata = repoInstallable
+	}
 
-  if len(repodata) == 0 {
-    repodata = []RepoType{}
-  }
+	if len(repodata) == 0 {
+		repodata = []RepoType{}
+	}
 
-  // repodata containes the list of available plugins
-  // See if the plugin we want is in the list
+	// repodata containes the list of available plugins
+	// See if the plugin we want is in the list
 
-  pluginIndex := 0
-  pluginFound := false
-  for i := range repodata {
-    if pluginData.Name == repodata[i].Name {
-      pluginFound = true
-      pluginIndex = i
-    }
-  }
+	pluginIndex := 0
+	pluginFound := false
+	for i := range repodata {
+		if pluginData.Name == repodata[i].Name {
+			pluginFound = true
+			pluginIndex = i
+		}
+	}
 
-  if pluginFound == false {
-    rest.Error(w, "Plugin, '" + pluginData.Name + "' not found.", 400)
-    return
-  }
+	if pluginFound == false {
+		rest.Error(w, "Plugin, '"+pluginData.Name+"' not found.", 400)
+		return
+	}
 
-  //
-  // Finally! Get and install the plugin
-  //
+	//
+	// Finally! Get and install the plugin
+	//
 
-  {
-    url := repodata[pluginIndex].Url
+	{
+		url := repodata[pluginIndex].Url
 
-    // cd
-    if err := os.Chdir( config.GoPluginSource ); err != nil {
-      rest.Error(w, "Could not change into directory: " +
-        config.GoPluginSource, 400)
-      return
-    }
+		// cd
+		if err := os.Chdir(config.GoPluginSource); err != nil {
+			rest.Error(w, "Could not change into directory: "+
+				config.GoPluginSource, 400)
+			return
+		}
 
-    // rm -rf repodir
-    repodir := path.Join( config.GoPluginSource,pluginData.Name )
-    if err := os.RemoveAll( repodir ); err != nil {
-      rest.Error(w, "Could not delete directory: " + repodir, 400)
-      return
-    }
+		// rm -rf repodir
+		repodir := path.Join(config.GoPluginSource, pluginData.Name)
+		if err := os.RemoveAll(repodir); err != nil {
+			rest.Error(w, "Could not delete directory: "+repodir, 400)
+			return
+		}
 
-    cmd := exec.Command("git", "clone", url, pluginData.Name)
+		cmd := exec.Command("git", "clone", url, pluginData.Name)
 
-    cmd.Env = []string{}
-    if len(config.HttpProxy) > 0 {
-      cmd.Env = append(cmd.Env, "http_proxy="+config.HttpProxy)
-    }
-    if len(config.HttpsProxy) > 0 {
-      cmd.Env = append(cmd.Env, "https_proxy="+config.HttpsProxy)
-    }
+		cmd.Env = []string{}
+		if len(config.HttpProxy) > 0 {
+			cmd.Env = append(cmd.Env, "http_proxy="+config.HttpProxy)
+		}
+		if len(config.HttpsProxy) > 0 {
+			cmd.Env = append(cmd.Env, "https_proxy="+config.HttpsProxy)
+		}
 
-    err := cmd.Start()
-    if err != nil {
-      txt := fmt.Sprintf("exec.Command error. %s", err)
-      logit(txt)
-      rest.Error(w, txt, 400)
-      return
-    }
-    err = cmd.Wait()
-    status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-    if status != 0 {
-      rest.Error(w, "Git command failed: git clone " + url, 400)
-      return
-    }
-  }
+		err := cmd.Start()
+		if err != nil {
+			txt := fmt.Sprintf("exec.Command error. %s", err)
+			logit(txt)
+			rest.Error(w, txt, 400)
+			return
+		}
+		err = cmd.Wait()
+		status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
+		if status != 0 {
+			rest.Error(w, "Git command failed: git clone "+url, 400)
+			return
+		}
+	}
 
-  // Run the installer script sending 'guid' environment variable
+	// Run the installer script sending 'guid' environment variable
 
-  {
-    plugindir := path.Join( config.GoPluginSource,pluginData.Name )
+	{
+		plugindir := path.Join(config.GoPluginSource, pluginData.Name)
 
-    // cd
-    if err := os.Chdir( plugindir ); err != nil {
-      rest.Error(w, "Could not change into directory: " +
-        config.GoPluginSource, 400)
-      return
-    }
+		// cd
+		if err := os.Chdir(plugindir); err != nil {
+			rest.Error(w, "Could not change into directory: "+
+				config.GoPluginSource, 400)
+			return
+		}
 
-    cmd := exec.Command("/bin/bash", "install_plugin.sh")
+		cmd := exec.Command("/bin/bash", "install_plugin.sh")
 
-    cmd.Env = []string{}
-    cmd.Env = append(cmd.Env, "guid="+guid)
+		cmd.Env = []string{}
+		cmd.Env = append(cmd.Env, "guid="+guid)
 
-    err := cmd.Start()
-    if err != nil {
-      txt := fmt.Sprintf("exec.Command error. %s", err)
-      logit(txt)
-      rest.Error(w, txt, 400)
-      return
-    }
-    err = cmd.Wait()
-    status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
-    if status != 0 {
-      rest.Error(w, "Command, install_plugin.sh failed.", 400)
-      return
-    }
-  }
+		err := cmd.Start()
+		if err != nil {
+			txt := fmt.Sprintf("exec.Command error. %s", err)
+			logit(txt)
+			rest.Error(w, txt, 400)
+			return
+		}
+		err = cmd.Wait()
+		status := cmd.ProcessState.Sys().(syscall.WaitStatus).ExitStatus()
+		if status != 0 {
+			rest.Error(w, "Command, install_plugin.sh failed.", 400)
+			return
+		}
+	}
 
 	api.LogActivity(session.Id, "Downloaded new plugin '"+pluginData.Name+"'.")
 	w.WriteJson(&repodata)

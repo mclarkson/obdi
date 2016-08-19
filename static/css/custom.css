@@ -160,6 +160,10 @@ div.panel-body {
   margin: 20px 0 20px;
   border-bottom: 1px solid #d0d0d0;
 }
+
+.navbar-brand {
+    padding-left: 18px
+}
 @media(max-width:767px) {
   .navbar-brand {
     font-size: 16px;
@@ -236,7 +240,10 @@ div.panel-body {
     height: 3em;
     */
     margin-top: 6px;
+    padding-top: 4px;
     padding-right: 6px; 
+    max-height: 25px;
+    box-sizing: content-box;
 }
 /*.fa-plus-circle,*/
 td a .fa-trash-o,
