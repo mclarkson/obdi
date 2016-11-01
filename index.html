@@ -1,136 +1,119 @@
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Obdi by mclarkson</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Obdi</h1>
-      <h2 class="project-tagline">A REST interface and GUI for running scripts.</h2>
-      <a href="https://github.com/mclarkson/obdi" class="btn">View on GitHub</a>
-      <a href="https://github.com/mclarkson/obdi/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/mclarkson/obdi/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
-
-    <section class="main-content">
-      <h1>
-<a id="obdi" class="anchor" href="#obdi" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Obdi</h1>
-
-<h1>
-<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
-
-<p><a href="http://choosealicense.com/licenses/apache-2.0/#">Apache License 2.0</a></p>
-
-<h2>
-<a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Screenshots</h2>
-
-<p>See:</p>
-
-<p><a href="http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html">Obdi in Pictures (Salt Stack Plugins)</a></p>
-
-<p><a href="http://rsyncbackup.obdi.io/">Obdi Rsync Backup</a></p>
-
-<h2>
-<a id="what-is-it" class="anchor" href="#what-is-it" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is it?</h2>
-
-<p>Obdi is an extendable graphical user interface for running scripts on
-remote servers.  The most basic installation provides administrative tools to
-manage users, data centres and environments, and includes a job manager.</p>
-
-<h2>
-<a id="status" class="anchor" href="#status" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Status</h2>
-
-<p>Alpha - for test environments.</p>
-
-<h2>
-<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
-
-<ul>
-<li>All GUI items in the screen shot are implemented using plugins.</li>
-<li>Plugins can be REST end-points - they can be used for automation.</li>
-<li>The saltconfigserver plugin contains a number of REST end-points, including an External Node Classifier (ENC).</li>
-</ul>
-
-<h2>
-<a id="architecture" class="anchor" href="#architecture" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Architecture</h2>
-
-<ul>
-<li>Google Go for the back end REST interface.</li>
-<li>Angular JS and bootstrap for the front end.</li>
-<li>Sqlite3 used for data storage.</li>
-<li>Obdi simply runs scripts on remote servers, so it can be used for lots of different tasks.</li>
-</ul>
-
-<h2>
-<a id="plugins" class="anchor" href="#plugins" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Plugins</h2>
-
-<table>
-<thead>
-<tr>
-<th>Name/Link</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="https://github.com/mclarkson/obdi-core-repository.git">Obdi Core Plugins</a></td>
-<td>The Obdi job viewer plugin.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mclarkson/obdi-salt-repository.git">Salt Stack Plugins</a></td>
-<td>Plugins for managing Salt Stack.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mclarkson/obdi-dev-repository.git">Dev Plugins</a></td>
-<td>Hello World plugins</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mclarkson/obdi-nettools-repository.git">Net Tools</a></td>
-<td>Rsync backup + dedup + compression + snapshots.</td>
-</tr>
-<tr>
-<td><a href="https://github.com/mclarkson/obdi-awstools-repository.git">AWS Tools</a></td>
-<td>Create Amazon EC2 instance from an rsync backup.</td>
-</tr>
-</tbody>
-</table>
-
-<h2>
-<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h2>
-
-<h3>
-<a id="about" class="anchor" href="#about" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About</h3>
-
-<p><a href="https://github.com/mclarkson/obdi/blob/master/doc/plugins.md">About Plugins</a></p>
-
-<h3>
-<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h3>
-
-<p><a href="https://github.com/mclarkson/obdi/blob/master/doc/ubuntu_install.md">Installing Obdi Core on Ubuntu</a></p>
-
-<p><a href="https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/ubuntu_guide.md">Complete Guide to Installing Obdi and Salt Stack Plugins on Ubuntu Trusty</a></p>
-
-<p><a href="https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/centos_guide.md">Complete Guide to Installing Obdi and Salt Stack Plugins on Centos 6</a></p>
-
-<h3>
-<a id="building" class="anchor" href="#building" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building</h3>
-
-<p><a href="https://github.com/mclarkson/obdi/blob/master/doc/redhat_build.md">RedHat/CentOS Building from Source</a></p>
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/mclarkson/obdi">Obdi</a> is maintained by <a href="https://github.com/mclarkson">mclarkson</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
-
-  
-  </body>
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.1.25">
+  <meta charset="UTF-8">
+  <title>Obdi by mclarkson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+</head>
+<body>
+  <section class="page-header">
+    <h1 class="project-name">Obdi</h1>
+    <h2 class="project-tagline">A REST interface and GUI for wrapping scripts.</h2><a href=
+    "https://github.com/mclarkson/obdi" class="btn">View on GitHub</a> <a href=
+    "https://github.com/mclarkson/obdi/zipball/master" class="btn">Download .zip</a> <a href=
+    "https://github.com/mclarkson/obdi/tarball/master" class="btn">Download .tar.gz</a>
+  </section>
+  <section class="main-content">
+    <h1><a id="what-is-it" class="anchor" href="#what-is-it" aria-hidden="true"></a>What is it?</h1>
+    <p><strong>Obdi is a script wrapper.</strong>So, you've written a great script that's few hundred lines long.
+    Obdi can wrap around that script, providing a pretty user interface, and it can run it for you on local or
+    remote servers.</p>
+    <p><strong>Obdi glues different systems together nicely.</strong> REST is a big part of Obdi, and this
+    is what makes Obdi so versatile. You will notice that anything that can be done using the user interface
+    can also be automated from the command line.</p>
+    <p><strong>Obdi encourages code reuse.</strong> After installing a plugin it will probably be viewable in the
+    user interface. Not all plugins will be viewable in the user interface however, as some are library plugins
+    which only provide one or more REST end points and no user interface at all, for example <var>obdi-aws-ec2lib</var>
+    works this way. There are other plugins that have a user interface which is only accessible from other plugins,
+    for example <var>obdi-aws-p2ec2</var>.</p>
+    <h1><a id="license" class="anchor" href="#license" aria-hidden="true"></a>License</h1>
+    <p><a href="http://choosealicense.com/licenses/apache-2.0/#">Apache License 2.0</a></p>
+    <h2><a id="screenshots" class="anchor" href="#screenshots" aria-hidden="true"></a>Screenshots</h2>
+    <p>See:</p>
+    <p><a href="http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html">Obdi in Pictures (Salt Stack Plugins)</a></p>
+    <p><a href="http://rsyncbackup.obdi.io/">Obdi Rsync Backup</a></p>
+    <h2><a id="status" class="anchor" href="#status" aria-hidden="true"></a>Status</h2>
+    <p>Alpha - for test environments.</p>
+    <h2><a id="features" class="anchor" href="#features" aria-hidden="true"></a>Features</h2>
+    <ul>
+      <li>All GUI items in the screen shot are implemented using plugins.</li>
+      <li>Plugins can be REST end-points - they can be used for automation.</li>
+      <li>The saltconfigserver plugin contains a number of REST end-points, including an External Node Classifier
+      (ENC).</li>
+    </ul>
+    <h2><a id="architecture" class="anchor" href="#architecture" aria-hidden="true"></a>Architecture</h2>
+    <ul>
+      <li>Google Go for the back end REST interface.</li>
+      <li>Angular JS and bootstrap for the front end.</li>
+      <li>Sqlite3 used for data storage.</li>
+      <li>Obdi simply runs scripts on remote servers, so it can be used for lots of different tasks.</li>
+    </ul>
+    <h2><a id="plugins" class="anchor" href="#plugins" aria-hidden="true"></a>Plugins</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name/Link</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <a href="https://github.com/mclarkson/obdi-core-repository.git">Obdi Core Plugins</a>
+          </td>
+          <td>The Obdi job viewer plugin.</td>
+        </tr>
+        <tr>
+          <td>
+            <a href="https://github.com/mclarkson/obdi-salt-repository.git">Salt Stack Plugins</a>
+          </td>
+          <td>Plugins for managing Salt Stack.</td>
+        </tr>
+        <tr>
+          <td>
+            <a href="https://github.com/mclarkson/obdi-dev-repository.git">Dev Plugins</a>
+          </td>
+          <td>Hello World plugins</td>
+        </tr>
+        <tr>
+          <td>
+            <a href="https://github.com/mclarkson/obdi-nettools-repository.git">Net Tools</a>
+          </td>
+          <td>Rsync backup + dedup + compression + snapshots.</td>
+        </tr>
+        <tr>
+          <td>
+            <a href="https://github.com/mclarkson/obdi-awstools-repository.git">AWS Tools</a>
+          </td>
+          <td>Create Amazon EC2 instance from an rsync backup.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2><a id="documentation" class="anchor" href="#documentation" aria-hidden="true"></a>Documentation</h2>
+    <h3><a id="about" class="anchor" href="#about" aria-hidden="true"></a>About</h3>
+    <p><a href="https://github.com/mclarkson/obdi/blob/master/doc/plugins.md">About Plugins</a></p>
+    <h3><a id="installation" class="anchor" href="#installation" aria-hidden="true"></a>Installation</h3>
+    <p><a href="https://github.com/mclarkson/obdi/blob/master/doc/ubuntu_install.md">Installing Obdi Core on
+    Ubuntu</a></p>
+    <p><a href="https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/ubuntu_guide.md">Complete Guide to
+    Installing Obdi and Salt Stack Plugins on Ubuntu Trusty</a></p>
+    <p><a href="https://github.com/mclarkson/obdi-salt-repository/blob/master/docs/centos_guide.md">Complete Guide to
+    Installing Obdi and Salt Stack Plugins on Centos 6</a></p>
+    <h3><a id="building" class="anchor" href="#building" aria-hidden="true"></a>Building</h3>
+    <p><a href="https://github.com/mclarkson/obdi/blob/master/doc/redhat_build.md">RedHat/CentOS Building from
+    Source</a></p>
+    <footer class="site-footer">
+      <span class="site-footer-owner"><a href="https://github.com/mclarkson/obdi">Obdi</a> is maintained by <a href=
+      "https://github.com/mclarkson">mclarkson</a>.</span> <span class="site-footer-credits">This page was generated by
+      <a href="https://pages.github.com">GitHub Pages</a> using the <a href=
+      "https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason
+      Long</a>.</span>
+    </footer>
+  </section>
+</body>
 </html>
