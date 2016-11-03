@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.1.25">
+  <meta charset="UTF-8">
+  <title>Obdi by mclarkson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+</head>
+<body>
+    <style>
+    img[alt=screenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    img[alt=smallscreenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 500px;
+    }
+    </style>
+
+  <section class="page-header">
+    <h1 class="project-name">Obdi</h1>
+    <h2 class="project-tagline">A REST interface and GUI for wrapping scripts.</h2><a href=
+    "https://github.com/mclarkson/obdi" class="btn">View on GitHub</a> <a href=
+    "https://github.com/mclarkson/obdi/zipball/master" class="btn">Download .zip</a> <a href=
+    "https://github.com/mclarkson/obdi/tarball/master" class="btn">Download .tar.gz</a>
+  </section>
+  <section class="main-content">
+
+<h1>Obdi Core REST Usage</h1>
+
+<h2>Log In</h2>
+
+<p>Log in is the admin user:</p>
+
+<pre><code>ipport="127.0.0.1:443"
+
+guid=`curl -s \
+      -d '{"Login":"admin","Password":"admin"}' \
+      http://$ipport/api/login | grep -o "[a-z0-9][^\"]*"`
+</code></pre>
+
+<p>Check that the GUID token was received:</p>
+
+<pre><code>echo $guid
+</code></pre>
+
+<h2>Log Out</h2>
+
+<p>Logging out will invalidate the GUID. Log admin out:</p>
+
+<pre><code>curl -sk -X POST "http://$ipport/api/admin/$guid/logout"
+</code></pre>
+
+<h2>Data Centres</h2>
+
+<pre><code># Add a new data centre (HTTP POST)
+
+curl -s -d '{
+    "SysName":"NEWDC",
+    "DispName":"New DC"
+}' "http://$ipport/api/admin/$guid/dcs"
+
+# View details for all data centres (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/dcs"
+
+# View details for a single data centre (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/dcs?sys_name=NEWDC"
+
+# Update data centre details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "DispName":"A new dc decsription"}' "http://$ipport/api/admin/$guid/dcs/4"
+
+# Delete a data centre (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/dcs/4"
+</code></pre>
+
+<h2>Data Centre Capabilities</h2>
+
+<pre><code># Add a new capability (HTTP POST)
+
+curl -s -d '{
+    "Code":"HAS_RH_REPO_CLONE",
+    "Desc":"Has Red Hat repo clone"
+}' "http://$ipport/api/admin/$guid/dccaps"
+
+# View details for all capabilities (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/dccaps"
+
+# View details for a single capability (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/dccaps?code=HAS_RH_REPO_CLONE"
+
+# Update capability details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "Desc":"A new dccap description"}' "http://$ipport/api/admin/$guid/dccaps/1"
+
+# Delete a capability (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/dccaps/1"
+</code></pre>
+
+<h2>Environments</h2>
+
+<pre><code># Add a new environment (HTTP POST)
+
+curl -s -d '{
+    "SysName":"NEWENV",
+    "DispName":"New Environment"
+    "DcId":1
+}' "http://$ipport/api/admin/$guid/envs"
+
+# View details for all environments (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/envs"
+
+# View details for a single environment (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/envs?sys_name=NEWENV"
+
+# Update environment details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "DispName":"A new env description"}' "http://$ipport/api/admin/$guid/envs/21"
+
+# Delete an environment (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/envs/21"
+</code></pre>
+
+<h2>Environment Capabilities</h2>
+
+<pre><code># Add a new capability (HTTP POST)
+
+curl -s -d '{
+    "Code":"HAS_CUSTOM_RPM_REPO",
+    "Desc":"Has a custom RPM repository.",
+    "IsWorkerDef":false
+    "IsJsonObjectDef":false
+}' "http://$ipport/api/admin/$guid/envcaps"
+
+# View details for all capabilities (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/envcaps"
+
+# View details for a single capability (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/envcaps?code=HAS_CUSTOM_RPM_REPO"
+
+# Update capability details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "Desc":"A new dccap description"}' "http://$ipport/api/admin/$guid/envcaps/1"
+
+# Delete a capability (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/envcaps/1"
+</code></pre>
+
+<h2>Workers</h2>
+
+<p>If an environment capability has <code>IsWorkerDef</code> set to <code>true</code> then a Worker
+entry is expected for that capability.</p>
+
+<pre><code># Add a new worker (HTTP POST)
+
+curl -s -d '{
+    "EnvId":1,
+    "EnvCapId":3,
+    "WorkerUrl":"https://ServerNameOrIP:4443/",
+    "WorkerKey":"PassW0rd"
+}' "http://$ipport/api/admin/$guid/workers"
+
+# View details for all workers (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/workers"
+
+# View details for a single worker (HTTP GET)
+# Supports using env_id *and* env_cap_id
+
+curl -s "http://$ipport/api/admin/$guid/workers?env_id=1&amp;env_cap_id=3"
+
+# Update worker details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "WorkerKey":"lOcAlH0St"}' "http://$ipport/api/admin/$guid/workers/1"
+
+# Delete a worker (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/workers/1"
+</code></pre>
+
+<h2>JsonObjects</h2>
+
+<p>If an environment capability has <code>IsJsonObjectDef</code> set to <code>true</code> then a JsonObject
+entry is expected for that capability.</p>
+
+<pre><code># Add a new json object (HTTP POST)
+
+curl -s -d '{
+    "EnvId":1,
+    "EnvCapId":3,
+    "Json":"{\"var\":\"val\"}",
+}' "http://$ipport/api/admin/$guid/jsonobjects"
+
+# View details for all json objects (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/jsonobjects"
+
+# View details for a single json object (HTTP GET)
+# Supports using env_id *and* env_cap_id
+
+curl -s "http://$ipport/api/admin/$guid/jsonobjects?env_id=1&amp;env_cap_id=3"
+
+# Update json object details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "Json":"{\"var\":\"newval\"}"}' "http://$ipport/api/admin/$guid/jsonobjects/1"
+
+# Delete a json object (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/jsonobjects/1"
+</code></pre>
+
+<h2>User Permissions</h2>
+
+<pre><code># Add a new environment permission (HTTP POST)
+
+curl -s -d '{
+    "UserId":"NEWENV",
+    "EnvId":"New Permission"
+    "Enabled":true
+    "Writeable":true
+}' "http://$ipport/api/admin/$guid/perms"
+
+# View details for all environments (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/perms"
+
+# View permission details for a single user (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/perms?user_id=2"
+
+# Update permission details (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "Enabled":true,"Writeable":true}' "http://$ipport/api/admin/$guid/perms/2"
+
+# Delete a permission (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/perms/2"
+</code></pre>
+
+<h2>Data Centre Capability Maps</h2>
+
+<pre><code># Add a new mapping (HTTP POST)
+
+curl -s -d '{
+    "DcId":'"1"',
+    "DcCapId":'"1"'
+}' "http://$ipport/api/admin/$guid/dccapmaps"
+
+# View details for all mappings (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/dccapmaps"
+
+# View details for a single data centre (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/dccapmaps?dc_id=1"
+
+# Update a mapping (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "DcCapId":'"1"}' "http://$ipport/api/admin/$guid/dccapmaps/1"
+
+# Delete a mapping (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/dccapmaps/1"
+</code></pre>
+
+<h2>Environment Capability Maps</h2>
+
+<pre><code># Add a new mapping (HTTP POST)
+
+curl -s -d '{
+    "EnvId":1,
+    "EnvCapId":1
+}' "http://$ipport/api/admin/$guid/envcapmaps"
+
+# View details for all mappings (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/envcapmaps"
+
+# View details for a single data centre (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/envcapmaps?env_id=1"
+
+# Update a mapping (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "DcCapId":1}' "http://$ipport/api/admin/$guid/envcapmaps/1"
+
+# Delete a mapping (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/envcapmaps/1"
+</code></pre>
+
+<h2>Jobs</h2>
+
+<pre><code># Add a new job (HTTP POST)
+
+curl -s -d '{
+    "ScriptId":1,
+    "Args":"-s 4",
+    "EnvVars":"A=1 B=2 C=\"Hello there\" D=4"
+}' "http://$ipport/api/a.user/$guid/jobs"
+
+# View details for all jobs (HTTP GET)
+
+curl -s "http://$ipport/api/a.user/$guid/jobs"
+
+# View details for a single job (HTTP GET)
+
+curl -s "http://$ipport/api/a.user/$guid/jobs?job_id=1"
+
+# Update a job (HTTP PUT)
+
+curl -s -X PUT -d '{
+    "Status":1}' "http://$ipport/api/a.user/$guid/jobs/1"
+
+# Kill a running job
+
+curl -i -X DELETE "http://$ipport/api/a.user/$guid/jobs/kill/1"
+
+# Delete a job (HTTP DELETE) This does not kill a running job!
+
+curl -i -X DELETE "http://$ipport/api/a.user/$guid/jobs/1"
+</code></pre>
+
+<h2>Scripts</h2>
+
+<pre><code># Add a new scripts (HTTP POST)
+# Source is a script, or binary, encoded in base64
+
+curl -s -d '{
+    "Name":"env.sh",
+    "Desc":"Output environment variables",
+    "Source":"IyEvYmluL2Jhc2gKClBBVEg9JFBBVEg6L2JpbjovdXNyL2JpbgoKZWNobyAiSGkiCgpzbGVlcCAxCgplY2hvICRACgpzbGVlcCAxCgplbnYKCnNsZWVwIDEKCmVjaG8gIkJ5ZSIKCmV4aXQgMAoK"
+}' "http://$ipport/api/admin/$guid/scripts"
+
+# View details for all scripts (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/scripts"
+
+# View permission details for a single script (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/scripts?script_id=1"
+
+# Same as previous but exclude the 'Source' column
+
+curl -s "http://$ipport/api/admin/$guid/scripts?script_id=1&amp;nosource=1"
+
+# Update a script (HTTP PUT)
+
+curl -s -X PUT -d '{"Name":"env_old.sh"}' "http://$ipport/api/admin/$guid/scripts/1"
+
+# Delete a script (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/scripts/1"
+</code></pre>
+
+<h2>Output Lines</h2>
+
+<p>Command line output from scripts. Output lines are stored over multiple rows.
+Output lines can be added and deleted, but they cannot be updated (changed).</p>
+
+<pre><code># Add a new outputline (HTTP POST)
+
+curl -s -d '{
+    "Serial":1,
+    "JobID":1,
+    "Text":"Hello"
+}' "http://$ipport/api/a.user/$guid/outputlines"
+
+# View details for all outputlines (HTTP GET)
+
+curl -s "http://$ipport/api/a.user/$guid/outputlines"
+
+# View outputlines for a single job (HTTP GET)
+# Add '&amp;top=5' to see the top 5 lines or
+# '&amp;bottom=5' to see the bottom 5 lines.
+
+curl -s "http://$ipport/api/a.user/$guid/outputlines?job_id=1"
+
+# Update an outputline (HTTP PUT)
+
+No method!
+
+# Delete all outputlines for a job ID (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/a.user/$guid/scripts/1"
+                                                           ^
+                            This is a job_id, not an outputline_id
+</code></pre>
+
+<h2>Plugins</h2>
+
+<pre><code># Add a new plugin (HTTP POST)
+
+curl -s -d '{
+    "Name":"mysuperplugin",
+    "Desc":"My super plugin",
+    "Parent":0,
+    "SbName":"Super Thing"
+}' "http://$ipport/api/admin/$guid/plugins"
+
+# View details for all plugins (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/plugins"
+
+# View details for a single plugin (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/plugins?name=mysuperplugin"
+
+# Update a plugin (HTTP PUT)
+
+curl -s -X PUT -d '{"Desc":"The super plugin"}'
+    "http://$ipport/api/admin/$guid/plugins/1"
+
+# Delete a plugin (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/plugins/1"
+</code></pre>
+
+<h2>Files</h2>
+
+<p>Files that belong to plugins.</p>
+
+<pre><code># Add a new scripts (HTTP POST)
+# Source is a script or binary encoded in base64
+
+curl -s -d '{
+    "Name":"afile.js",
+    "Desc":"a test file",
+    "Type":1,
+    "PluginID":1,
+    "Url":"mysuperplugin/js/controller/afile.js"
+}' "http://$ipport/api/admin/$guid/files"
+
+# View details for all scripts (HTTP GET)
+
+curl -s "http://$ipport/api/admin/$guid/files"
+
+# View permission details for a single script name (HTTP GET)
+# This might return many scripts with the same name for different plugins
+
+curl -s "http://$ipport/api/admin/$guid/files?name=afile.js"
+
+# Limit the previous file search to a specific plugin id
+
+curl -s "http://$ipport/api/admin/$guid/files?name=afile.js&amp;plugin_id=1"
+
+# Update a script (HTTP PUT)
+
+curl -s -X PUT -d '{"Name":"a_file.js_old"}' "http://$ipport/api/admin/$guid/files/1"
+
+# Delete a script (HTTP DELETE)
+
+curl -i -X DELETE "http://$ipport/api/admin/$guid/files/1"
+</code></pre>
+
+<h2>Worker REST Interface</h2>
+
+<p>The Manager submits jobs to the Worker.</p>
+
+<pre><code># Add a new job (HTTP POST)
+# ScriptSource is a base64 encoded script/binary.
+
+curl -s -d '{
+    "ScriptSource":"IyEvYmluL2Jhc2gKClBBVEg9JFBBVEg6L2JpbjovdXNyL2JpbgoKZWNobyAiSGkiCgpzbGVlcCAxCgplY2hvICRACgpzbGVlcCAxCgplbnYKCnNsZWVwIDEKCmVjaG8gIkJ5ZSIKCmV4aXQgMAoK",
+    "EnvVars":"A=1 B=\"Hi There\" C=3",
+    "JobID":2,
+    "Key":"serverkey",
+    "Args":"-a \"hi there\" -x 1"
+}' "http://$ipport/api/a.user/$guid/jobs"
+
+# View details for all jobs (HTTP GET)
+
+curl -s "http://$ipport/api/a.user/$guid/jobs"
+
+# View details for a single job (HTTP GET)
+
+curl -s "http://$ipport/api/a.user/$guid/jobs?job_id=1"
+
+# Update a job (HTTP PUT)
+
+There is no Update enpoint!
+
+# Delete a job (HTTP DELETE). This kills all processes in the process group for
+# this job.
+
+curl -i -X DELETE '{
+    "JobID":1,
+    "Key":"serverkey"
+}' "http://$ipport/api/a.user/$guid/jobs/1"
+</code></pre>
+
+  </section>
+</body>
+</html>

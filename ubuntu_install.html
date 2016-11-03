@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.1.25">
+  <meta charset="UTF-8">
+  <title>Obdi by mclarkson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+</head>
+<body>
+    <style>
+    img[alt=screenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    img[alt=smallscreenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 500px;
+    }
+    </style>
+
+  <section class="page-header">
+    <h1 class="project-name">Obdi</h1>
+    <h2 class="project-tagline">A REST interface and GUI for wrapping scripts.</h2><a href=
+    "https://github.com/mclarkson/obdi" class="btn">View on GitHub</a> <a href=
+    "https://github.com/mclarkson/obdi/zipball/master" class="btn">Download .zip</a> <a href=
+    "https://github.com/mclarkson/obdi/tarball/master" class="btn">Download .tar.gz</a>
+  </section>
+  <section class="main-content">
+
+<h1>Install Obdi on Ubuntu Trusty</h1>
+
+<h2>Installation</h2>
+
+<p>The following steps will install Obdi from the Ubuntu Personal Package Archive (PPA).
+<code>
+apt-get install software-properties-common
+add-apt-repository ppa:mark-clarkson/obdi
+apt-get update
+apt-get install obdi obdi-worker golang-go gcc
+</code>
+Obdi should now be installed and running.</p>
+
+<h2>Testing</h2>
+
+<p>The Admin and Run interfaces can be tested now that Obdi is installed.</p>
+
+<p>Only the &lsquo;admin&rsquo; user can log into the Admin interface.
+Use a Web Browser to connect to the Admin interface at &lsquo;https://\&lt;HOST_OR_IP>/manager/admin&rsquo;.
+The log-in screen should be shown, so log in as the &lsquo;admin&rsquo; user, with the password &lsquo;admin&rsquo;.</p>
+
+<p>Create a user by clicking &lsquo;Add User&rsquo;, then filling in the fields, and don&rsquo;t forget to check the &lsquo;Enabled&rsquo; box.</p>
+
+<p>Now log into the Run interface. The URL for this is &lsquo;https://\&lt;HOST_OR_IP>/manager/run&rsquo;.
+There&rsquo;s nothing to do there except log out, since Obdi needs plugins to do anything useful.</p>
+
+<h2>Configuration</h2>
+
+<p>There are a number of settings in <code>/etc/obdi/obdi.conf</code> and <code>/etc/obdi-worker/obdi-worker.conf</code>. The options are documented in those files.</p>
+
+<h2>Next Steps</h2>
+
+<p>Plugins will need to be installed to be able to do anything useful with Obdi.
+See the <a href="https://github.com/mclarkson/obdi/blob/master/doc/plugins.md">Plugins</a> wiki page for information on installing plugins.</p>
+
+  </section>
+</body>
+</html>

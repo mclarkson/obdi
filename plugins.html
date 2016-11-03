@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.1.25">
+  <meta charset="UTF-8">
+  <title>Obdi by mclarkson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+</head>
+<body>
+    <style>
+    img[alt=screenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    img[alt=smallscreenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 500px;
+    }
+    </style>
+
+  <section class="page-header">
+    <h1 class="project-name">Obdi</h1>
+    <h2 class="project-tagline">A REST interface and GUI for wrapping scripts.</h2><a href=
+    "https://github.com/mclarkson/obdi" class="btn">View on GitHub</a> <a href=
+    "https://github.com/mclarkson/obdi/zipball/master" class="btn">Download .zip</a> <a href=
+    "https://github.com/mclarkson/obdi/tarball/master" class="btn">Download .tar.gz</a>
+  </section>
+  <section class="main-content">
+
+<h1>Obdi Plugins</h1>
+
+<h2>About</h2>
+
+<p>Obdi provides a framework for running scripts. A Linux System Administrator
+generally works on the command line and types lots of commands to get a job
+done. When these commands are repeated often, and in much the same order, they
+are usually grouped together to form scripts. Obdi attempts to provide the
+final step, putting a User Interface around those scripts to make using them
+easier. Wrapping the scripts is achieved by extending the Obdi User Interface
+using Plugins.</p>
+
+<h2>Where are they</h2>
+
+<p>Plugins are stored in their own Git repositories. To get a plugin, Obdi needs
+to be pointed at a list that describes the plugin and also tells Obdi where to
+get the plugin from. This list of plugins, or plugin repository, is also stored
+in a git repository containing at least one file, named <code>repodata.json</code>.</p>
+
+<p>After installation, Obdi has no plugins installed so doesn&rsquo;t do anything
+useful. Plugin repositories need to be added to be able to install the plugins.
+There are some plugin repositories available and it&rsquo;s fairly simple to create a
+plugin repository of your own, and they can be stored in any public or private
+Git repository.</p>
+
+<h2>Known Plugins</h2>
+
+<p>The following Plugins are free to use and licensed under GPLv3.</p>
+
+<h3>Obdi Core Plugins</h3>
+
+<p>The Obdi job viewer is here. When a script is run it is called a Job, and has a
+Job ID and other information that can be viewed with this plugin.</p>
+
+<p>Plugin repository: https://github.com/mclarkson/obdi-core-repository.git</p>
+
+<p>Click the above link to visit the page and see the plugins.</p>
+
+<h3>Salt Stack Plugins</h3>
+
+<p>Plugins that wrap around Salt Stack configuration management scripts.</p>
+
+<p>Plugin repository: https://github.com/mclarkson/obdi-salt-repository.git</p>
+
+<p>Click the above link to visit the page and see the plugins.</p>
+
+<p>Additional post-installation instructions and documentation are kept with the
+plugins so will not be documented here. For some screen shots see the Blog
+page: http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html.</p>
+
+<h3>Dev Plugins</h3>
+
+<p>The Hello World plugins live in Dev plugins. These are useful starting points
+for writing plugins.</p>
+
+<p>Plugin repository: https://github.com/mclarkson/obdi-dev-repository.git</p>
+
+<p>Click the above link to visit the page and see the plugins.</p>
+
+<h3>Net Tools</h3>
+
+<p>Genereal network tools are in this repository. It contains the Rsync Backup
+plugin, useful for backing up a number of servers to a central server, which is
+designed for use with zfs so supports compression, deduplication and snapshots
+in time.</p>
+
+<p>Plugin repository: https://github.com/mclarkson/obdi-nettools-repository.git</p>
+
+<p>Click the above link to visit the page and see the plugins.</p>
+
+<h3>AWS Tools</h3>
+
+<p>Tools for working with Amazon AWS are in this repository.</p>
+
+<p>Plugin repository: https://github.com/mclarkson/obdi-awstools-repository.git</p>
+
+<p>Click the above link to visit the page and see the plugins.</p>
+
+<h2>Installing Plugins</h2>
+
+<p>Plugins are installed using the Admin interface. Only the &lsquo;admin&rsquo; user can log
+into the Admin interface.</p>
+
+<p>Once in the Admin interface, click on the &lsquo;Plugins&rsquo; button, then &lsquo;Manage
+Repositories&rsquo;. To add the &lsquo;Obdi Core Plugins&rsquo; or the &lsquo;Salt Stack Plugins&rsquo;,
+paste the plugin repository http(s) URL into the &lsquo;Repository URL&rsquo; Text Entry
+control.</p>
+
+<p>Next, click &lsquo;Back&rsquo;, then &lsquo;Add Plugin&rsquo;, a list of plugins will be shown. Click
+the green button to install a plugin. Only installable plugins will be shown,
+so if all the plugins are installed then the list will be empty.</p>
+
+<p>There is some more information and screen shots on the blog page:
+http://blogger.smorg.co.uk/2015/03/obdi-plugins-completed.html.</p>
+
+<h2>Anatomy of a plugin</h2>
+
+<p><img src="../images/PluginsOverview.png?raw=true" alt="" /></p>
+
+<h2>Next Steps</h2>
+
+<p>Once the plugins are installed they may need to be configured. Refer to the documentation supplied with each plugin to find out how to use them.</p>
+
+  </section>
+</body>
+</html>
