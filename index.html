@@ -118,13 +118,16 @@
         <sup style="font-size:small"><a href="#contents">BACK TO TOP</a></sup>
     </h2>
 
-    <p>Plugins need to be installed before Obdi can do anything useful.</p>
+    <p>Plugins need to be installed before Obdi can do anything useful. To
+    install a plugin the repository URL, where the plugin is listed, is
+    added to Obdi, then all available plugins for that repository will
+    be shown.</p>
 
     <table>
       <thead>
         <tr>
-          <th>Name/Link</th>
-          <th>Description</th>
+          <th>Repository URL</th>
+          <th>Plugins</th>
         </tr>
       </thead>
       <tbody>
@@ -132,31 +135,45 @@
           <td>
             <a href="http://coreplugins.obdi.io">Obdi Core Plugins</a>
           </td>
-          <td>The Obdi job viewer plugin is here.</td>
+          <td>systemjobs</td>
         </tr>
         <tr>
           <td>
             <a href="http://saltstack.obdi.io">Salt Stack Plugins</a>
           </td>
-          <td>Plugins for managing Salt Stack.</td>
+          <td>salt<br>
+              saltconfigserver<br>
+              saltjobviewer<br>
+              saltkeymanager<br>
+              saltregexmanager<br>
+              saltupdategit
+          </td>
         </tr>
         <tr>
           <td>
             <a href="http://dev.obdi.io">Dev Plugins</a>
           </td>
-          <td>Hello World plugins</td>
+          <td>helloworld<br>
+              helloworld-minimal<br>
+              helloworld-runscript<br>
+              helloworld-localdb<br>
+          </td>
         </tr>
         <tr>
           <td>
             <a href="http://nettools.obdi.io">Net Tools</a>
           </td>
-          <td>Rsync backup + dedup + compression + snapshots.</td>
+          <td>nettools<br>
+              rsyncbackup<br>
+          </td>
         </tr>
         <tr>
           <td>
             <a href="http://awstools.obdi.io">AWS Tools</a>
           </td>
-          <td>Create Amazon EC2 instance from an rsync backup.</td>
+          <td>aws-p2ec2<br>
+              aws-ec2lib<br>
+          </td>
         </tr>
       </tbody>
     </table>
