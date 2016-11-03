@@ -1,39 +1,27 @@
 # Obdi
 
+# About
+
+[obdi.io](http://obdi.io)
+
 # License
 
 [Apache License 2.0](http://choosealicense.com/licenses/apache-2.0/#)
 
 ## Screenshots
 
-See:
-
+See: 
 [Obdi in Pictures (Salt Stack Plugins)](http://blogger.smorg.co.uk/2015/01/obdi-in-pictures.html)
-
+and
 [Obdi Rsync Backup](http://rsyncbackup.obdi.io/)
 
 ## What is it?
 
-Obdi is an extendable graphical user interface for running scripts on
-remote servers.  The most basic installation provides administrative tools to
-manage users, data centres and environments, and includes a job manager.
+Obdi is a script wrapper. See the [Obdi Home Page](http://obdi.io) for more information.
 
 ## Status
 
 Alpha - for test environments.
-
-## Features
-
-* All GUI items in the screen shot are implemented using plugins.
-* Plugins can be REST end-points - they can be used for automation.
-* The saltconfigserver plugin contains a number of REST end-points, including an External Node Classifier (ENC).
-
-## Architecture
-
-* Google Go for the back end REST interface.
-* Angular JS and bootstrap for the front end.
-* Sqlite3 used for data storage.
-* Obdi simply runs scripts on remote servers, so it can be used for lots of different tasks.
 
 ## Plugins
 
