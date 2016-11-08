@@ -30,7 +30,7 @@
     <h1 class="project-name">{{NAME}}</h1>
     <h2 class="project-tagline">{{TAGLINE}}</h2>
     <a href= "http://obdi.io/" class="btn">Back to Obdi</a>
-    <a href= "http://obdi.io/{{MDNAME}}" class="btn">View Source</a>
+    <a href= "https://github.com/mclarkson/obdi/blob/master/{{MDNAME}}" class="btn">View Source</a>
   </section>
   <section class="main-content">
 
