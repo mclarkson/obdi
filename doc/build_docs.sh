@@ -25,6 +25,8 @@ cp -av $tmpdir/images/* images/
 rm -f *.frag
 rm -f header
 rm -f $tmpdir/*
-rmdir $tmpdir
+rm -f $tmpdir/images/*
+rmdir $tmpdir/images/
+rmdir $tmpdir/
 
 # Then git commit push etc
