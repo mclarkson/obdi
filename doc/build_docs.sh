@@ -8,6 +8,7 @@ tmpdir=$(mktemp -d)
 for i in *.md; do
     markdown $i >$tmpdir/${i%.md}.frag
 done
+cp -av images/ $tmpdir/
 popd
 
 git checkout gh-pages
@@ -18,6 +19,8 @@ for i in $tmpdir/*.frag; do
     sed "s/{{NAME}}/$NAME/;s/{{TAGLINE}}/$TAGLINE/" frags/header.frag >$tmpdir/header
     cat $tmpdir/header $i frags/footer.frag >conv/${name%.frag}.html
 done
+
+cp -av $tmpdir/images/* images/
 
 rm -f *.frag
 rm -f header
