@@ -11,9 +11,10 @@ done
 popd
 
 git checkout gh-pages
-sed "s/{{NAME}}/$NAME/;s/{{TAGLINE}}/$TAGLINE/" frags/header.frag >$tmpdir/header
 for i in $tmpdir/*.frag; do
+    sed "s/{{NAME}}/$NAME/;s/{{TAGLINE}}/$TAGLINE/" frags/header.frag >$tmpdir/header
     name=${i##*/}
+    NAME=${name%.frag}
     cat $tmpdir/header $i frags/footer.frag >${name%.frag}.html
 done
 
