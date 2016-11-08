@@ -8,8 +8,8 @@ tmpdir=$(mktemp -d)
 for i in *.md; do
     markdown $i >$tmpdir/${i%.md}.frag
 done
-cp -av images/ $tmpdir/
 popd
+cp -av images/ $tmpdir/
 
 git checkout gh-pages
 for i in $tmpdir/*.frag; do
