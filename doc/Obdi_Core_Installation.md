@@ -20,22 +20,31 @@ updating the Obdi master and workers easily.
 The following commands should be typed (or copy/pasted) into the linux terminal.
 
 Go to your home directory:
+
 ```
 cd
 ```
+
 Install the [EPEL](https://fedoraproject.org/wiki/EPEL) repository for installing extra dependencies:
+
 ```
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 ```
+
 Install some dependencies:
+
 ```
 yum install rpmdevtools gcc golang tar
 ```
+
 Download obdi using Git:
+
 ```
 git clone https://github.com/mclarkson/obdi.git
 ```
+
 Build the RPM:
+
 ```
 cd obdi
 BUILD_NUMBER=1 ./dist/jenkins-build.sh
