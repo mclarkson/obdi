@@ -16,7 +16,7 @@ for i in $tmpdir/*.frag; do
     NAME=${name%.frag}  # remove frag
     NAME=${NAME//_/ }   # change '_' to ' '
     sed "s/{{NAME}}/$NAME/;s/{{TAGLINE}}/$TAGLINE/" frags/header.frag >$tmpdir/header
-    cat $tmpdir/header $i frags/footer.frag >${name%.frag}.html
+    cat $tmpdir/header $i frags/footer.frag >conv/${name%.frag}.html
 done
 
 rm -f *.frag
