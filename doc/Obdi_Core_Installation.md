@@ -86,5 +86,9 @@ output the location then install the RPM:
 rpm -ivh $TheRpm
 ```
 
+And here's the video for this step:
+
+\[VIDEO]
+
 That's it!
 
