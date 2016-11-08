@@ -15,9 +15,17 @@ installation involves:
 The RPM could be stored in a yum repository on the network to make
 updating the Obdi master and workers easily.
 
-### Build from Source
+### Install OS
 
-The following commands should be typed (or copy/pasted) into the linux terminal.
+This can be done in many ways. The video gives an example of how to accomplish
+this task using the Amazon AWS management console.
+
+\[VIDEO]
+
+### Download Obdi source using Git
+
+Now log into the new Linux box and type, or copy/paste, the next commands
+into the linux terminal.
 
 Go to your home directory:
 
@@ -25,7 +33,8 @@ Go to your home directory:
 cd
 ```
 
-Install the [EPEL](https://fedoraproject.org/wiki/EPEL) repository for installing extra dependencies:
+Install the [EPEL](https://fedoraproject.org/wiki/EPEL) repository so that
+extra extra dependencies can be installed:
 
 ```
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
@@ -43,10 +52,39 @@ Download obdi using Git:
 git clone https://github.com/mclarkson/obdi.git
 ```
 
+The following video shows the previous commands being run.
+
+\[VIDEO]
+
+### Run a script to create an RPM
+
 Build the RPM:
 
 ```
 cd obdi
 BUILD_NUMBER=1 ./dist/jenkins-build.sh
 ```
+
+The following video shows the build in action.
+
+\[VIDEO]
+
+### Install that RPM
+
+Find the RPM files:
+
+```
+cd ~/obdi
+TheRpm=$(find . -name "*.rpm")
+echo $TheRpm
+```
+
+Finally, so long as the last echo line, above, managed to
+output the location then install the RPM:
+
+```
+rpm -ivh $TheRpm
+```
+
+That's it!
 
