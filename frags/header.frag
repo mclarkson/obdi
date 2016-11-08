@@ -35,11 +35,3 @@
   </section>
   <section class="main-content">
 
-
-  </section>
-</body>
-</html>
-
-  </section>
-</body>
-</html>
