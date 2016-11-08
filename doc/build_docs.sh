@@ -16,7 +16,9 @@ for i in $tmpdir/*.frag; do
     name=${i##*/}       # remove leading path
     NAME=${name%.frag}  # remove frag
     NAME=${NAME//_/ }   # change '_' to ' '
-    sed "s/{{NAME}}/$NAME/;s/{{TAGLINE}}/$TAGLINE/" frags/header.frag >$tmpdir/header
+    MDNAME=doc/$name
+    sed "s/{{NAME}}/$NAME/;s/{{TAGLINE}}/$TAGLINE/;s/{{MDNAME}}/$MDNAME/" \
+        frags/header.frag >$tmpdir/header
     cat $tmpdir/header $i frags/footer.frag >conv/${name%.frag}.html
 done
 
