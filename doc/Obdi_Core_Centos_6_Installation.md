@@ -113,7 +113,7 @@ num=$(iptables -L INPUT --line-numbers | tail -1 | awk '{print $1-1}')
 iptables -I INPUT $num -p tcp -m tcp --dport 443 -j ACCEPT
 
 # And make it survive reboots
-/etc/init.d/iptables save
+service iptables save
 ```
 
 Now you can test the Obdi user interfaces by connecting to 'https://MACHINE_ADDRESS/manager/run' and 'https//MACHINE_ADDRESS/manager/admin'.
