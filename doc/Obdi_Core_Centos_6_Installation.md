@@ -20,7 +20,7 @@ updating the Obdi master and workers easily.
 This can be done in many ways. The video gives an example of how to accomplish
 this task using the Amazon AWS management console.
 
-<video src="video/centos6install_installos.webm" style="width: 100%" controls preload></video>
+<video src="/video/centos6install_installos.webm" style="width: 100%" controls preload></video>
 
 ### Download Obdi source using Git
 
