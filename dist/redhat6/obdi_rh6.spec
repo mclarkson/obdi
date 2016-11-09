@@ -86,7 +86,7 @@ ln -s ../../../../external src/github.com/mclarkson/obdi/external
 
 # Build
 cd obdi
-go build -ldflags "-X main.VERSION %{version}" -o obdi
+go build -ldflags "-X main.VERSION=%{version}" -o obdi
 cd ..
 cd obdi-worker
 go build -o obdi-worker
