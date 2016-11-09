@@ -9,6 +9,7 @@
   <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
   <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
+  <script src="http://api.html5media.info/1.1.8/html5media.min.js"></script>
 </head>
 <body>
     <style>
