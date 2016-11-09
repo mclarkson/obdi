@@ -96,5 +96,21 @@ And here's the video for this step:
 
 <video src="/videos/centos6install_installrpm.webm" style="width: 100%" controls preload></video>
 
+To start obdi:
+
+```
+service obdi start
+service obdi-worker start
+```
+
+If you installed Centos 6 in Amazon, as shown at the top of this page, then you will probably need to open the HTTPS port 443 in the AWS EC2 security group using the Amazon AWS management console, and also in the Centos 6 virtual machine like so:
+
+```
+iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+/etc/init.d/iptables save
+```
+
+Now you can test the Obdi user interfaces by connecting to 'https://MACHINE_ADDRESS/manager/run' and 'https//MACHINE_ADDRESS/manager/admin'.
+
 That's it!
 
