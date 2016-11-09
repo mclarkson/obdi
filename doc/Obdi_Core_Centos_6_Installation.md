@@ -13,7 +13,7 @@ installation involves:
 4. Install that RPM.
 
 The RPM could be stored in a yum repository on the network to make
-updating the Obdi master and workers easily.
+updating the Obdi master and worker(s) easy.
 
 ### Install OS
 
