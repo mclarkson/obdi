@@ -81,7 +81,7 @@ Find the RPM files:
 
 ```
 cd ~/obdi
-TheRpm=$(find . -name "*.rpm")
+TheRpm=$(find rpmbuild/RPMS -name "*.rpm")
 echo $TheRpm
 ```
 
