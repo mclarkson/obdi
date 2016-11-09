@@ -60,7 +60,7 @@ git clone https://github.com/mclarkson/obdi.git
 
 The following video shows the previous commands being run.
 
-\[VIDEO]
+<video src="/videos/centos6install_downloadsource.webm" style="width: 100%" controls preload></video>
 
 ### Run a script to create an RPM
 
@@ -73,7 +73,7 @@ BUILD_NUMBER=1 ./dist/jenkins-build.sh
 
 The following video shows the build in action.
 
-\[VIDEO]
+<video src="/videos/centos6install_runscript.webm" style="width: 100%" controls preload></video>
 
 ### Install that RPM
 
@@ -94,7 +94,7 @@ rpm -ivh $TheRpm
 
 And here's the video for this step:
 
-\[VIDEO]
+<video src="/videos/centos6install_installrpm.webm" style="width: 100%" controls preload></video>
 
 That's it!
 
