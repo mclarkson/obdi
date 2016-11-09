@@ -40,7 +40,7 @@ cd
 ```
 
 Install the [EPEL](https://fedoraproject.org/wiki/EPEL) repository so that
-extra extra dependencies can be installed:
+extra dependencies can be installed:
 
 ```
 rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
