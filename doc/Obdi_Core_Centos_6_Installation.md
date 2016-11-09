@@ -106,7 +106,13 @@ service obdi-worker start
 If you installed Centos 6 in Amazon, as shown at the top of this page, then you will probably need to open the HTTPS port 443 in the AWS EC2 security group using the Amazon AWS management console, and also in the Centos 6 virtual machine like so:
 
 ```
-iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
+# Get the line number of the last item in the INPUT chain, minus 1
+num=$(iptables -L INPUT --line-numbers | tail -1 | awk '{print $1-1}')
+
+# Then insert before the last item
+iptables -I INPUT $num -p tcp -m tcp --dport 443 -j ACCEPT
+
+# And make it survive reboots
 /etc/init.d/iptables save
 ```
 
