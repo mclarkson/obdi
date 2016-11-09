@@ -27,6 +27,12 @@ this task using the Amazon AWS management console.
 Now log into the new Linux box and type, or copy/paste, the next commands
 into the linux terminal.
 
+Switch user to the super user:
+
+```
+sudo su
+```
+
 Go to your home directory:
 
 ```
@@ -43,7 +49,7 @@ rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-6.noarch.rpm
 Install some dependencies:
 
 ```
-yum install rpmdevtools gcc golang tar
+yum install rpmdevtools gcc golang tar git
 ```
 
 Download obdi using Git:
