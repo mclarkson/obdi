@@ -114,7 +114,7 @@ BUILD_NUMBER=1 ./dist/jenkins-build.sh
 <p>Find the RPM files:</p>
 
 <pre><code>cd ~/obdi
-TheRpm=$(find . -name "*.rpm")
+TheRpm=$(find rpmbuild/RPMS -name "*.rpm")
 echo $TheRpm
 </code></pre>
 
