@@ -136,7 +136,9 @@ service obdi-worker start
 
 <p>If you installed Centos 6 in Amazon, as shown at the top of this page, then you will probably need to open the HTTPS port 443 in the AWS EC2 security group using the Amazon AWS management console, and also in the Centos 6 virtual machine like so:</p>
 
-<pre><code># Get the line number of the last item in the INPUT chain, minus 1
+<pre><code># -- IF THIS IS AN AMAZON INSTANCE USING OFFICIAL CENTOS 6 --
+
+# Get the line number of the last item in the INPUT chain, minus 1
 num=$(iptables -L INPUT --line-numbers | tail -1 | awk '{print $1-1}')
 
 # Then insert before the last item
@@ -146,7 +148,7 @@ iptables -I INPUT $num -p tcp -m tcp --dport 443 -j ACCEPT
 service iptables save
 </code></pre>
 
-<p>Now you can test the Obdi user interfaces by connecting to &lsquo;https://MACHINE_ADDRESS/manager/run&rsquo; and &lsquo;https//MACHINE_ADDRESS/manager/admin&rsquo;.</p>
+<p>Now you can test the Obdi user interfaces by opening your Web Browser and connecting to &lsquo;https://MACHINE_ADDRESS/manager/run&rsquo; and &lsquo;https//MACHINE_ADDRESS/manager/admin&rsquo;.</p>
 
 <p>That&rsquo;s it!</p>
 
