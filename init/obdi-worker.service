@@ -1,0 +1,11 @@
+[Unit]
+Description=Obdi Worker
+
+[Service]
+Type=simple
+Restart=always
+PIDFile=/var/run/obdi-worker.pid
+ExecStart=/usr/sbin/obdi-worker
+
+[Install]
+WantedBy=multi-user.target

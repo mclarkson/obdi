@@ -1,0 +1,11 @@
+[Unit]
+Description=Obdi
+
+[Service]
+Type=simple
+Restart=always
+PIDFile=/var/run/obdi.pid
+ExecStart=/usr/sbin/obdi
+
+[Install]
+WantedBy=multi-user.target
