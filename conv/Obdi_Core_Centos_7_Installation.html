@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.1.25">
+  <meta charset="UTF-8">
+  <title>Obdi by mclarkson</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/normalize.css" media="screen">
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" type="text/css" href="/stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" type="text/css" href="/stylesheets/github-light.css" media="screen">
+  <script src="http://api.html5media.info/1.1.8/html5media.min.js"></script>
+</head>
+<body>
+    <style>
+    img[alt=screenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+    img[alt=smallscreenshot] {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 500px;
+    }
+    </style>
+
+  <section class="page-header">
+    <h1 class="project-name">Obdi Core Centos 7 Installation</h1>
+    <h2 class="project-tagline"></h2>
+    <a href= "http://obdi.io/" class="btn">Back to Obdi</a>
+    <a href= "https://github.com/mclarkson/obdi/blob/master/doc/Obdi_Core_Centos_7_Installation.md" class="btn">View Source</a>
+  </section>
+  <section class="main-content">
+
+<h1>How to install Obdi from source</h1>
+
+<p>This is currently the recommended way to install Obdi.</p>
+
+<h2>Install Obdi on CentOS 7</h2>
+
+<p>Follow these instructions to get Obdi installed on Centos 7. Broadly,
+installation involves:</p>
+
+<ol>
+<li>Install OS.</li>
+<li>Download Obdi source using Git.</li>
+<li>Run a script to create an RPM.</li>
+<li>Install that RPM.</li>
+</ol>
+
+
+<p>The RPM could be stored in a yum repository on the network to make
+updating the Obdi master and worker(s) easy.</p>
+
+<h3>Install OS</h3>
+
+<p>This can be done in many ways. The video gives an example of how to accomplish
+this task using the Amazon AWS management console.</p>
+
+<p><video src="/videos/centos7install_installos.webm" style="width: 100%" controls preload></video></p>
+
+<h3>Download Obdi source using Git</h3>
+
+<p>Now log into the new Linux box and type, or copy/paste, the next commands
+into the linux terminal.</p>
+
+<p>Switch user to the super user:</p>
+
+<pre><code>sudo su
+</code></pre>
+
+<p>Go to your home directory:</p>
+
+<pre><code>cd
+</code></pre>
+
+<p>Install the <a href="https://fedoraproject.org/wiki/EPEL">EPEL</a> repository so that
+extra dependencies can be installed:</p>
+
+<pre><code>rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+</code></pre>
+
+<p>Install some dependencies:</p>
+
+<pre><code>yum install rpmdevtools gcc golang tar git
+</code></pre>
+
+<p>Download obdi using Git:</p>
+
+<pre><code>git clone https://github.com/mclarkson/obdi.git
+</code></pre>
+
+<p>The following video shows the previous commands being run.</p>
+
+<p><video src="/videos/centos7install_downloadsource.webm" style="width: 100%" controls preload></video></p>
+
+<h3>Run a script to create an RPM</h3>
+
+<p>Build the RPM:</p>
+
+<pre><code>cd obdi
+BUILD_NUMBER=1 ./dist/jenkins-build-redhat7.sh
+</code></pre>
+
+<p>The following video shows the build in action.</p>
+
+<p><video src="/videos/centos7install_runscript.webm" style="width: 100%" controls preload></video></p>
+
+<h3>Install that RPM</h3>
+
+<p>Find the RPM files:</p>
+
+<pre><code>cd ~/obdi
+TheRpm=$(find rpmbuild/RPMS -name "*.rpm")
+echo $TheRpm
+</code></pre>
+
+<p>Finally, so long as the last echo line, above, managed to
+output the location then install the RPM:</p>
+
+<pre><code>rpm -ivh $TheRpm
+</code></pre>
+
+<p>And here&rsquo;s the video for this step:</p>
+
+<p><video src="/videos/centos7install_installrpm.webm" style="width: 100%" controls preload></video></p>
+
+<p>To start obdi:</p>
+
+<pre><code>systemctl start obdi
+systemctl start obdi-worker
+</code></pre>
+
+<p>If you installed Centos 7 in Amazon, as shown at the top of this page, then you will probably need to open the HTTPS port 443 in the AWS EC2 security group using the Amazon AWS management console, and also in the Centos 7 virtual machine like so:</p>
+
+<pre><code># -- IF THIS IS AN AMAZON INSTANCE USING OFFICIAL CENTOS 7 --
+
+# Get the line number of the last item in the INPUT chain, minus 1
+num=$(iptables -L INPUT --line-numbers | tail -1 | awk '{print $1-1}')
+
+# Then insert before the last item
+iptables -I INPUT $num -p tcp -m tcp --dport 443 -j ACCEPT
+
+# And make it survive reboots
+service iptables save
+</code></pre>
+
+<p>Now you can test the Obdi user interfaces by opening your Web Browser and connecting to &lsquo;https://MACHINE_ADDRESS/manager/run&rsquo; and &lsquo;https//MACHINE_ADDRESS/manager/admin&rsquo;.</p>
+
+<p>That&rsquo;s it!</p>
+
+  </section>
+</body>
+</html>
