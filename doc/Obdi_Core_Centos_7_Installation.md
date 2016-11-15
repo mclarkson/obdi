@@ -68,7 +68,7 @@ Build the RPM:
 
 ```
 cd obdi
-BUILD_NUMBER=1 ./dist/jenkins-build.sh
+BUILD_NUMBER=1 ./dist/jenkins-build-redhat7.sh
 ```
 
 The following video shows the build in action.
