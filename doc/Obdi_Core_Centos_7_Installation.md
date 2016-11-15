@@ -4,7 +4,7 @@ This is currently the recommended way to install Obdi.
 
 ## Install Obdi on CentOS 7
 
-Follow these instructions to get Obdi installed on Centos 6. Broadly,
+Follow these instructions to get Obdi installed on Centos 7. Broadly,
 installation involves:
 
 1. Install OS.
@@ -99,14 +99,14 @@ And here's the video for this step:
 To start obdi:
 
 ```
-service obdi start
-service obdi-worker start
+systemctl start obdi
+systemctl start obdi-worker
 ```
 
-If you installed Centos 6 in Amazon, as shown at the top of this page, then you will probably need to open the HTTPS port 443 in the AWS EC2 security group using the Amazon AWS management console, and also in the Centos 6 virtual machine like so:
+If you installed Centos 7 in Amazon, as shown at the top of this page, then you will probably need to open the HTTPS port 443 in the AWS EC2 security group using the Amazon AWS management console, and also in the Centos 7 virtual machine like so:
 
 ```
-# -- IF THIS IS AN AMAZON INSTANCE USING OFFICIAL CENTOS 6 --
+# -- IF THIS IS AN AMAZON INSTANCE USING OFFICIAL CENTOS 7 --
 
 # Get the line number of the last item in the INPUT chain, minus 1
 num=$(iptables -L INPUT --line-numbers | tail -1 | awk '{print $1-1}')
