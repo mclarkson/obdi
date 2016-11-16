@@ -108,6 +108,9 @@ If you installed Centos 7 in Amazon, as shown at the top of this page, then you 
 ```
 # -- IF THIS IS AN AMAZON INSTANCE USING OFFICIAL CENTOS 7 --
 
+# -- NOTE THAT I DID NOT NEED TO DO THIS! MAYBE YOU WILL?    --
+# -- CHECK 'iptables -L' AND IF EMPTY DON'T DO THE FOLLOWING --
+
 # Get the line number of the last item in the INPUT chain, minus 1
 num=$(iptables -L INPUT --line-numbers | tail -1 | awk '{print $1-1}')
 
