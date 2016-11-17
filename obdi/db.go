@@ -296,8 +296,7 @@ func (db *Database) InitDB() {
 		log.Fatal(fmt.Sprintf("%s: %s", txt, err))
 	}
 
-	// Unique index is also a constraint. So these are forced to be unique
-	db.dB.Model(User{}).AddUniqueIndex("idx_login", "login")
+	db.dB.Model(User{}).AddIndex("idx_login", "login")
 	db.dB.Model(Plugin{}).AddIndex("idx_name", "name")
 	db.dB.Model(Session{}).AddIndex("idx_user_id", "user_id")
 	db.dB.Model(Activity{}).AddIndex("idx_session_id", "session_id")
