@@ -176,11 +176,11 @@ func (api *Api) RunPluginUsingRPC(w rest.ResponseWriter, r *rest.Request,
 	err = cmd.Wait()
 
 	// We delete the sdtoken after the plugin exits
-	mutex.Lock()
 	if session.Id > 0 {
+		mutex.Lock()
 		if err := api.db.Delete(&session).Error; err != nil {
-			rest.Error(w, err.Error(), 400)
 			mutex.Unlock()
+			rest.Error(w, err.Error(), 400)
 			return reply, ApiError{"Error"}
 		}
 		mutex.Unlock()
