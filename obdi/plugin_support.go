@@ -292,13 +292,14 @@ func (api *Api) GenericGetEndpoint(w rest.ResponseWriter, r *rest.Request) {
 	guid := r.PathParam("GUID")
 
 	// Admin is only allowed to recompile plugins
-	///*
 	if login == "admin" {
+		endpoint := r.PathParam("endpoint")
+		subitem := r.PathParam("subitem")
+		pluginFile := path.Join(config.GoPluginDir, endpoint, subitem)
 		api.CompilePlugin(w, pluginFile, endpoint, subitem)
 		rest.Error(w, "Not allowed", 400)
 		return
 	}
-	//*/
 
 	var errl error = nil
 	if _, errl = api.CheckLogin(login, guid); errl != nil {
