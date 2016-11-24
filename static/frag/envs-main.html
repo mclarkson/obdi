@@ -53,6 +53,7 @@
     <table class="table table-striped" style="margin-top: 4px">
       <thead>
       <tr>
+        <th>ID</th>
         <th>Data Centre</th>
         <th>Environment</th>
         <th>Description</th>
@@ -61,6 +62,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="env in envs">
+        <td>{{env.Id}}</td>
         <td><span class="mypopover" uib-popover="{{env.DcDispName}}"
           popover-trigger="mouseenter"> {{env.DcSysName}}</span></td>
         <td>{{env.SysName}}</td>
