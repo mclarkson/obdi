@@ -51,6 +51,7 @@
     <table class="table table-striped" style="margin-top: 4px">
       <thead>
       <tr>
+        <th>ID</th>
         <th>DC Code</th>
         <th>Name</th>
         <th>Action</th>
@@ -58,6 +59,7 @@
       </thead>
       <tbody>
       <tr ng-repeat="dc in dcs">
+        <td>{{dc.Id}}</td>
         <td>{{dc.SysName}}</td>
         <td>{{dc.DispName}}</td>
         <td>
