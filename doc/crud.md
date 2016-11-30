@@ -196,7 +196,7 @@ entry is expected for that capability.
 curl -s -d '{
     "EnvId":1,
     "EnvCapId":3,
-    "Json":"{\"var\":\"val\"}",
+    "Json":"{\"var\":\"val\"}"
 }' "http://$ipport/api/admin/$guid/jsonobjects"
 
 # View details for all json objects (HTTP GET)
@@ -227,8 +227,8 @@ User Permissions
 
 curl -s -d '{
     "UserId":"NEWENV",
-    "EnvId":"New Permission"
-    "Enabled":true
+    "EnvId":"New Permission",
+    "Enabled":true,
     "Writeable":true
 }' "http://$ipport/api/admin/$guid/perms"
 
