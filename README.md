@@ -1,10 +1,10 @@
 # Obdi
 
-# About
+## About
 
 [obdi.io](http://obdi.io)
 
-# License
+## License
 
 [Apache License 2.0](http://choosealicense.com/licenses/apache-2.0/#)
 
