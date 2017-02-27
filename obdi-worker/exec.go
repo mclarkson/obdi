@@ -163,23 +163,44 @@ func (api *Api) execCmd(job JobIn) {
 	serial := int64(1)
 	line := ""
 	if job.Type != 2 {
-		// A user job (the default, should be type=1)
-		line, err = rdr.ReadString('\n')
-		api.sendOutputLine(job, line, serial)
-		for err == nil {
-			serial++
-			a := ""
-			starttime := time.Now()
-			// Up to 50 lines can be read in one hit
-			for i := 0; i < 50; i++ {
-				if time.Duration(time.Since(starttime)) > time.Second {
+		input := make(chan string, 1)
+
+		getInput := func(input chan string) {
+			for {
+				result, err := rdr.ReadString('\n')
+				input <- result
+				if err != nil {
+					close(input)
 					break
 				}
-				line, err = rdr.ReadString('\n')
-				a = a + line
 			}
-			api.sendOutputLine(job, a, serial)
 		}
+
+		go getInput(input)
+		lines := ""
+		t := time.NewTicker(time.Duration(1000 * time.Millisecond))
+
+	OuterLoop:
+		for {
+			select {
+			case i, ok := <-input:
+				lines += i
+				if ok == false {
+					api.sendOutputLine(job, lines, serial)
+					serial++
+					break OuterLoop
+				}
+			case <-t.C:
+				if len(lines) > 0 {
+					api.sendOutputLine(job, lines, serial)
+					serial++
+					lines = ""
+				}
+			}
+		}
+
+		t.Stop()
+
 	} else {
 		// A system job. Send all output in a single output line
 		a := ""
