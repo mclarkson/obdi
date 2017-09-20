@@ -14,7 +14,7 @@ Release: %{release}
 License: Apache-2.0
 Group: Application/System
 Source: obdi-%{version}.tar.gz
-Requires: gcc golang
+Requires: gcc golang openssl
 BuildRequires: golang
 # PreReq: sh-utils
 BuildRoot: %{_builddir}/%{name}-%{version}/tmp
