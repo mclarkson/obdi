@@ -27,6 +27,7 @@ A REST interface and GUI for deploying software.
 %package worker
 Group: Application/System
 Summary: Obdi Worker daemon.
+Requires: openssl
 #Requires: obdi
 
 %description worker
