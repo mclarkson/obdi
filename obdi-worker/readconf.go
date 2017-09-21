@@ -28,6 +28,7 @@ type Config struct {
 	ListenAddr       string `toml:"listen_address"`
 	SessionTimeout   int    `toml:"session_timeout"`
 	StaticContent    string `toml:"static_content"`
+	SyslogEnabled    bool   `toml:"syslog_enabled"`
 	SSLEnabled       bool   `toml:"ssl_enabled"`
 	SSLCertFile      string `toml:"ssl_cert"`
 	SSLKeyFile       string `toml:"ssl_key"`

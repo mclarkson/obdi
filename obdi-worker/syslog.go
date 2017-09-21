@@ -20,12 +20,16 @@ import (
 )
 
 func logit(msg string) {
-	log.Println(msg)
-	l, err := syslog.New(syslog.LOG_ERR, "salt-worker")
-	defer l.Close()
-	if err != nil {
-		log.Fatal("error writing syslog!")
-	}
 
-	l.Err(msg)
+	log.Println(msg)
+
+	if config.SyslogEnabled {
+		l, err := syslog.New(syslog.LOG_ERR, "obdi-worker")
+		defer l.Close()
+		if err != nil {
+			log.Fatal("error writing syslog!")
+		}
+
+		l.Err(msg)
+	}
 }
