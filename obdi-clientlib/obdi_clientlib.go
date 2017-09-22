@@ -116,17 +116,7 @@ func ReturnError(text string, response *[]byte) {
 // ***************************************************************************
 
 func logit(msg string) {
-
-	// Log to syslog
-
 	log.Println(msg)
-	l, err := syslog.New(syslog.LOG_ERR, "obdi")
-	defer l.Close()
-	if err != nil {
-		log.Fatal("error writing syslog!")
-	}
-
-	l.Err(msg)
 }
 
 func GET(url, endpoint string) (r *http.Response, e error) {
