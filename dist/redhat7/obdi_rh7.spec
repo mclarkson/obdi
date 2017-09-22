@@ -85,6 +85,9 @@ export GOPATH=$PWD
 mkdir -p src/github.com/mclarkson/obdi
 ln -s ../../../../external src/github.com/mclarkson/obdi/external 
 
+# Modify config
+sed -i "s#^go_root = .*#go_root = \"$GOROOT\"#" conf/obdi*.conf
+
 # Build
 cd obdi
 go build -ldflags "-X main.VERSION=%{version}" -o obdi
