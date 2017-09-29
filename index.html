@@ -118,6 +118,31 @@
         <sup style="font-size:small"><a href="#contents">BACK TO TOP</a></sup>
     </h2>
 
+    <p>Using docker containers:</p>
+
+<pre>
+docker run -d -p 4443:443 --name obdi-master mclarkson/obdi-master
+
+masterip=$(docker inspect obdi-master | \
+  sed -n '/"Networks":/,/}/{s/.*IPAddress[^0-9]*\([0-9.]*\).*/\1/p}' )
+
+wget https://raw.githubusercontent.com/mclarkson/obdi-docker/master/examples/setupobdi.sh
+wget https://raw.githubusercontent.com/mclarkson/obdi-docker/master/examples/setupdefworker.sh
+
+bash setupobdi.sh $masterip
+
+docker run -d --name obdi-worker-1 --env-file envfile mclarkson/obdi-worker
+
+workerip=$(docker inspect obdi-worker-1 | \
+  sed -n '/"Networks":/,/}/{s/.*IPAddress[^0-9]*\([0-9.]*\).*/\1/p}')
+
+bash setupdefworker.sh $masterip $workerip
+</pre>
+
+    <p>Source: <a href="https://github.com/mclarkson/obdi-docker">
+        https://github.com/mclarkson/obdi-docker</a></p>
+
+    <!--
     <p>Installation from source is the recommended way to install Obdi right
     now.  The Centos 6 <strong>RPMs</strong> hosted on COPR and Ubuntu
     <strong>packages</strong> hosted on Launchpad are <strong>not kept up to
@@ -159,6 +184,7 @@
         </tr>
       </tbody>
     </table>
+    -->
 
     <!-- Plugins -->
 
