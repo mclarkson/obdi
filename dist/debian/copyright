@@ -12,12 +12,12 @@ Upstream Author:
 
 Copyright:
 
-    Copyright (C) 2015 Mark Clarkson
+    Copyright (C) 2018 Mark Clarkson
 
 License:
 
    Obdi - a REST interface and GUI for deploying software
-   Copyright (C) 2014  Mark Clarkson
+   Copyright (C) 2018  Mark Clarkson
   
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ Public License version 2 can be found in "/usr/share/common-licenses/GPL-3".
 
 The Debian packaging is:
 
-    Copyright (C) 2015 Mark Clarkson <mark.clarkson@smorg.co.uk>
+    Copyright (C) 2018 Mark Clarkson <mark.clarkson@smorg.co.uk>
 
 you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
