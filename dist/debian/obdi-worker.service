@@ -1,0 +1,12 @@
+[Unit]
+Description=Obdi Worker
+
+[Service]
+Type=simple
+Restart=always
+PIDFile=/var/run/obdi-worker.pid
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/usr/sbin/obdi-worker
+
+[Install]
+WantedBy=multi-user.target

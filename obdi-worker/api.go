@@ -212,7 +212,7 @@ func POST(jsondata []byte, endpoint string) (r *http.Response,
 
 	resp, err = client.Do(req)
 
-	return resp, nil
+	return resp, err
 }
 
 func PUT(jsondata []byte, endpoint string) (r *http.Response,
@@ -254,6 +254,7 @@ func (api *Api) Login() error {
 			" (Maybe transport_timeout is too low or not set?)")
 		return ApiError{err.Error()}
 	}
+
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {

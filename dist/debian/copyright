@@ -12,11 +12,11 @@ Upstream Author:
 
 Copyright:
 
-    Copyright (C) 2015 Mark Clarkson
+    Copyright (C) 2018 Mark Clarkson
 
 License:
 
-   Copyright 2016 Mark Clarkson
+   Copyright 2018 Mark Clarkson
   
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ License:
 
 The Debian packaging is:
 
-    Copyright (C) 2015 Mark Clarkson <mark.clarkson@smorg.co.uk>
+    Copyright (C) 2018 Mark Clarkson <mark.clarkson@smorg.co.uk>
 
 you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

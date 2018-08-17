@@ -20,8 +20,8 @@ V=$OBDI_SEMANTIC_VERSION
 
 # Create the original source tarball
 #echo "Creating tarball"
-#tar --exclude-vcs -cvzf \
-  #/tmp/obdi_${V}.orig.tar.gz --transform 's#^.#./obdi-'"$V"'#' .
+tar --exclude-vcs -cvzf \
+  ../obdi_${V}.orig.tar.gz --transform 's#^.#./obdi-'"$V"'#' .
 #mv /tmp/obdi_${V}.orig.tar.gz .
 
 cp ../obdi_${V}.orig.tar.gz .
