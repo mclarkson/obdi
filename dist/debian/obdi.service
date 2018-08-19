@@ -1,0 +1,12 @@
+[Unit]
+Description=Obdi
+
+[Service]
+Type=simple
+Restart=always
+PIDFile=/var/run/obdi.pid
+Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/usr/sbin/obdi
+
+[Install]
+WantedBy=multi-user.target

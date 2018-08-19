@@ -2,10 +2,10 @@ Source: obdi
 Section: net
 Priority: optional
 Maintainer: Mark Clarkson <mark.clarkson@smorg.co.uk>
-Build-Depends: debhelper (>= 9), golang-go
+Build-Depends: debhelper (>= 10), golang-go, dh-systemd
 Standards-Version: 3.9.5
-Homepage: http://smorg.co.uk
-Bugs: https://lists.sourceforge.net/lists/listinfo/obdi-users
+Homepage: http://obdi.io/
+Bugs: https://github.com/mclarkson/obdi/issues
 
 Package: obdi
 Architecture: any

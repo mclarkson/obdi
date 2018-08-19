@@ -1,3 +1,9 @@
+obdi (0.2.2-1) bionic; urgency=low
+
+  * Bionic 0.2.2 package.
+
+ -- René Jochum <rene@jochums.at>  Fri, 17 Aug 2018 02:34:00 +0200
+
 obdi (0.1.4-1) trusty; urgency=low
 
   * Added documentation. Fixes #23.
